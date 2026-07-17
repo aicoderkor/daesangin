@@ -93,7 +93,7 @@ function createInitialState(): GameState {
     mercenaries: [],
     items: [],
     candidates: [createMercenary()],
-    candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS / state.tavernSpeedMultiplier,
+    candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS,
     candidatePaused: false,
     candidateTimeRemaining: TAVERN_REFRESH_MS,
     tavernSpeedMultiplier: 1,
@@ -935,7 +935,7 @@ export const gameStore = {
       const candidates = [...current.candidates, createMercenary()]
       const capacity = getTavernCapacity(current)
       while (candidates.length > capacity) candidates.shift()
-      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS / state.tavernSpeedMultiplier, candidatePaused: false, candidateTimeRemaining: TAVERN_REFRESH_MS }
+      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS, candidatePaused: false, candidateTimeRemaining: TAVERN_REFRESH_MS }
     })
     return true
   },
@@ -1382,6 +1382,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

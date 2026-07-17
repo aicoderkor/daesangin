@@ -150,13 +150,14 @@ export default function HomePage({
             <div className="head"><h2>숙소</h2><button type="button" className="btn sm" onClick={() => setLodgingOpen(false)}>닫기</button></div>
             <p>용병들은 이곳에서 휴식합니다. 숙소를 확장하면 더 많은 용병을 고용할 수 있습니다.</p>
             <p>숙소 수용량 {game.mercenaries.length}/{mercenaryCapacity}</p>
-            <button type="button" className="btn" disabled={game.gold < 250 * game.facilities.quarters * game.facilities.quarters} onClick={() => { if (gameStore.upgradeFacility('quarters')) onToast?.('숙소 수용량이 증가했습니다.') }}>수용량 +1 · 1동</button>
+            <button type="button" className="btn" disabled={game.gold < gameStore.getFacilityUpgradeCost("quarters", game.facilities.quarters)} onClick={() => { if (gameStore.upgradeFacility('quarters')) onToast?.('숙소 수용량이 증가했습니다.') }}>수용량 +1 · 1동</button>
           </div>
         </div>
       )}
     </>
   )
 }
+
 
 
 

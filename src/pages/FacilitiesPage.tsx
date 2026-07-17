@@ -49,7 +49,7 @@ export default function FacilitiesPage({
         <div>
           {FACILITIES.map((facility) => {
             const level = game.facilities[facility.key]
-            const cost = 250 * level * level
+            const cost = gameStore.getFacilityUpgradeCost(facility.key, level)
 
             return (
               <article
@@ -88,5 +88,6 @@ export default function FacilitiesPage({
     </section>
   )
 }
+
 
 

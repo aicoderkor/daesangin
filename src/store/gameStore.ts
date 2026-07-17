@@ -349,8 +349,8 @@ function ensurePartyCount(targetState: GameState): void {
   }
 }
 
-function getMercenaryCapacity(_targetState = state): number {
-  return 2
+function getMercenaryCapacity(targetState = state): number {
+  return targetState.facilities.quarters + 1
 }
 
 function getTavernCapacity(targetState = state): number {
@@ -1357,6 +1357,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

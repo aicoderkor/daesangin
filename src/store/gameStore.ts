@@ -1286,13 +1286,15 @@ export const gameStore = {
     setState((current) => {
       const next = structuredClone(current)
 
-      if (now >= next.candidateRefreshAt) {
-        next.candidates = [
-          createMercenary(),
-          createMercenary(),
-          createMercenary(),
-        ]
-        next.candidateRefreshAt = now + 60_000
+      if (!next.candidatePaused) {
+        if (now >= next.candidateRefreshAt) {
+          next.candidates = [...next.candidates, createMercenary()]
+          while (next.candidates.length > getTavernCapacity(next)) next.candidates.shift()
+          next.candidateRefreshAt = now + TAVERN_REFRESH_MS
+          next.candidateTimeRemaining = TAVERN_REFRESH_MS
+        } else {
+          next.candidateTimeRemaining = Math.max(0, next.candidateRefreshAt - now)
+        }
       }
 
       for (const party of next.parties) {
@@ -1355,6 +1357,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

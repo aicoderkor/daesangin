@@ -934,6 +934,14 @@ export const gameStore = {
   getHireCost,
   getFacilityUpgradeCost,
 
+  fillTavernCandidates(): void {
+    setState((current) => {
+      const candidates = [...current.candidates]
+      while (candidates.length < getTavernCapacity(current)) candidates.push(createMercenary())
+      return { ...current, candidates }
+    })
+  },
+
   refreshCandidates(): boolean {
     setState((current) => {
       const candidates = [...current.candidates, createMercenary()]
@@ -1392,6 +1400,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

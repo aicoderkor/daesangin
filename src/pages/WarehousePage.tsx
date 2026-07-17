@@ -1,0 +1,140 @@
+﻿import { MATERIAL_NAMES } from '../data/gameData'
+import { gameStore, useGameStore } from '../store/gameStore'
+import type {
+  GearItem,
+  MaterialKey,
+  StatMap,
+} from '../types/game'
+
+type WarehousePageProps = {
+  onToast?: (message: string) => void
+}
+
+function formatStatValue(value: number): string {
+  return value < 1
+    ? Math.round(value * 100) + '%'
+    : Math.round(value).toString()
+}
+
+function formatItemStats(stats: StatMap): string {
+  return Object.entries(stats)
+    .map(
+      ([key, value]) =>
+        key + ' +' + formatStatValue(value ?? 0),
+    )
+    .join(' · ')
+}
+
+function getEquippedMercenaryId(
+  item: GearItem,
+  mercenaries: ReturnType<typeof useGameStore>['mercenaries'],
+): string {
+  return (
+    mercenaries.find(
+      (mercenary) => mercenary.gear[item.slot] === item.id,
+    )?.id ?? ''
+  )
+}
+
+export default function WarehousePage({
+  onToast,
+}: WarehousePageProps) {
+  const game = useGameStore()
+  const materialTotal = gameStore.getMaterialTotal(game)
+  const storageCapacity = gameStore.getStorageCapacity(game)
+
+  const handleSell = () => {
+    const earned = gameStore.sellSurplusMaterials()
+    onToast?.(
+      earned > 0
+        ? earned + ' 엽전 획득'
+        : '판매할 잉여 재료가 없습니다.',
+    )
+  }
+
+  return (
+    <section className="screen warehouse-screen">
+      <h2 className="subscreenTitle">저장소</h2>
+
+      <div className="card">
+        <div className="head">
+          <div>
+            <h3>재료</h3>
+            <div className="small">
+              {materialTotal}/{storageCapacity}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn sm alt"
+            onClick={handleSell}
+          >
+            재료 일괄판매
+          </button>
+        </div>
+
+        <div>
+          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).map(
+            (material) => (
+              <div className="item row" key={material}>
+                <span>{MATERIAL_NAMES[material]}</span>
+                <b>{game.materials[material]}</b>
+              </div>
+            ),
+          )}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="head">
+          <h3>장비</h3>
+        </div>
+
+        <div>
+          {game.items.length === 0 ? (
+            <div className="empty">장비 없음</div>
+          ) : (
+            game.items.map((item) => (
+              <article className="item" key={item.id}>
+                <div className="row">
+                  <div>
+                    <b>{item.name}</b>
+                    <div className="small">
+                      {formatItemStats(item.stats)}
+                    </div>
+                  </div>
+
+                  <select
+                    className="select equipment-select"
+                    value={getEquippedMercenaryId(
+                      item,
+                      game.mercenaries,
+                    )}
+                    onChange={(event) => {
+                      gameStore.equipItem(
+                        item.id,
+                        event.target.value || null,
+                      )
+                    }}
+                  >
+                    <option value="">미장착</option>
+                    {game.mercenaries.map((mercenary) => (
+                      <option
+                        value={mercenary.id}
+                        key={mercenary.id}
+                      >
+                        {mercenary.name ?? mercenary.base}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+

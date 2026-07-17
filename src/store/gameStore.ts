@@ -167,6 +167,10 @@ function normalizeState(input: Partial<GameState>): GameState {
 
   state.candidatePaused = Boolean(state.candidatePaused)
   state.candidateTimeRemaining = Math.max(0, Number(state.candidateTimeRemaining) || TAVERN_REFRESH_MS)
+  if (!state.candidatePaused && state.tavernSpeedMultiplier > 1) {
+    const expected = TAVERN_REFRESH_MS / state.tavernSpeedMultiplier
+    if (state.candidateRefreshAt - Date.now() > expected) state.candidateRefreshAt = Date.now() + expected
+  }
   removeDuplicatePartyMembers(state)
   ensurePartyCount(state)
 
@@ -1388,6 +1392,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

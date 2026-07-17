@@ -114,16 +114,7 @@ export default function PartyPage({ onToast }: PartyPageProps) {
 
                     return (
                       <div className="slot" key={slotIndex}>
-                        <b>
-                          {mercenary
-                            ? mercenary.base
-                            : '빈 자리'}
-                        </b>
-                        <div>
-                          {mercenary
-                            ? getClassName(mercenary)
-                            : ''}
-                        </div>
+                        <b>{mercenary ? getClassName(mercenary) : '빈 자리'}</b>
 
                         <select
                           className="select"
@@ -195,6 +186,7 @@ export default function PartyPage({ onToast }: PartyPageProps) {
     </section>
   )
 }
+
 
 
 

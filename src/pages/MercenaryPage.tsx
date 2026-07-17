@@ -190,6 +190,7 @@ function MercenaryDetail({
   items,
   onClose,
   onOpenPromotion,
+  onDismiss,
 }: {
   mercenary: Mercenary
   items: ReturnType<typeof useGameStore>['items']
@@ -356,6 +357,7 @@ function PromotionPanel({
     </>
   )
 }
+
 
 
 

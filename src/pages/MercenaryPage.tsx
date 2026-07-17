@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { TRAITS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { Mercenary, StatMap } from '../types/game'
@@ -124,13 +124,7 @@ export default function MercenaryPage({
                   </div>
 
                   <div>
-                    <div className="name">
-                      {mercenary.base}
-                      <span className="small">
-                        {' '}
-                        {getClassName(mercenary)}
-                      </span>
-                    </div>
+                    <div className="name">{getClassName(mercenary)}</div>
 
                     <div className="small">
                       Lv.{mercenary.level} ·{' '}
@@ -360,3 +354,5 @@ function PromotionPanel({
     </>
   )
 }
+
+

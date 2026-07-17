@@ -372,6 +372,10 @@ function getHireCost(_mercenary: Mercenary): number {
   return 0
 }
 
+function getFacilityUpgradeCost(facility: keyof GameState['facilities'], level: number): number {
+  return facility === 'tavern' ? 1 : 250 * level * level
+}
+
 const battleStates: Record<string, BattleState> = {}
 
 function getTotalStats(mercenary: Mercenary, targetState: GameState) {
@@ -920,6 +924,7 @@ export const gameStore = {
   getStorageCapacity,
   getMaterialTotal,
   getHireCost,
+  getFacilityUpgradeCost,
 
   refreshCandidates(): boolean {
     setState((current) => {
@@ -1255,7 +1260,7 @@ export const gameStore = {
     facility: keyof GameState['facilities'],
   ): boolean {
     const level = state.facilities[facility]
-    const cost = 250 * level * level
+    const cost = getFacilityUpgradeCost(facility, level)
 
     if (state.gold < cost) {
       return false
@@ -1350,6 +1355,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

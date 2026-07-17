@@ -373,7 +373,7 @@ function getHireCost(_mercenary: Mercenary): number {
 }
 
 function getFacilityUpgradeCost(facility: keyof GameState['facilities'], level: number): number {
-  return facility === 'tavern' || facility === 'quarters' ? 1 : 250 * level * level
+  return facility === 'tavern' || facility === 'quarters' || facility === 'storage' ? 1 : 250 * level * level
 }
 
 const battleStates: Record<string, BattleState> = {}
@@ -1357,6 +1357,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

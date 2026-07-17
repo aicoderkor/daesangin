@@ -43,15 +43,6 @@ export default function WarehousePage({
   const materialTotal = gameStore.getMaterialTotal(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
 
-  const handleSell = () => {
-    const earned = gameStore.sellSurplusMaterials()
-    onToast?.(
-      earned > 0
-        ? earned + ' 엽전 획득'
-        : '판매할 잉여 재료가 없습니다.',
-    )
-  }
-
   return (
     <section className="screen warehouse-screen">
       <h2 className="subscreenTitle">저장소</h2>
@@ -65,13 +56,7 @@ export default function WarehousePage({
             </div>
           </div>
 
-          <button
-            type="button"
-            className="btn sm alt"
-            onClick={handleSell}
-          >
-            재료 일괄판매
-          </button>
+          <button type="button" className="btn sm" disabled={game.gold < gameStore.getFacilityUpgradeCost("storage", game.facilities.storage)} onClick={() => { if (gameStore.upgradeFacility("storage")) onToast?.("저장소 수용량이 증가했습니다.") }}>수용량 +1 · 1동</button>
         </div>
 
         <div>
@@ -130,6 +115,8 @@ export default function WarehousePage({
     </section>
   )
 }
+
+
 
 
 

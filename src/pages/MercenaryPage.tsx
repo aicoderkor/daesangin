@@ -195,6 +195,7 @@ function MercenaryDetail({
   items: ReturnType<typeof useGameStore>['items']
   onClose: () => void
   onOpenPromotion: () => void
+  onDismiss: () => void
 }) {
   const stats = addGearStats(
     getMercenaryStats(mercenary),
@@ -354,6 +355,7 @@ function PromotionPanel({
     </>
   )
 }
+
 
 
 

@@ -1347,9 +1347,6 @@ export const gameStore = {
     })
   },
 
-  addGold(amount: number): void {
-    if (!Number.isFinite(amount)) return
-    setState((current) => ({ ...current, gold: Math.max(0, current.gold + Math.floor(amount)) }))
   },
 
   reset(): void {

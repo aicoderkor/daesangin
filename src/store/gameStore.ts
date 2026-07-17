@@ -1344,9 +1344,7 @@ export const gameStore = {
       }
 
       return next
-    })
-  },
-
+    })
   },
 
   reset(): void {
@@ -1359,6 +1357,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

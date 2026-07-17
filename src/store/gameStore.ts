@@ -14,7 +14,7 @@ import type {
 
 import { getClassName, getMercenaryStats, getXpRequired } from '../utils/mercenary'
 
-const STORAGE_KEY = 'daesangin-react-v1'
+const STORAGE_KEY = 'daesangin-react-v2'
 
 type Listener = () => void
 
@@ -76,11 +76,6 @@ function createParty(index: number, members: Array<string | null> = []): Party {
 }
 
 function createInitialState(): GameState {
-  const mercenaries = [
-    createMercenary('창잡이'),
-    createMercenary('의술사'),
-    createMercenary('활잡이'),
-  ]
 
   return {
     gold: 500,
@@ -94,7 +89,7 @@ function createInitialState(): GameState {
       herb: 0,
       essence: 0,
     },
-    mercenaries,
+    mercenaries: [],
     items: [],
     candidates: [
       createMercenary(),
@@ -108,15 +103,9 @@ function createInitialState(): GameState {
       storage: 1,
       forge: 1,
     },
-    parties: [
-      createParty(0, [
-        mercenaries[0].id,
-        mercenaries[1].id,
-        mercenaries[2].id,
-      ]),
-    ],
+    parties: [createParty(0)],
     unlockedDungeonIndex: 0,
-    recentLog: '제1 원정대가 편성되었습니다.',
+    recentLog: '새 길드가 시작되었습니다.',
     lastSavedAt: Date.now(),
   }
 }
@@ -1379,6 +1368,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

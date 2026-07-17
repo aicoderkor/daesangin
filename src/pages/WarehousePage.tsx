@@ -124,7 +124,7 @@ export default function WarehousePage({
                         value={mercenary.id}
                         key={mercenary.id}
                       >
-                        {mercenary.name ?? mercenary.base}
+                        {mercenary.base}
                       </option>
                     ))}
                   </select>
@@ -137,4 +137,5 @@ export default function WarehousePage({
     </section>
   )
 }
+
 

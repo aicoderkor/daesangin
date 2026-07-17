@@ -116,7 +116,7 @@ export default function PartyPage({ onToast }: PartyPageProps) {
                       <div className="slot" key={slotIndex}>
                         <b>
                           {mercenary
-                            ? mercenary.name ?? mercenary.base
+                            ? mercenary.base
                             : '빈 자리'}
                         </b>
                         <div>
@@ -140,7 +140,7 @@ export default function PartyPage({ onToast }: PartyPageProps) {
                           <option value="">비움</option>
                           {availableMercenaries.map((target) => (
                             <option value={target.id} key={target.id}>
-                              {target.name ?? target.base}
+                              {target.base}
                             </option>
                           ))}
                         </select>
@@ -195,4 +195,9 @@ export default function PartyPage({ onToast }: PartyPageProps) {
     </section>
   )
 }
+
+
+
+
+
 

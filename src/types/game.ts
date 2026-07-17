@@ -86,7 +86,6 @@ export interface MercenaryGear {
 
 export interface Mercenary {
   id: string
-  name?: string
   base: MercenaryBase
   traits: string[]
   level: number
@@ -198,5 +197,6 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 

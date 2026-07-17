@@ -20,9 +20,6 @@ type Listener = () => void
 
 const listeners = new Set<Listener>()
 
-const FAMILY_NAMES = ['강', '윤', '한', '진', '서', '백', '연', '도', '무', '하']
-const GIVEN_NAMES = ['진', '호', '월', '린', '성', '율', '빈', '경', '람', '현']
-
 
 function createId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -32,9 +29,6 @@ function randomItem<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)]
 }
 
-function randomName(): string {
-  return randomItem(FAMILY_NAMES) + randomItem(GIVEN_NAMES)
-}
 function createMercenary(base?: MercenaryBase): Mercenary {
   const selectedBase = base ?? randomItem(MERCENARY_BASES)
   const traitCount = Math.random() < 0.58 ? 1 : Math.random() < 0.85 ? 2 : 3
@@ -45,7 +39,6 @@ function createMercenary(base?: MercenaryBase): Mercenary {
 
   return {
     id: createId('mercenary'),
-    name: randomName(),
     base: selectedBase,
     traits: selectedTraits,
     level: 1,
@@ -432,7 +425,7 @@ function createAllyUnits(
     units.push({
       kind: 'ally',
       id: mercenary.id,
-      name: mercenary.name ?? mercenary.base,
+      name: getClassName(mercenary),
       className: getClassName(mercenary),
       hp: stats.hp,
       maxHp: stats.hp,
@@ -1386,6 +1379,9 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
+
 
 
 

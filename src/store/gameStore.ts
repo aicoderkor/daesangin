@@ -358,7 +358,7 @@ function getTavernCapacity(targetState = state): number {
 }
 
 function getStorageCapacity(targetState = state): number {
-  return 35 + (targetState.facilities.storage - 1) * 35
+  return 35 + (targetState.facilities.storage - 1)
 }
 
 function getMaterialTotal(targetState = state): number {
@@ -1357,6 +1357,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

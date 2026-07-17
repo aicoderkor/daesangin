@@ -235,6 +235,7 @@ function MercenaryDetail({
         >
           닫기
         </button>
+        <button type="button" className="btn alt sm" onClick={onDismiss}>해고</button>
       </div>
 
       <div className="card">
@@ -355,6 +356,8 @@ function PromotionPanel({
     </>
   )
 }
+
+
 
 
 

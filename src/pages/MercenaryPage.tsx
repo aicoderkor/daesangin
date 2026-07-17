@@ -169,7 +169,7 @@ export default function MercenaryPage({
                 mercenary={selectedMercenary}
                 items={game.items}
                 onClose={closeModal}
-                onOpenPromotion={() => setPromotionOpen(true)}
+                onOpenPromotion={() => setPromotionOpen(true)} onDismiss={() => { if (gameStore.dismissMercenary(selectedMercenary.id)) closeModal() }}
               />
             ) : (
               <PromotionPanel
@@ -354,5 +354,7 @@ function PromotionPanel({
     </>
   )
 }
+
+
 
 

@@ -966,6 +966,12 @@ export const gameStore = {
     return true
   },
 
+  dismissMercenary(mercenaryId: string): boolean {
+    if (!state.mercenaries.some((target) => target.id === mercenaryId)) return false
+    setState((current) => ({ ...current, mercenaries: current.mercenaries.filter((target) => target.id !== mercenaryId), parties: current.parties.map((party) => ({ ...party, members: party.members.map((id) => id === mercenaryId ? null : id) as typeof party.members })) }))
+    return true
+  },
+
   promoteMercenary(
     mercenaryId: string,
     branchIndex: number,
@@ -1399,6 +1405,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

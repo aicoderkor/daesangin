@@ -75,14 +75,7 @@ export default function WarehousePage({
         </div>
 
         <div>
-          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).map(
-            (material) => (
-              <div className="item row" key={material}>
-                <span>{MATERIAL_NAMES[material]}</span>
-                <b>{game.materials[material]}</b>
-              </div>
-            ),
-          )}
+          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).filter((material) => game.materials[material] > 0).map((material) => (<div className="item row" key={material}><span>{MATERIAL_NAMES[material]}</span><b>{game.materials[material]}</b></div>))}
         </div>
       </div>
 
@@ -137,5 +130,7 @@ export default function WarehousePage({
     </section>
   )
 }
+
+
 
 

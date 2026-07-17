@@ -83,9 +83,9 @@ function createInitialState(): GameState {
     fame: 0,
     gems: 0,
     materials: {
-      wood: 8,
-      ore: 5,
-      fiber: 5,
+      wood: 0,
+      ore: 0,
+      fiber: 0,
       hide: 0,
       herb: 0,
       essence: 0,
@@ -1350,6 +1350,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

@@ -81,6 +81,7 @@ export default function App() {
 
           <div className="gem">
             💎 <span>{game.gems}</span>
+            <button type="button" className="btn sm" onClick={() => gameStore.addGold(100)}>+100동</button>
           </div>
         </div>
 
@@ -145,6 +146,8 @@ export default function App() {
     </div>
   )
 }
+
+
 
 
 

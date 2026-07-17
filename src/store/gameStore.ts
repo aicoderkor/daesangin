@@ -1347,6 +1347,11 @@ export const gameStore = {
     })
   },
 
+  addGold(amount: number): void {
+    if (!Number.isFinite(amount)) return
+    setState((current) => ({ ...current, gold: Math.max(0, current.gold + Math.floor(amount)) }))
+  },
+
   reset(): void {
     state = createInitialState()
     persist()
@@ -1357,6 +1362,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

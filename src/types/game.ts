@@ -158,6 +158,7 @@ export interface GameState {
   candidateRefreshAt: number
   candidatePaused: boolean
   candidateTimeRemaining: number
+  tavernSpeedMultiplier: number
   facilities: FacilityLevels
   marketSlots: number
   marketSpeedMultiplier: number
@@ -203,6 +204,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

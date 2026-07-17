@@ -93,9 +93,10 @@ function createInitialState(): GameState {
     mercenaries: [],
     items: [],
     candidates: [createMercenary()],
-    candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS,
+    candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS / state.tavernSpeedMultiplier,
     candidatePaused: false,
     candidateTimeRemaining: TAVERN_REFRESH_MS,
+    tavernSpeedMultiplier: 1,
     marketSlots: 1,
     marketSpeedMultiplier: 1,
     marketListings: [],
@@ -934,7 +935,7 @@ export const gameStore = {
       const candidates = [...current.candidates, createMercenary()]
       const capacity = getTavernCapacity(current)
       while (candidates.length > capacity) candidates.shift()
-      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS, candidatePaused: false, candidateTimeRemaining: TAVERN_REFRESH_MS }
+      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS / state.tavernSpeedMultiplier, candidatePaused: false, candidateTimeRemaining: TAVERN_REFRESH_MS }
     })
     return true
   },
@@ -1293,7 +1294,7 @@ export const gameStore = {
         if (now >= next.candidateRefreshAt) {
           next.candidates = [...next.candidates, createMercenary()]
           while (next.candidates.length > getTavernCapacity(next)) next.candidates.shift()
-          next.candidateRefreshAt = now + TAVERN_REFRESH_MS
+          next.candidateRefreshAt = now + TAVERN_REFRESH_MS / next.tavernSpeedMultiplier
           next.candidateTimeRemaining = TAVERN_REFRESH_MS
         } else {
           next.candidateTimeRemaining = Math.max(0, next.candidateRefreshAt - now)
@@ -1357,6 +1358,13 @@ export const gameStore = {
     return true
   },
 
+  upgradeTavernSpeed(): boolean {
+    const cost = 10
+    if (state.gold < cost) return false
+    setState((current) => ({ ...current, gold: current.gold - cost, tavernSpeedMultiplier: current.tavernSpeedMultiplier + 0.1 }))
+    return true
+  },
+
   upgradeMarketSpeed(): boolean {
     const cost = 10
     if (state.gold < cost) return false
@@ -1374,6 +1382,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

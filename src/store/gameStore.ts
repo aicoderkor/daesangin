@@ -937,7 +937,7 @@ export const gameStore = {
   fillTavernCandidates(): void {
     setState((current) => {
       const candidates = Array.from({ length: getTavernCapacity(current) }, () => createMercenary())
-      return { ...current, candidates }
+      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS / current.tavernSpeedMultiplier, candidateTimeRemaining: TAVERN_REFRESH_MS / current.tavernSpeedMultiplier }
     })
   },
 
@@ -1399,6 +1399,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

@@ -159,6 +159,9 @@ export interface GameState {
   candidatePaused: boolean
   candidateTimeRemaining: number
   facilities: FacilityLevels
+  marketSlots: number
+  marketSpeedMultiplier: number
+  marketListings: string[]
   parties: Party[]
   unlockedDungeonIndex: number
   recentLog: string
@@ -200,6 +203,8 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
+
 
 
 

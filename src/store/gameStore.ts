@@ -96,6 +96,9 @@ function createInitialState(): GameState {
     candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS,
     candidatePaused: false,
     candidateTimeRemaining: TAVERN_REFRESH_MS,
+    marketSlots: 1,
+    marketSpeedMultiplier: 1,
+    marketListings: [],
     facilities: {
       quarters: 1,
       party: 1,
@@ -1347,6 +1350,20 @@ export const gameStore = {
     })
   },
 
+  upgradeMarketSlots(): boolean {
+    const cost = 20
+    if (state.gold < cost) return false
+    setState((current) => ({ ...current, gold: current.gold - cost, marketSlots: current.marketSlots + 1 }))
+    return true
+  },
+
+  upgradeMarketSpeed(): boolean {
+    const cost = 10
+    if (state.gold < cost) return false
+    setState((current) => ({ ...current, gold: current.gold - cost, marketSpeedMultiplier: current.marketSpeedMultiplier + 0.1 }))
+    return true
+  },
+
   reset(): void {
     state = createInitialState()
     persist()
@@ -1357,6 +1374,11 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
+
+
+
 
 
 

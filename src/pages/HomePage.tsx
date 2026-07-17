@@ -1,4 +1,5 @@
-﻿import { gameStore, useGameStore } from '../store/gameStore'
+﻿import { useState } from 'react'
+import { gameStore, useGameStore } from '../store/gameStore'
 import type { ScreenId } from '../types/game'
 
 type HomePageProps = {
@@ -11,6 +12,7 @@ export default function HomePage({
   onToast,
 }: HomePageProps) {
   const game = useGameStore()
+  const [lodgingOpen, setLodgingOpen] = useState(false)
   const mercenaryCapacity = gameStore.getMercenaryCapacity(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
   const materialTotal = gameStore.getMaterialTotal(game)
@@ -19,6 +21,7 @@ export default function HomePage({
   ).length
 
   return (
+    <>
     <section className="screen home-screen">
       <div className="quick">
         <button
@@ -49,7 +52,7 @@ export default function HomePage({
       <button
         type="button"
         className="building"
-        onClick={() => onNavigate('mercs')}
+        onClick={() => setLodgingOpen(true)}
       >
         <div className="hang">🌙</div>
         <div>
@@ -141,6 +144,18 @@ export default function HomePage({
         </div>
       </div>
     </section>
+      {lodgingOpen && (
+        <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setLodgingOpen(false) }}>
+          <div className="sheet lodging-sheet">
+            <div className="head"><h2>숙소</h2><button type="button" className="btn sm" onClick={() => setLodgingOpen(false)}>닫기</button></div>
+            <p>용병들은 이곳에서 휴식합니다. 숙소를 확장하면 더 많은 용병을 고용할 수 있습니다.</p>
+            <p>숙소 수용량 {game.mercenaries.length}/{mercenaryCapacity}</p>
+            <button type="button" className="btn" disabled={game.gold < 250 * game.facilities.quarters * game.facilities.quarters} onClick={() => { if (gameStore.upgradeFacility('quarters')) onToast?.('숙소 수용량이 증가했습니다.') }}>수용량 +1 · 250금화</button>
+          </div>
+        </div>
+      )}
+    </>
   )
 }
+
 

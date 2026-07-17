@@ -1295,7 +1295,7 @@ export const gameStore = {
           next.candidates = [...next.candidates, createMercenary()]
           while (next.candidates.length > getTavernCapacity(next)) next.candidates.shift()
           next.candidateRefreshAt = now + TAVERN_REFRESH_MS / next.tavernSpeedMultiplier
-          next.candidateTimeRemaining = TAVERN_REFRESH_MS
+          next.candidateTimeRemaining = TAVERN_REFRESH_MS / next.tavernSpeedMultiplier
         } else {
           next.candidateTimeRemaining = Math.max(0, next.candidateRefreshAt - now)
         }
@@ -1382,6 +1382,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

@@ -128,7 +128,7 @@ function normalizeState(input: Partial<GameState>): GameState {
       ? input.mercenaries
       : fallback.mercenaries,
     candidates: Array.isArray(input.candidates)
-      ? input.candidates
+      ? input.candidates.slice(-Math.max(1, (input.facilities?.tavern ?? fallback.facilities.tavern)))
       : fallback.candidates,
     items: Array.isArray(input.items) ? input.items : [],
     candidatePaused: input.candidatePaused ?? false,
@@ -939,8 +939,8 @@ export const gameStore = {
   toggleCandidatePause(): boolean {
     const now = Date.now()
     setState((current) => current.candidatePaused
-      ? { ...current, candidatePaused: false, candidateRefreshAt: now + Math.max(0, current.candidateTimeRemaining || TAVERN_REFRESH_MS) }
-      : { ...current, candidatePaused: true, candidateTimeRemaining: Math.max(0, current.candidateRefreshAt - now), candidateRefreshAt: 0 })
+      ? { ...current, candidatePaused: false, candidateRefreshAt: now + Math.max(1_000, current.candidateTimeRemaining || TAVERN_REFRESH_MS) }
+      : { ...current, candidatePaused: true, candidateTimeRemaining: Math.max(1_000, current.candidateRefreshAt - now), candidateRefreshAt: 0 })
     return true
   },
 
@@ -1355,6 +1355,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

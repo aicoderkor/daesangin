@@ -14,7 +14,8 @@ import type {
 
 import { getClassName, getMercenaryStats, getXpRequired } from '../utils/mercenary'
 
-const STORAGE_KEY = 'daesangin-react-v2'
+const STORAGE_KEY = 'daesangin-react-v3'
+const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
 
 type Listener = () => void
 
@@ -78,7 +79,7 @@ function createParty(index: number, members: Array<string | null> = []): Party {
 function createInitialState(): GameState {
 
   return {
-    gold: 500,
+    gold: 0,
     fame: 0,
     gems: 0,
     materials: {
@@ -91,17 +92,16 @@ function createInitialState(): GameState {
     },
     mercenaries: [],
     items: [],
-    candidates: [
-      createMercenary(),
-      createMercenary(),
-      createMercenary(),
-    ],
-    candidateRefreshAt: Date.now() + 60_000,
+    candidates: [createMercenary()],
+    candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS,
+    candidatePaused: false,
+    candidateTimeRemaining: TAVERN_REFRESH_MS,
     facilities: {
       quarters: 1,
       party: 1,
       storage: 1,
       forge: 1,
+      tavern: 1,
     },
     parties: [createParty(0)],
     unlockedDungeonIndex: 0,
@@ -131,6 +131,8 @@ function normalizeState(input: Partial<GameState>): GameState {
       ? input.candidates
       : fallback.candidates,
     items: Array.isArray(input.items) ? input.items : [],
+    candidatePaused: input.candidatePaused ?? false,
+    candidateTimeRemaining: Math.max(0, input.candidateTimeRemaining ?? TAVERN_REFRESH_MS),
     parties: Array.isArray(input.parties) ? input.parties : fallback.parties,
   }
 
@@ -159,6 +161,8 @@ function normalizeState(input: Partial<GameState>): GameState {
     busy: false,
   }))
 
+  state.candidatePaused = Boolean(state.candidatePaused)
+  state.candidateTimeRemaining = Math.max(0, Number(state.candidateTimeRemaining) || TAVERN_REFRESH_MS)
   removeDuplicatePartyMembers(state)
   ensurePartyCount(state)
 
@@ -345,12 +349,16 @@ function ensurePartyCount(targetState: GameState): void {
   }
 }
 
-function getMercenaryCapacity(targetState = state): number {
-  return 6 + targetState.facilities.quarters * 2
+function getMercenaryCapacity(_targetState = state): number {
+  return 2
+}
+
+function getTavernCapacity(targetState = state): number {
+  return Math.max(1, targetState.facilities.tavern)
 }
 
 function getStorageCapacity(targetState = state): number {
-  return 40 + targetState.facilities.storage * 35
+  return 35 + (targetState.facilities.storage - 1) * 35
 }
 
 function getMaterialTotal(targetState = state): number {
@@ -360,8 +368,8 @@ function getMaterialTotal(targetState = state): number {
   )
 }
 
-function getHireCost(mercenary: Mercenary): number {
-  return 100 + mercenary.traits.length * 60
+function getHireCost(_mercenary: Mercenary): number {
+  return 0
 }
 
 const battleStates: Record<string, BattleState> = {}
@@ -908,59 +916,33 @@ export const gameStore = {
   },
 
   getMercenaryCapacity,
+  getTavernCapacity,
   getStorageCapacity,
   getMaterialTotal,
   getHireCost,
 
-  refreshCandidates(paid = true): boolean {
-    const refreshCost = 80
+  refreshCandidates(): boolean {
+    setState((current) => {
+      const candidates = [...current.candidates, createMercenary()]
+      const capacity = getTavernCapacity(current)
+      while (candidates.length > capacity) candidates.shift()
+      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS, candidatePaused: false, candidateTimeRemaining: TAVERN_REFRESH_MS }
+    })
+    return true
+  },
 
-    if (paid && state.gold < refreshCost) {
-      return false
-    }
-
-    setState((current) => ({
-      ...current,
-      gold: paid ? current.gold - refreshCost : current.gold,
-      candidates: [
-        createMercenary(),
-        createMercenary(),
-        createMercenary(),
-      ],
-      candidateRefreshAt: Date.now() + 60_000,
-    }))
-
+  toggleCandidatePause(): boolean {
+    const now = Date.now()
+    setState((current) => current.candidatePaused
+      ? { ...current, candidatePaused: false, candidateRefreshAt: now + Math.max(0, current.candidateTimeRemaining || TAVERN_REFRESH_MS) }
+      : { ...current, candidatePaused: true, candidateTimeRemaining: Math.max(0, current.candidateRefreshAt - now), candidateRefreshAt: 0 })
     return true
   },
 
   hireMercenary(mercenaryId: string): boolean {
-    const candidate = state.candidates.find(
-      (mercenary) => mercenary.id === mercenaryId,
-    )
-
-    if (!candidate) {
-      return false
-    }
-
-    const cost = getHireCost(candidate)
-
-    if (
-      state.gold < cost ||
-      state.mercenaries.length >= getMercenaryCapacity()
-    ) {
-      return false
-    }
-
-    setState((current) => ({
-      ...current,
-      gold: current.gold - cost,
-      mercenaries: [...current.mercenaries, candidate],
-      candidates: current.candidates.filter(
-        (mercenary) => mercenary.id !== mercenaryId,
-      ),
-      recentLog: `${candidate.base}이 상단에 합류했습니다.`,
-    }))
-
+    const candidate = state.candidates.find((mercenary) => mercenary.id === mercenaryId)
+    if (!candidate || state.mercenaries.length >= getMercenaryCapacity()) return false
+    setState((current) => ({ ...current, mercenaries: [...current.mercenaries, candidate], candidates: current.candidates.filter((mercenary) => mercenary.id !== mercenaryId), recentLog: `${candidate.base}이 상단에 합류했습니다.` }))
     return true
   },
 
@@ -1368,6 +1350,15 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
+
+
+
+
+
+
+
 
 
 

@@ -8,6 +8,7 @@ import PartyPage from './pages/PartyPage'
 import TavernPage from './pages/TavernPage'
 import WarehousePage from './pages/WarehousePage'
 import { gameStore, useGameStore } from './store/gameStore'
+import { formatCurrency } from './utils/currency'
 import type { ScreenId } from './types/game'
 
 const PAGE_TITLES: Record<ScreenId, string> = {
@@ -84,10 +85,7 @@ export default function App() {
         </div>
 
         <div className="res">
-          <div><span>엽전</span><b>{Math.floor(game.gold).toLocaleString()}</b></div>
-          <div><span>명성</span><b>{Math.floor(game.fame).toLocaleString()}</b></div>
-          <div><span>목재</span><b>{game.materials.wood.toLocaleString()}</b></div>
-          <div><span>철광석</span><b>{game.materials.ore.toLocaleString()}</b></div>
+          <div><span>엽전</span><b>{formatCurrency(game.gold)}</b></div>
         </div>
       </header>
 
@@ -147,6 +145,8 @@ export default function App() {
     </div>
   )
 }
+
+
 
 
 

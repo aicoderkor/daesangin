@@ -131,6 +131,7 @@ export interface FacilityLevels {
   party: number
   storage: number
   forge: number
+  tavern: number
 }
 
 export interface Party {
@@ -155,6 +156,8 @@ export interface GameState {
   items: GearItem[]
   candidates: Mercenary[]
   candidateRefreshAt: number
+  candidatePaused: boolean
+  candidateTimeRemaining: number
   facilities: FacilityLevels
   parties: Party[]
   unlockedDungeonIndex: number
@@ -197,6 +200,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

@@ -10,12 +10,7 @@ const FACILITIES: Array<{
   name: string
   effect: string
 }> = [
-  {
-    key: 'quarters',
-    name: '용병 숙소',
-    effect: '보유 용병 +2',
-  },
-  {
+{
     key: 'party',
     name: '작전실',
     effect: '동시 원정대 +1',
@@ -93,4 +88,5 @@ export default function FacilitiesPage({
     </section>
   )
 }
+
 

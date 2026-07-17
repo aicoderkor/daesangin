@@ -1361,7 +1361,13 @@ export const gameStore = {
   upgradeTavernSpeed(): boolean {
     const cost = 10
     if (state.gold < cost) return false
-    setState((current) => ({ ...current, gold: current.gold - cost, tavernSpeedMultiplier: current.tavernSpeedMultiplier + 0.1 }))
+    const now = Date.now()
+    setState((current) => {
+      const nextMultiplier = current.tavernSpeedMultiplier + 0.1
+      const remaining = current.candidatePaused ? current.candidateTimeRemaining : Math.max(0, current.candidateRefreshAt - now)
+      const adjustedRemaining = remaining * current.tavernSpeedMultiplier / nextMultiplier
+      return { ...current, gold: current.gold - cost, tavernSpeedMultiplier: nextMultiplier, candidateTimeRemaining: adjustedRemaining, candidateRefreshAt: current.candidatePaused ? current.candidateRefreshAt : now + adjustedRemaining }
+    })
     return true
   },
 
@@ -1382,6 +1388,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

@@ -712,6 +712,12 @@ function rewardBattleVictory(
 
   targetState.gold += gold
   targetState.fame += 2 + dungeon.recommendedLevel
+  const rewardLogs = [
+    'good|' + dungeon.name + '의 적이 쓰러졌습니다.',
+    'good|전투에서 승리했습니다.',
+    'skill|경험치와 ' + gold + '동을 획득했습니다.',
+  ]
+  partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...rewardLogs].slice(-120)
 
   for (const [material, range] of Object.entries(
     dungeon.materials,
@@ -1433,6 +1439,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

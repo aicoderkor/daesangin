@@ -985,6 +985,10 @@ export const gameStore = {
   getBattleLogs(partyId: string): string[] {
     return [...(partyLogs[partyId] ?? []), ...(battleStates[partyId]?.logs ?? [])]
   },
+  getExpeditionLogs(partyId: string): string[] {
+    const sessionLogs = state.expeditionSessions[partyId]?.logs.map((log) => 'exploration|' + log.message) ?? []
+    return [...sessionLogs, ...(partyLogs[partyId] ?? []), ...(battleStates[partyId]?.logs ?? [])].slice(-120)
+  },
 
   getMercenaryCapacity,
   getTavernCapacity,
@@ -1484,6 +1488,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

@@ -76,7 +76,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   const liveBattle = watchedParty ? gameStore.getLiveBattleState(watchedParty.id) : undefined
   const battle = liveBattle
   const isSearching = Boolean(watchedParty && !liveBattle)
-  const battleLogs = watchedParty ? gameStore.getBattleLogs(watchedParty.id) : []
+  const battleLogs = watchedParty ? gameStore.getExpeditionLogs(watchedParty.id) : []
 
   return (
     <section className="screen dungeon-screen">
@@ -228,6 +228,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

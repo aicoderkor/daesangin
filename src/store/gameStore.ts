@@ -386,6 +386,7 @@ function getFacilityUpgradeCost(facility: keyof GameState['facilities'], level: 
 
 const battleStates: Record<string, BattleState> = {}
 const partyVitals: Record<string, Record<string, { hp: number; mp: number }>> = {}
+const partyLogs: Record<string, string[]> = {}
 
 function getTotalStats(mercenary: Mercenary, targetState: GameState) {
   const stats = getMercenaryStats(mercenary)
@@ -793,6 +794,7 @@ function finishBattle(
   now: number,
 ): void {
   battle.result = won ? 'victory' : 'defeat'
+  partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...battle.logs]
   partyVitals[party.id] = Object.fromEntries(battle.allies.map((unit) => [unit.id, { hp: unit.hp, mp: unit.mp }]))
   battle.finishAt = now + 1_200
   pushBattleLog(
@@ -1409,6 +1411,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

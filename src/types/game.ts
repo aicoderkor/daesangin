@@ -147,6 +147,12 @@ export interface Party {
   busy: boolean
 }
 
+export interface DungeonProgress {
+  runProgress: number
+  totalProgress: number
+  cleared: boolean
+}
+
 export interface GameState {
   gold: number
   fame: number
@@ -165,6 +171,7 @@ export interface GameState {
   marketListings: string[]
   parties: Party[]
   unlockedDungeonIndex: number
+  dungeonProgress: Record<string, DungeonProgress>
   recentLog: string
   lastSavedAt: number
 }
@@ -204,6 +211,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

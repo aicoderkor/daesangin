@@ -16,6 +16,7 @@ import { getClassName, getMercenaryStats, getXpRequired } from '../utils/mercena
 
 const STORAGE_KEY = 'daesangin-react-v3'
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
+const DUNGEON_PROGRESS_REQUIREMENTS = [0, 80, 150, 220] as const
 
 type Listener = () => void
 
@@ -109,6 +110,7 @@ function createInitialState(): GameState {
     },
     parties: [createParty(0)],
     unlockedDungeonIndex: 0,
+    dungeonProgress: {},
     recentLog: '새 길드가 시작되었습니다.',
     lastSavedAt: Date.now(),
   }
@@ -701,6 +703,13 @@ function rewardBattleVictory(
   if (dungeonIndex === null) return
 
   const dungeon = DUNGEONS[dungeonIndex]
+  const progressKey = String(dungeonIndex)
+  const progress = targetState.dungeonProgress[progressKey] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+  progress.runProgress += 1
+  progress.totalProgress += 1
+  const requirement = DUNGEON_PROGRESS_REQUIREMENTS[dungeonIndex] ?? 999999
+  if (progress.runProgress >= requirement) progress.cleared = true
+  targetState.dungeonProgress[progressKey] = progress
   party.runs += 1
   const gold = 20 + dungeon.recommendedLevel * 12
 
@@ -743,8 +752,8 @@ function rewardBattleVictory(
   }
 
   if (
+    progress.cleared &&
     dungeonIndex === targetState.unlockedDungeonIndex &&
-    party.runs >= 3 &&
     targetState.unlockedDungeonIndex < DUNGEONS.length - 1
   ) {
     targetState.unlockedDungeonIndex += 1
@@ -1084,6 +1093,12 @@ export const gameStore = {
       targetParty.nextActionAt = Date.now() + 1_200
       targetParty.campUntil = 0
       targetParty.busy = false
+      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+      progress.runProgress = 0
+      next.dungeonProgress[String(dungeonIndex)] = progress
+      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+      progress.runProgress = 0
+      next.dungeonProgress[String(dungeonIndex)] = progress
       next.recentLog = `${targetParty.name}이 원정을 시작했습니다.`
 
       return next
@@ -1108,6 +1123,12 @@ export const gameStore = {
       targetParty.nextActionAt = 0
       targetParty.campUntil = 0
       targetParty.busy = false
+      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+      progress.runProgress = 0
+      next.dungeonProgress[String(dungeonIndex)] = progress
+      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+      progress.runProgress = 0
+      next.dungeonProgress[String(dungeonIndex)] = progress
       next.recentLog = `${targetParty.name}이 귀환했습니다.`
 
       return next
@@ -1411,6 +1432,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

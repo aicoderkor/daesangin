@@ -75,8 +75,8 @@ function createParty(index: number, members: Array<string | null> = []): Party {
     runs: 0,
     loot: {},
     busy: false,
-    areaTotal: party.areaTotal ?? 8,
-    areasCompleted: party.areasCompleted ?? 0,
+    areaTotal: 8,
+    areasCompleted: 0,
   }
 }
 

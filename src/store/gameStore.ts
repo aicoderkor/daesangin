@@ -1129,7 +1129,7 @@ export const gameStore = {
       const party = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.status === 'idle' && candidate.dungeon === null)
       if (party) {
         party.dungeon = dungeonIndex
-        party.members = progress.assignedMercenaryIds.slice(0, 4).concat([null, null, null, null]).slice(0, 4) as Party['members']
+        party.members = [...progress.assignedMercenaryIds.slice(0, 4), null, null, null, null].slice(0, 4) as Party['members']
         party.status = 'idle'
       }
       const mercenary = next.mercenaries.find((candidate) => candidate.id === mercenaryId)
@@ -1147,7 +1147,7 @@ export const gameStore = {
       const progress = next.dungeonProgress[String(dungeonIndex)]
       if (progress) progress.assignedMercenaryIds = (progress.assignedMercenaryIds ?? []).filter((id) => id !== mercenaryId)
       const targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex)
-      if (targetParty) targetParty.members = (progress?.assignedMercenaryIds ?? []).concat([null, null, null, null]).slice(0, 4) as Party['members']
+      if (targetParty) targetParty.members = [...(progress?.assignedMercenaryIds ?? []).slice(0, 4), null, null, null, null].slice(0, 4) as Party['members']
       const mercenary = next.mercenaries.find((candidate) => candidate.id === mercenaryId)
       if (mercenary) mercenary.assignedDungeonId = null
       return next

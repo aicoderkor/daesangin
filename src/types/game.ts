@@ -2,7 +2,6 @@ export type ScreenId =
   | 'home'
   | 'tavern'
   | 'mercs'
-  | 'parties'
   | 'dungeons'
   | 'warehouse'
   | 'forge'

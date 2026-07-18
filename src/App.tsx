@@ -1,10 +1,9 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import DungeonPage from './pages/DungeonPage'
 import ForgePage from './pages/ForgePage'
 import FacilitiesPage from './pages/FacilitiesPage'
 import HomePage from './pages/HomePage'
 import MercenaryPage from './pages/MercenaryPage'
-import PartyPage from './pages/PartyPage'
 import TavernPage from './pages/TavernPage'
 import WarehousePage from './pages/WarehousePage'
 import { gameStore, useGameStore } from './store/gameStore'
@@ -15,7 +14,6 @@ const PAGE_TITLES: Record<ScreenId, string> = {
   home: '본부',
   tavern: '객잔',
   mercs: '용병',
-  parties: '원정대',
   dungeons: '던전',
   warehouse: '저장소',
   forge: '공방',
@@ -64,8 +62,6 @@ export default function App() {
         return <TavernPage onToast={setToastMessage} />
       case 'mercs':
         return <MercenaryPage onToast={setToastMessage} />
-      case 'parties':
-        return <PartyPage onToast={setToastMessage} />
       case 'dungeons':
         return <DungeonPage onNavigate={navigate} />
       case 'warehouse':

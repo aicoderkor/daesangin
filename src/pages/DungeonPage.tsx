@@ -154,10 +154,10 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               진행 중인 원정대를 선택하세요.
             </div>
           ) : !battle ? (
-            <div className="search-status">다음 조우를 탐색 중...</div>
+            <div className="log"><div>다음 조우를 탐색 중...</div></div>
           ) : (
             <>
-              {isSearching && <div className="search-status">다음 조우를 탐색 중...</div>}
+              {isSearching && <div className="log"><div>다음 조우를 탐색 중...</div></div>}
               <div className="field">
                 <div className="side">
                   {battle!.allies.map((unit) => (
@@ -228,6 +228,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

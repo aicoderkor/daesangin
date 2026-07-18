@@ -149,6 +149,7 @@ export default function MercenaryPage({
                   <div className="stars">
                     {'★'.repeat(mercenary.traits.length)}
                   </div>
+                  <div className='merc-gear'>장비 {Object.values(mercenary.gear).filter(Boolean).length}/3</div>
                 </button>
               )
             })
@@ -357,6 +358,7 @@ function PromotionPanel({
     </>
   )
 }
+
 
 
 

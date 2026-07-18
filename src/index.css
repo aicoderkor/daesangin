@@ -130,3 +130,4 @@ button { cursor: pointer; }
 .equipment-select { width: 120px; flex: 0 0 120px; }
 
 .forge-materials { margin-top: 8px; }
+.merc-gear{font-size:.8rem;color:var(--muted);margin-top:4px}

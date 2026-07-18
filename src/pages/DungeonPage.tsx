@@ -135,7 +135,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
         <div className="battle">
           {!watchedParty ? (
             <div className="empty">
-              진행 중인 원정대를 선택하세요.
+              진행 중인 던전을 선택하세요.
             </div>
           ) : !battle ? (
             <div className="log"></div>
@@ -203,7 +203,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
       </div>
       {selectedDungeon !== null && (
         <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setSelectedDungeon(null) }}>
-          <div className="sheet"><div className="head"><h2>원정대 구성</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>닫기</button></div>
+          <div className="sheet"><div className="head"><h2>던전 용병 배치</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>닫기</button></div>
             <div className="small">현재 던전 참여 용병</div>
             {(game.dungeonProgress[String(selectedDungeon)]?.assignedMercenaryIds ?? []).map((id) => { const mercenary = game.mercenaries.find((candidate) => candidate.id === id); return mercenary ? <div className="row" key={id}><span>{mercenary.base} Lv.{mercenary.level}</span><button type="button" className="btn sm" onClick={() => gameStore.removeMercenaryFromDungeon(selectedDungeon, id)}>제외</button></div> : null })}
             <div className="small">배치 가능한 용병</div>

@@ -75,7 +75,6 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   )
   const liveBattle = watchedParty ? gameStore.getLiveBattleState(watchedParty.id) : undefined
   const battle = watchedParty ? gameStore.getBattleState(watchedParty.id) : undefined
-  const isSearching = Boolean(watchedParty && !liveBattle)
   const battleLogs = watchedParty ? gameStore.getExpeditionLogs(watchedParty.id) : []
   const displayedLogs = battleLogs.slice(-120)
   return (
@@ -157,7 +156,6 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
             <div className="log"><div>다음 조우를 탐색 중...</div></div>
           ) : (
             <>
-              {isSearching && <div className="log"><div>다음 조우를 탐색 중...</div></div>}
               <div className="field">
                 <div className="side">
                   {battle!.allies.map((unit) => (

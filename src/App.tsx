@@ -56,7 +56,7 @@ export default function App() {
       case 'parties':
         return <PartyPage onToast={setToastMessage} />
       case 'dungeons':
-        return <DungeonPage />
+        return <DungeonPage onNavigate={navigate} />
       case 'warehouse':
         return <WarehousePage onToast={setToastMessage} />
       case 'forge':
@@ -146,6 +146,7 @@ export default function App() {
     </div>
   )
 }
+
 
 
 

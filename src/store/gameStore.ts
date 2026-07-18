@@ -1475,3 +1475,4 @@ export function getClassDefinition(base: MercenaryBase) {
 
 
 
+

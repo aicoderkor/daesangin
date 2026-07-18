@@ -158,11 +158,11 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               {isSearching && <div className="search-status">다음 조우를 탐색 중...</div>}
               <div className="field">
                 <div className="side">
-                  {battle.allies.map((unit) => (
+                  {battle!.allies.map((unit) => (
                     <Fighter
                       unit={unit}
-                      active={battle.activeUnitId === unit.id}
-                      hit={battle.hitUnitId === unit.id}
+                      active={battle!.activeUnitId === unit.id}
+                      hit={battle!.hitUnitId === unit.id}
                       key={unit.id}
                     />
                   ))}
@@ -171,11 +171,11 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
                 <div className="versus">VS</div>
 
                 <div className="side">
-                  {battle.enemies.map((unit) => (
+                  {battle!.enemies.map((unit) => (
                     <Fighter
                       unit={unit}
-                      active={battle.activeUnitId === unit.id}
-                      hit={battle.hitUnitId === unit.id}
+                      active={battle!.activeUnitId === unit.id}
+                      hit={battle!.hitUnitId === unit.id}
                       key={unit.id}
                     />
                   ))}
@@ -226,6 +226,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

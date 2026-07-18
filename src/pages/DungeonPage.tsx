@@ -194,7 +194,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               </div>
 
               <div className="log">
-                {battle.logs.map((entry, index) => {
+                {[...battle.logs].reverse().map((entry, index) => {
                   const separator = entry.indexOf('|')
                   const tone =
                     separator >= 0
@@ -237,6 +237,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

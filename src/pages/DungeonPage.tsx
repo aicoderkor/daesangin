@@ -77,19 +77,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   const battle = liveBattle
   const isSearching = Boolean(watchedParty && !liveBattle)
   const battleLogs = watchedParty ? gameStore.getExpeditionLogs(watchedParty.id) : []
-  const [displayedLogs, setDisplayedLogs] = useState<string[]>([])
-  const queuedLogs = useRef<string[]>([])
-  useEffect(() => {
-    if (!watchedParty) { setDisplayedLogs([]); queuedLogs.current = []; return }
-    const known = new Set([...displayedLogs, ...queuedLogs.current])
-    queuedLogs.current.push(...battleLogs.filter((log) => !known.has(log)))
-    const timer = window.setInterval(() => {
-      const next = queuedLogs.current.shift()
-      if (next) setDisplayedLogs((logs) => [...logs, next].slice(-120))
-    }, 500)
-    return () => window.clearInterval(timer)
-  }, [battleLogs, watchedPartyId])
-
+  const displayedLogs = battleLogs.slice(-120)
   return (
     <section className="screen dungeon-screen">
       <div className="card">

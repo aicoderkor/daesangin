@@ -135,3 +135,4 @@ button { cursor: pointer; }
 .battle{display:flex;flex-direction:column;gap:12px}.battle .field{min-height:180px}.battle .log{max-height:260px;overflow:auto;text-align:left;padding:10px;background:#222;border-radius:10px}
 .battle-hidden{display:none}.battle-open{display:block}
 .battle-hidden{display:none}.battle-open{display:block}
+.battle-open{position:fixed;z-index:100;top:6vh;left:4vw;width:92vw;max-height:86vh;overflow:auto;background:var(--panel);box-shadow:0 0 0 100vmax #000b;border:2px solid var(--line);border-radius:18px;padding:18px}.battle-open .log{max-height:38vh}.battle-hidden{display:none}

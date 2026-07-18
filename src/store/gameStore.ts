@@ -790,7 +790,7 @@ function rewardBattleVictory(
 
   party.busy = false
   party.expeditionPhase = 'continuing'
-  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.phase = party.areasCompleted + 1 >= party.areaTotal ? 'completed' : 'continuing'; session.completedAreas = party.areasCompleted; session.nextProcessAt = now + 5_000 }
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.phase = party.areasCompleted + 1 >= party.areaTotal ? 'completed' : 'continuing'; session.completedAreas = party.areasCompleted; session.nextProcessAt = Date.now() + 5_000 }
   if (party.areasCompleted >= party.areaTotal) {
     party.status = 'idle'
     party.dungeon = null
@@ -1468,6 +1468,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

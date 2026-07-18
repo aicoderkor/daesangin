@@ -114,7 +114,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
                   <span>{unlocked ? '해금' : '잠김'}</span>
                 </div>
 
-                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status === "explore").map((party) => <div className="small" key={party.id}>원정대: {party.name} · 전투 진행 중 · 상자 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)} <button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); setWatchedPartyId(party.id); setBattleOpen(true) }}>전투 관전</button><button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); onNavigate("parties") }}>편성대 보기</button></div>)}
+                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status === "explore").map((party) => <div className="small" key={party.id}>원정대: {party.name} · 진행 {party.areasCompleted}/{party.areaTotal} · 전투 진행 중 · 상자 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)} <button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); setWatchedPartyId(party.id); setBattleOpen(true) }}>전투 관전</button><button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); onNavigate("parties") }}>편성대 보기</button></div>)}
 
                 <div className="material">
                   {Object.keys(dungeon.materials)
@@ -228,6 +228,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

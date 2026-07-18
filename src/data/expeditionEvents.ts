@@ -5,6 +5,7 @@ export interface ExpeditionEventDefinition {
   type: ExpeditionEventType
   weight: number
   messages: string[]
+  effect?: 'heal' | 'trap'
 }
 
 export const EXPEDITION_EVENTS: ExpeditionEventDefinition[] = [

@@ -110,6 +110,8 @@ export default function DungeonPage() {
                   <span>{unlocked ? '해금' : '잠김'}</span>
                 </div>
 
+                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status !== "idle").map((party) => <div className="small" key={party.id}>원정대: {party.name} · 전투 진행 중 · 상자 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)}</div>)}
+
                 <div className="material">
                   {Object.keys(dungeon.materials)
                     .map(
@@ -234,6 +236,7 @@ export default function DungeonPage() {
       )}    </section>
   )
 }
+
 
 
 

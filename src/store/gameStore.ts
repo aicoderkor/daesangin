@@ -112,6 +112,7 @@ function createInitialState(): GameState {
       tavern: 1,
     },
     parties: [createParty(0)],
+    expeditionSessions: {},
     unlockedDungeonIndex: 0,
     dungeonProgress: {},
     recentLog: '새 길드가 시작되었습니다.',
@@ -1125,6 +1126,7 @@ export const gameStore = {
 
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'
+      next.expeditionSessions[targetParty.id] = { id: createId('expedition'), partyId: targetParty.id, dungeonIndex, phase: 'entering', totalAreas: targetParty.areaTotal, completedAreas: 0, defeatedEnemies: 0, startedAt: Date.now(), nextProcessAt: Date.now() + 1_200, rewardGranted: false, logs: [] }
       targetParty.status = 'explore'
       targetParty.nextActionAt = Date.now() + 1_200
       targetParty.campUntil = 0
@@ -1152,6 +1154,7 @@ export const gameStore = {
       const next = structuredClone(current)
       const targetParty = next.parties[partyIndex]
 
+      if (next.expeditionSessions[targetParty.id]) delete next.expeditionSessions[targetParty.id]
       targetParty.dungeon = null
       targetParty.status = 'idle'
       targetParty.nextActionAt = 0
@@ -1462,6 +1465,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

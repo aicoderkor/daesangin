@@ -176,6 +176,7 @@ export interface GameState {
   marketSpeedMultiplier: number
   marketListings: string[]
   parties: Party[]
+  expeditionSessions: Record<string, import('./expedition').ExpeditionSession>
   unlockedDungeonIndex: number
   dungeonProgress: Record<string, DungeonProgress>
   recentLog: string
@@ -218,6 +219,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

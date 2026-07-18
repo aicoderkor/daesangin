@@ -204,6 +204,7 @@ export interface BattleState {
   allies: CombatUnit[]
   enemies: CombatUnit[]
   logs: string[]
+  structuredLogs?: import('./expedition').ExpeditionLog[]
   round: number
   queue: CombatUnit[]
   activeUnitId: string | null
@@ -211,6 +212,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

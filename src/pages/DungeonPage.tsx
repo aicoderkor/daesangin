@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { DUNGEONS, MATERIAL_NAMES } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
@@ -228,6 +228,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

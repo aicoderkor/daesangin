@@ -778,11 +778,12 @@ function applyBattleDefeat(
   const dungeonIndex = party.dungeon
   if (dungeonIndex === null) return
 
-  party.status = 'camp'
+  party.status = 'idle'
   party.busy = false
-  party.campUntil =
-    Date.now() +
-    (18 + DUNGEONS[dungeonIndex].recommendedLevel * 2) * 1_000
+  party.dungeon = null
+  party.members = [null, null, null, null]
+  party.campUntil = 0
+  delete partyVitals[party.id]
   targetState.recentLog = party.name + ' 전멸 · 야영 회복'
 }
 
@@ -1351,11 +1352,10 @@ export const gameStore = {
           party.status === 'camp' &&
           now >= party.campUntil
         ) {
-          party.status = 'explore'
-          party.nextActionAt =
-            now +
-            DUNGEONS[dungeonIndex as number].actionTime *
-              1_000
+          party.status = 'idle'
+          party.dungeon = null
+          party.busy = false
+          party.nextActionAt = 0
         }
 
         if (party.status !== 'explore') {
@@ -1411,6 +1411,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

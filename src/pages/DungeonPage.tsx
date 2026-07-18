@@ -50,7 +50,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   const [selectedDungeon, setSelectedDungeon] = useState<number | null>(null)
   const [battleOpen, setBattleOpen] = useState(false)
   const activeParties = game.parties.filter(
-    (party) => party.status !== 'idle',
+    (party) => party.status === 'explore',
   )
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               <article
                 className="dungeon"
                 key={dungeon.name}
-                onClick={() => { const active = game.parties.find((party) => party.dungeon === dungeonIndex && party.status !== "idle"); if (active) { setWatchedPartyId(active.id); setBattleOpen(true) } else if (unlocked) setSelectedDungeon(dungeonIndex) }}
+                onClick={() => { const active = game.parties.find((party) => party.dungeon === dungeonIndex && party.status === "explore"); if (active) { setWatchedPartyId(active.id); setBattleOpen(true) } else if (unlocked) setSelectedDungeon(dungeonIndex) }}
                 style={{ opacity: unlocked ? 1 : 0.45 }}
               >
                 <div className="row">
@@ -113,7 +113,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
                   <span>{unlocked ? '해금' : '잠김'}</span>
                 </div>
 
-                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status !== "idle").map((party) => <div className="small" key={party.id}>원정대: {party.name} · 전투 진행 중 · 상자 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)} <button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); setWatchedPartyId(party.id); setBattleOpen(true) }}>전투 관전</button><button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); onNavigate("parties") }}>편성대 보기</button></div>)}
+                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status === "explore").map((party) => <div className="small" key={party.id}>원정대: {party.name} · 전투 진행 중 · 상자 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)} <button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); setWatchedPartyId(party.id); setBattleOpen(true) }}>전투 관전</button><button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); onNavigate("parties") }}>편성대 보기</button></div>)}
 
                 <div className="material">
                   {Object.keys(dungeon.materials)
@@ -237,6 +237,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

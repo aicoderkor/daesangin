@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DUNGEONS, MATERIAL_NAMES } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
@@ -153,7 +153,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               진행 중인 원정대를 선택하세요.
             </div>
           ) : !battle ? (
-            <div className="log"><div>다음 조우를 탐색 중...</div></div>
+            <div className="log"></div>
           ) : (
             <>
               <div className="field">

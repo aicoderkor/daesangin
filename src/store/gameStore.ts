@@ -852,6 +852,8 @@ function startBattle(
   const autoEvent = Math.random() < 0.28 ? randomExpeditionEvent() : null
   const enemyDefinitions = DUNGEONS[dungeonIndex].enemies
   const intro = enemyDefinitions[0]?.encounterIntros?.[Math.floor(Math.random() * enemyDefinitions[0].encounterIntros.length)] ?? (Math.random() < 0.5 ? '주변에서 낯선 인기척이 느껴집니다.' : '수풀 너머에서 적의 모습이 드러납니다.')
+  if (autoEvent?.effect === 'heal') allies.forEach((unit) => { unit.hp = Math.min(unit.maxHp, unit.hp + Math.round(unit.maxHp * 0.15)) })
+  if (autoEvent?.effect === 'trap') allies.forEach((unit) => { unit.hp = Math.max(1, unit.hp - 5) })
   const savedVitals = partyVitals[party.id]
   if (savedVitals) allies.forEach((unit) => { const vital = savedVitals[unit.id]; if (vital) { unit.hp = Math.min(unit.maxHp, vital.hp); unit.mp = Math.min(unit.maxMp, vital.mp) } })
 
@@ -1455,6 +1457,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

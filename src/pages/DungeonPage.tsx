@@ -73,9 +73,9 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   const watchedParty = activeParties.find(
     (party) => party.id === watchedPartyId,
   )
-  const battle = watchedParty
-    ? gameStore.getBattleState(watchedParty.id)
-    : undefined
+  const liveBattle = watchedParty ? gameStore.getBattleState(watchedParty.id) : undefined
+  const battle = liveBattle
+  const isSearching = Boolean(watchedParty && !liveBattle)
   const battleLogs = watchedParty ? gameStore.getBattleLogs(watchedParty.id) : []
 
   return (
@@ -163,7 +163,8 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
             </div>
           ) : (
             <>
-              {isSearching && <div className="search-status">다음 조우를 탐색 중...</div>}`r`n              <div className="field">
+              {isSearching && <div className="search-status">다음 조우를 탐색 중...</div>}
+              <div className="field">
                 <div className="side">
                   {battle.allies.map((unit) => (
                     <Fighter
@@ -233,6 +234,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

@@ -1,5 +1,6 @@
 ﻿import { MATERIAL_NAMES } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
+import { getClassName } from '../utils/mercenary'
 import type {
   GearItem,
   MaterialKey,
@@ -102,7 +103,7 @@ export default function WarehousePage({
                         value={mercenary.id}
                         key={mercenary.id}
                       >
-                        {mercenary.base}
+                        {getClassName(mercenary)}
                       </option>
                     ))}
                   </select>
@@ -115,6 +116,7 @@ export default function WarehousePage({
     </section>
   )
 }
+
 
 
 

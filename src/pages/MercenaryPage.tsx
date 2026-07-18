@@ -222,7 +222,7 @@ function MercenaryDetail({
       <div className="head">
         <div>
           <h2>
-            {getBaseIcon(mercenary.base)} {mercenary.base}
+            {getBaseIcon(mercenary.base)} {getClassName(mercenary)}
           </h2>
           <div className="small">
             {getClassName(mercenary)} Lv.{mercenary.level}
@@ -357,6 +357,7 @@ function PromotionPanel({
     </>
   )
 }
+
 
 
 

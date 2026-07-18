@@ -131,7 +131,7 @@ export default function PartyPage({ onToast }: PartyPageProps) {
                           <option value="">비움</option>
                           {availableMercenaries.map((target) => (
                             <option value={target.id} key={target.id}>
-                              {target.base}
+                              {getClassName(target)}
                             </option>
                           ))}
                         </select>
@@ -186,6 +186,7 @@ export default function PartyPage({ onToast }: PartyPageProps) {
     </section>
   )
 }
+
 
 
 

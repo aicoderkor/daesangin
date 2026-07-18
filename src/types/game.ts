@@ -1,4 +1,4 @@
-﻿export type ScreenId =
+export type ScreenId =
   | 'home'
   | 'tavern'
   | 'mercs'
@@ -93,6 +93,7 @@ export interface Mercenary {
   path: number[]
   gear: MercenaryGear
   status: MercenaryStatus
+  assignedDungeonId?: string | null
 }
 
 export interface DungeonEnemyDefinition {
@@ -157,6 +158,8 @@ export interface DungeonProgress {
   runProgress: number
   totalProgress: number
   cleared: boolean
+  assignedMercenaryIds?: string[]
+  status?: 'idle' | 'exploring' | 'combat' | 'completed'
 }
 
 export interface GameState {

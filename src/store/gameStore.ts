@@ -1114,6 +1114,46 @@ export const gameStore = {
     return true
   },
 
+  assignMercenaryToDungeon(dungeonIndex: number, mercenaryId: string): boolean {
+    const target = state.mercenaries.find((mercenary) => mercenary.id === mercenaryId)
+    if (!target) return false
+    const existing = state.parties.find((party) => party.dungeon === dungeonIndex)
+    if (existing && existing.status !== 'idle') return false
+    const occupiedElsewhere = state.parties.some((party) => party.dungeon !== null && party.dungeon !== dungeonIndex && party.members.includes(mercenaryId))
+    if (occupiedElsewhere) return false
+    setState((current) => {
+      const next = structuredClone(current)
+      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+      progress.assignedMercenaryIds = Array.from(new Set([...(progress.assignedMercenaryIds ?? []), mercenaryId]))
+      next.dungeonProgress[String(dungeonIndex)] = progress
+      const party = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.status === 'idle' && candidate.dungeon === null)
+      if (party) {
+        party.dungeon = dungeonIndex
+        party.members = progress.assignedMercenaryIds.slice(0, 4).concat([null, null, null, null]).slice(0, 4) as Party['members']
+        party.status = 'idle'
+      }
+      const mercenary = next.mercenaries.find((candidate) => candidate.id === mercenaryId)
+      if (mercenary) mercenary.assignedDungeonId = String(dungeonIndex)
+      return next
+    })
+    return true
+  },
+
+  removeMercenaryFromDungeon(dungeonIndex: number, mercenaryId: string): boolean {
+    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex)
+    if (party && party.status !== 'idle') return false
+    setState((current) => {
+      const next = structuredClone(current)
+      const progress = next.dungeonProgress[String(dungeonIndex)]
+      if (progress) progress.assignedMercenaryIds = (progress.assignedMercenaryIds ?? []).filter((id) => id !== mercenaryId)
+      const targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex)
+      if (targetParty) targetParty.members = (progress?.assignedMercenaryIds ?? []).concat([null, null, null, null]).slice(0, 4) as Party['members']
+      const mercenary = next.mercenaries.find((candidate) => candidate.id === mercenaryId)
+      if (mercenary) mercenary.assignedDungeonId = null
+      return next
+    })
+    return true
+  },
   assignDungeon(partyIndex: number, dungeonIndex: number): boolean {
     const party = state.parties[partyIndex]
 

@@ -14,6 +14,7 @@ import type {
 } from '../types/game'
 
 import { getClassName, getMercenaryStats, getXpRequired } from '../utils/mercenary'
+import { EXPEDITION_TIMINGS } from '../config/expedition'
 
 const STORAGE_KEY = 'daesangin-react-v3'
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
@@ -792,7 +793,7 @@ function rewardBattleVictory(
 
   party.busy = false
   party.expeditionPhase = 'continuing'
-  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.phase = party.areasCompleted + 1 >= party.areaTotal ? 'completed' : 'continuing'; session.completedAreas = party.areasCompleted; session.nextProcessAt = Date.now() + 5_000 }
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.phase = party.areasCompleted + 1 >= party.areaTotal ? 'completed' : 'continuing'; session.completedAreas = party.areasCompleted; session.nextProcessAt = Date.now() + EXPEDITION_TIMINGS.rewardLogMs }
 
 }
 
@@ -1131,7 +1132,7 @@ export const gameStore = {
 
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'
-      next.expeditionSessions[targetParty.id] = { id: createId('expedition'), partyId: targetParty.id, dungeonIndex, phase: 'entering', totalAreas: targetParty.areaTotal, completedAreas: 0, defeatedEnemies: 0, startedAt: Date.now(), nextProcessAt: Date.now() + 1_200, rewardGranted: false, logs: [] }
+      next.expeditionSessions[targetParty.id] = { id: createId('expedition'), partyId: targetParty.id, dungeonIndex, phase: 'entering', totalAreas: targetParty.areaTotal, completedAreas: 0, defeatedEnemies: 0, startedAt: Date.now(), nextProcessAt: Date.now() + EXPEDITION_TIMINGS.explorationLogMs, rewardGranted: false, logs: [] }
       targetParty.status = 'explore'
       targetParty.nextActionAt = Date.now() + 1_200
       targetParty.campUntil = 0
@@ -1437,7 +1438,7 @@ export const gameStore = {
           if (session && now < session.nextProcessAt) continue
           advanceBattle(next, party, battle, now)
           if (session && battleStates[party.id] && !battle.result) {
-            session.nextProcessAt = now + 2_000
+            session.nextProcessAt = now + EXPEDITION_TIMINGS.combatTurnMs
           }
         } else if (now >= party.nextActionAt) {
           startBattle(next, party)

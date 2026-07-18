@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DUNGEONS, MATERIAL_NAMES } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
@@ -81,9 +81,9 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       <div className="card">
         <div className="head">
           <div>
-            <h2>?섏쟾</h2>
+            <h2>던전</h2>
             <div className="small">
-              ?뚰떚媛 ?ㅼ떆媛꾩쑝濡??먯깋?섍퀬 ?꾪닾?⑸땲??
+              파티가 실시간으로 탐색하고 전투합니다.
             </div>
           </div>
         </div>
@@ -104,15 +104,15 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
                   <div>
                     <b>{dungeon.name}</b>
                     <div className="small">
-                      沅뚯옣 Lv.{dungeon.recommendedLevel} 쨌 ?됰룞{' '}
-                      {dungeon.actionTime}珥?
+                      권장 Lv.{dungeon.recommendedLevel} · 행동{' '}
+                      {dungeon.actionTime}초
                     </div>
                   </div>
 
-                  <span>{unlocked ? '?닿툑' : '?좉?'}</span>
+                  <span>{unlocked ? '해금' : '잠김'}</span>
                 </div>
 
-                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status === "explore").map((party) => <div className="small" key={party.id}>?먯젙?: {party.name} 쨌 吏꾪뻾 {party.areasCompleted}/{party.areaTotal} 쨌 ?꾪닾 吏꾪뻾 以?쨌 ?곸옄 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)} <button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); setWatchedPartyId(party.id); setBattleOpen(true) }}>?꾪닾 愿??/button><button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); onNavigate("parties") }}>?몄꽦? 蹂닿린</button></div>)}
+                {game.parties.filter((party) => party.dungeon === dungeonIndex && party.status === "explore").map((party) => <div className="small" key={party.id}>원정대: {party.name} · 진행 {party.areasCompleted}/{party.areaTotal} · 전투 진행 중 · 상자 {Object.values(party.loot).reduce((sum, value) => sum + (value ?? 0), 0)} <button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); setWatchedPartyId(party.id); setBattleOpen(true) }}>전투 관전</button><button type="button" className="btn sm" onClick={(event) => { event.stopPropagation(); onNavigate("parties") }}>편성대 보기</button></div>)}
 
                 <div className="material">
                   {Object.keys(dungeon.materials)
@@ -120,7 +120,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
                       (material) =>
                         MATERIAL_NAMES[material as MaterialKey],
                     )
-                    .join(' 쨌 ')}
+                    .join(' · ')}
                 </div>
               </article>
             )
@@ -128,7 +128,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
         </div>
       </div>
 
-      <div className={`card ${battleOpen ? "battle-open" : "battle-hidden"}`} id="battle-viewer"><div className="head"><h3>?꾪닾 愿??/h3><button type="button" className="btn sm" onClick={() => setBattleOpen(false)}>?リ린</button>
+      <div className={`card ${battleOpen ? "battle-open" : "battle-hidden"}`} id="battle-viewer"><div className="head"><h3>전투 관전</h3><button type="button" className="btn sm" onClick={() => setBattleOpen(false)}>닫기</button>
 
           <select
             className="select battle-select"
@@ -137,7 +137,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               setWatchedPartyId(event.target.value)
             }
           >
-            <option value="">愿???좏깮</option>
+            <option value="">관전 선택</option>
             {activeParties.map((party) => (
               <option value={party.id} key={party.id}>
                 {party.name}
@@ -149,7 +149,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
         <div className="battle">
           {!watchedParty ? (
             <div className="empty">
-              吏꾪뻾 以묒씤 ?먯젙?瑜??좏깮?섏꽭??
+              진행 중인 원정대를 선택하세요.
             </div>
           ) : !battle ? (
             <div className="log"></div>
@@ -217,9 +217,9 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       </div>
       {selectedDungeon !== null && (
         <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setSelectedDungeon(null) }}>
-          <div className="sheet"><div className="head"><h2>?먯젙? 援ъ꽦</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>?リ린</button></div>
-            {game.parties[0].members.map((memberId, index) => <select className="select" key={index} value={memberId ?? ''} onChange={(event) => gameStore.setPartyMember(0, index, event.target.value || null)}><option value="">?⑸퀝 ?좏깮</option>{game.mercenaries.map((mercenary) => <option value={mercenary.id} key={mercenary.id}>{mercenary.base} Lv.{mercenary.level}</option>)}</select>)}
-            <button type="button" className="btn" onClick={() => { if (gameStore.assignDungeon(0, selectedDungeon)) setSelectedDungeon(null) }}>異쒖쟾</button>
+          <div className="sheet"><div className="head"><h2>원정대 구성</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>닫기</button></div>
+            {game.parties[0].members.map((memberId, index) => <select className="select" key={index} value={memberId ?? ''} onChange={(event) => gameStore.setPartyMember(0, index, event.target.value || null)}><option value="">용병 선택</option>{game.mercenaries.map((mercenary) => <option value={mercenary.id} key={mercenary.id}>{mercenary.base} Lv.{mercenary.level}</option>)}</select>)}
+            <button type="button" className="btn" onClick={() => { if (gameStore.assignDungeon(0, selectedDungeon)) setSelectedDungeon(null) }}>출전</button>
           </div>
         </div>
       )}    </section>

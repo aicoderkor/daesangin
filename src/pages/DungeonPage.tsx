@@ -97,7 +97,7 @@ export default function DungeonPage() {
               <article
                 className="dungeon"
                 key={dungeon.name}
-                onClick={() => { const active = game.parties.find((party) => party.dungeon === dungeonIndex && party.status !== "idle"); if (active) setWatchedPartyId(active.id); window.setTimeout(() => document.getElementById("battle-viewer")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0); else if (unlocked) setSelectedDungeon(dungeonIndex) }}
+                onClick={() => { const active = game.parties.find((party) => party.dungeon === dungeonIndex && party.status !== "idle"); if (active) setWatchedPartyId(active.id); else if (unlocked) setSelectedDungeon(dungeonIndex) }}
                 style={{ opacity: unlocked ? 1 : 0.45 }}
               >
                 <div className="row">

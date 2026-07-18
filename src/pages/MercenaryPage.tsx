@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { TRAITS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { Mercenary, StatMap } from '../types/game'
@@ -130,7 +130,7 @@ export default function MercenaryPage({
                       Lv.{mercenary.level} ·{' '}
                       {mercenary.status === 'idle'
                         ? '대기'
-                        : '원정대'}
+                        : '던전'}
                     </div>
 
                     <div className="tags">

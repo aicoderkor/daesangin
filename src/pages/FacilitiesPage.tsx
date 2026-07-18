@@ -1,4 +1,4 @@
-﻿import { gameStore, useGameStore } from '../store/gameStore'
+import { gameStore, useGameStore } from '../store/gameStore'
 import type { GameState } from '../types/game'
 
 type FacilitiesPageProps = {
@@ -13,7 +13,7 @@ const FACILITIES: Array<{
 {
     key: 'party',
     name: '작전실',
-    effect: '동시 원정대 +1',
+    effect: '동시 던전 +1',
   },
   {
     key: 'storage',

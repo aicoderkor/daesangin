@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { ScreenId } from '../types/game'
 

@@ -29,7 +29,7 @@ function Fighter({
       className={
         'fighter' +
         (active ? ' act' : '') +
-        (hit ? ' hit' : '')
+        (hit ? ' hit' : '') + (unit.hp <= 0 ? ' dead' : '')
       }
     >
       <b>{unit.name}</b>
@@ -228,6 +228,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

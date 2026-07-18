@@ -34,6 +34,17 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    const onVisibility = () => { if (document.visibilityState === 'visible') gameStore.tick() }
+    const onBeforeUnload = () => gameStore.save()
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('beforeunload', onBeforeUnload)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!toastMessage) return
     const timer = window.setTimeout(() => setToastMessage(''), 1_600)
     return () => window.clearTimeout(timer)
@@ -143,6 +154,7 @@ export default function App() {
     </div>
   )
 }
+
 
 
 

@@ -26,3 +26,4 @@ export function randomExpeditionEvent(): ExpeditionEventDefinition {
   return EXPEDITION_EVENTS[0]
 }
 
+

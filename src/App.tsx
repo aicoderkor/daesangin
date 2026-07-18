@@ -102,9 +102,6 @@ export default function App() {
         <button type="button" className={`tab ${screen === 'dungeons' ? 'on' : ''}`} onClick={() => navigate('dungeons')}>
           <b>🚪</b>던전
         </button>
-        <button type="button" className={`tab ${screen === 'parties' ? 'on' : ''}`} onClick={() => navigate('parties')}>
-          <b>⚔️</b>원정대
-        </button>
       </nav>
 
       {menuOpen && (

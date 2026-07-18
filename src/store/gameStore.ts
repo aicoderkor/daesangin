@@ -725,6 +725,7 @@ function rewardBattleVictory(
     'skill|경험치와 ' + gold + '동을 획득했습니다.',
   ]
   partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...rewardLogs].slice(-120)
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'reward', message: '전투 승리 · ' + gold + '동 획득', createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
 
   for (const [material, range] of Object.entries(
     dungeon.materials,
@@ -816,6 +817,7 @@ function applyBattleDefeat(
   party.campUntil = 0
   delete partyVitals[party.id]
   targetState.recentLog = party.name + ' 전멸 · 야영 회복'
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'defeat', message: '원정대 전멸 · 귀환', createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
 }
 
 function finishBattle(
@@ -875,6 +877,7 @@ function startBattle(
   party.busy = true
   party.expeditionPhase = 'combat'
   if (targetState.expeditionSessions[party.id]) { targetState.expeditionSessions[party.id].phase = 'combat'; targetState.expeditionSessions[party.id].nextProcessAt = Date.now() + 2_000 }
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'enemy', message: intro, createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
   delete lastBattleStates[party.id]
   battleStates[party.id] = {
     allies,
@@ -1468,6 +1471,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

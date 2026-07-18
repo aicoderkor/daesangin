@@ -1434,12 +1434,12 @@ export const gameStore = {
         }
 
         if (battle) {
-          if (session && now -lt session.nextProcessAt) continue
+          if (session && now < session.nextProcessAt) continue
           advanceBattle(next, party, battle, now)
           if (session && battleStates[party.id] && !battle.result) {
             session.nextProcessAt = now + 2_000
           }
-        } else if (now -ge party.nextActionAt) {
+        } else if (now >= party.nextActionAt) {
           startBattle(next, party)
         }
       }

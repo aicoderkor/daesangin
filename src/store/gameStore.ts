@@ -495,7 +495,7 @@ function pushBattleLog(
   message: string,
 ): void {
   battle.logs.push(tone + '|' + message)
-  const type = tone === 'good' ? 'victory' : tone === 'bad' ? 'defeat' : tone === 'skill' ? 'system' : 'damage'
+  const type: import('../types/expedition').ExpeditionLogType = tone === 'good' ? 'victory' : tone === 'bad' ? 'defeat' : tone === 'skill' ? 'system' : 'damage'
   battle.structuredLogs = [...(battle.structuredLogs ?? []), { id: createId('log'), type, message, createdAt: Date.now() }].slice(-120)
   battle.logs = battle.logs.slice(-40)
 }
@@ -1434,6 +1434,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

@@ -148,6 +148,8 @@ export interface Party {
   runs: number
   loot: Partial<Record<MaterialKey, number>>
   busy: boolean
+  areaTotal: number
+  areasCompleted: number
 }
 
 export interface DungeonProgress {
@@ -215,6 +217,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

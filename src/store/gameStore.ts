@@ -75,6 +75,8 @@ function createParty(index: number, members: Array<string | null> = []): Party {
     runs: 0,
     loot: {},
     busy: false,
+    areaTotal: 8,
+    areasCompleted: 0,
   }
 }
 
@@ -166,6 +168,8 @@ function normalizeState(input: Partial<GameState>): GameState {
     ],
     loot: party.loot ?? {},
     busy: false,
+    areaTotal: 8,
+    areasCompleted: 0,
   }))
 
   state.candidatePaused = Boolean(state.candidatePaused)
@@ -708,6 +712,7 @@ function rewardBattleVictory(
   if (progress.runProgress >= requirement) progress.cleared = true
   targetState.dungeonProgress[progressKey] = progress
   party.runs += 1
+  party.areasCompleted = Math.min(party.areaTotal, party.areasCompleted + 1)
   const gold = 20 + dungeon.recommendedLevel * 12
 
   targetState.gold += gold
@@ -781,6 +786,12 @@ function rewardBattleVictory(
   }
 
   party.busy = false
+  if (party.areasCompleted >= party.areaTotal) {
+    party.status = 'idle'
+    party.dungeon = null
+    party.nextActionAt = 0
+    partyLogs[party.id] = [...(partyLogs[party.id] ?? []), 'good|원정 구역을 모두 통과했습니다.', 'good|원정이 완료되어 귀환합니다.'].slice(-120)
+  }
 }
 
 function applyBattleDefeat(
@@ -1108,6 +1119,7 @@ export const gameStore = {
       targetParty.nextActionAt = Date.now() + 1_200
       targetParty.campUntil = 0
       targetParty.busy = false
+      targetParty.areasCompleted = 0
       const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
       progress.runProgress = 0
       next.dungeonProgress[String(dungeonIndex)] = progress
@@ -1439,6 +1451,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

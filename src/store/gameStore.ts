@@ -560,13 +560,7 @@ function performBattleAction(
     pushBattleLog(
       battle,
       'good',
-      actor.name +
-        '의 ' +
-        actor.skill.name +
-        ': ' +
-        healTarget.name +
-        ' +' +
-        quantity,
+      actor.name + '이 ' + actor.skill.name + '을 사용했습니다. ' + healTarget.name + '의 HP가 ' + quantity + ' 회복되었습니다.',
     )
     return
   }
@@ -576,7 +570,7 @@ function performBattleAction(
   if (!target) return
 
   if (Math.random() > actor.hit - target.evade) {
-    pushBattleLog(battle, 'normal', target.name + ' 회피')
+    pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + target.name + (Math.random() < 0.5 ? '이 몸을 틀어 피했습니다.' : '이 재빠르게 회피했습니다.'))
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
     return
   }
@@ -643,13 +637,12 @@ function performBattleAction(
       pushBattleLog(
         battle,
         actor.kind === 'ally' ? 'good' : 'bad',
-        actor.name +
-          ' → ' +
-          hitTarget.name +
-          ' ' +
-          damage +
-          (critical ? ' 치명타' : ''),
+        critical
+          ? actor.name + '이 빈틈을 포착해 치명타를 가했습니다. ' + hitTarget.name + '에게 ' + damage + '의 피해를 입혔습니다.'
+          : actor.name + (Math.random() < 0.5 ? '이 공격을 적중시켰습니다. ' : '이 공격을 퍼부었습니다. ') + hitTarget.name + '에게 ' + damage + '의 피해를 입혔습니다.',
       )
+
+      if (hitTarget.hp <= 0) pushBattleLog(battle, 'good', hitTarget.name + '이 힘없이 쓰러졌습니다.')
 
       if (actor.lifesteal > 0) {
         actor.hp = Math.min(
@@ -1437,6 +1430,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

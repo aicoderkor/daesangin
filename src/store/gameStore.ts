@@ -941,7 +941,7 @@ export const gameStore = {
   },
 
   subscribe,
-  getBattleState(partyId: string): BattleState | undefined {
+  getLiveBattleState(partyId: string): BattleState | undefined {`r`n    return battleStates[partyId]`r`n  },`r`n  getBattleState(partyId: string): BattleState | undefined {
     return battleStates[partyId] ?? lastBattleStates[partyId]
   },
   getBattleLogs(partyId: string): string[] {
@@ -1429,6 +1429,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

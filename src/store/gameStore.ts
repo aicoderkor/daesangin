@@ -788,10 +788,12 @@ function rewardBattleVictory(
   }
 
   party.busy = false
+  party.expeditionPhase = 'continuing'
   if (party.areasCompleted >= party.areaTotal) {
     party.status = 'idle'
     party.dungeon = null
     party.nextActionAt = 0
+    party.expeditionPhase = 'completed'
     partyLogs[party.id] = [...(partyLogs[party.id] ?? []), 'good|원정 구역을 모두 통과했습니다.', 'good|원정이 완료되어 귀환합니다.'].slice(-120)
   }
 }
@@ -804,6 +806,7 @@ function applyBattleDefeat(
   if (dungeonIndex === null) return
 
   party.status = 'idle'
+  party.expeditionPhase = 'defeated'
   party.busy = false
   party.dungeon = null
   party.members = [null, null, null, null]
@@ -867,6 +870,7 @@ function startBattle(
   }
 
   party.busy = true
+  party.expeditionPhase = 'combat'
   delete lastBattleStates[party.id]
   battleStates[party.id] = {
     allies,
@@ -1120,6 +1124,7 @@ export const gameStore = {
       const targetParty = next.parties[partyIndex]
 
       targetParty.dungeon = dungeonIndex
+      targetParty.expeditionPhase = 'entering'
       targetParty.status = 'explore'
       targetParty.nextActionAt = Date.now() + 1_200
       targetParty.campUntil = 0
@@ -1457,6 +1462,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

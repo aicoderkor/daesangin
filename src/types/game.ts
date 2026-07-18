@@ -148,6 +148,7 @@ export interface Party {
   runs: number
   loot: Partial<Record<MaterialKey, number>>
   busy: boolean
+  expeditionPhase?: import('./expedition').ExpeditionPhase
   areaTotal: number
   areasCompleted: number
 }
@@ -217,6 +218,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

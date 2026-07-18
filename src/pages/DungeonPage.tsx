@@ -218,8 +218,12 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       {selectedDungeon !== null && (
         <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setSelectedDungeon(null) }}>
           <div className="sheet"><div className="head"><h2>원정대 구성</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>닫기</button></div>
-            {game.parties[0].members.map((memberId, index) => <select className="select" key={index} value={memberId ?? ''} onChange={(event) => gameStore.setPartyMember(0, index, event.target.value || null)}><option value="">용병 선택</option>{game.mercenaries.map((mercenary) => <option value={mercenary.id} key={mercenary.id}>{mercenary.base} Lv.{mercenary.level}</option>)}</select>)}
-            <button type="button" className="btn" onClick={() => { if (gameStore.assignDungeon(0, selectedDungeon)) setSelectedDungeon(null) }}>출전</button>
+            <div className="small">현재 던전 참여 용병</div>
+            {(game.dungeonProgress[String(selectedDungeon)]?.assignedMercenaryIds ?? []).map((id) => { const mercenary = game.mercenaries.find((candidate) => candidate.id === id); return mercenary ? <div className="row" key={id}><span>{mercenary.base} Lv.{mercenary.level}</span><button type="button" className="btn sm" onClick={() => gameStore.removeMercenaryFromDungeon(selectedDungeon, id)}>제외</button></div> : null })}
+            <div className="small">배치 가능한 용병</div>
+            {game.mercenaries.filter((mercenary) => { const assigned = mercenary.assignedDungeonId; return !assigned || assigned === String(selectedDungeon) }).map((mercenary) => <button type="button" className="btn" key={mercenary.id} onClick={() => gameStore.assignMercenaryToDungeon(selectedDungeon, mercenary.id)}>{mercenary.base} Lv.{mercenary.level}</button>)}
+
+            <button type="button" className="btn" onClick={() => { if ((game.dungeonProgress[String(selectedDungeon)]?.assignedMercenaryIds ?? []).length > 0) { gameStore.assignDungeon(0, selectedDungeon); setSelectedDungeon(null) } }}>출전</button>
           </div>
         </div>
       )}    </section>

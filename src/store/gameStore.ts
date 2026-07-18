@@ -1428,6 +1428,11 @@ export const gameStore = {
           session.phase = 'exploring'
           session.nextProcessAt = party.nextActionAt
           session.completedAreas = party.areasCompleted
+          const explorationMessage = party.areasCompleted > 0 ? '일행이 다음 구역으로 이동합니다.' : '일행이 주변을 탐색합니다.'
+          if (session.logs.at(-1)?.message !== explorationMessage) {
+            session.logs.push({ id: createId('log'), type: 'exploration', message: explorationMessage, createdAt: Date.now() })
+            session.logs = session.logs.slice(-120)
+          }
         }
 
         if (battle) {
@@ -1479,6 +1484,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

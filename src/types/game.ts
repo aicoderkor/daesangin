@@ -102,6 +102,9 @@ export interface DungeonEnemyDefinition {
   defense: number
   magicDefense: number
   dexterity: number
+  encounterIntros?: string[]
+  deathMessages?: string[]
+  victoryMessages?: string[]
 }
 
 export interface DungeonDefinition {
@@ -212,6 +215,7 @@ export interface BattleState {
   result: 'victory' | 'defeat' | null
   finishAt: number
 }
+
 
 
 

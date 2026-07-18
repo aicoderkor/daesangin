@@ -836,6 +836,8 @@ function startBattle(
 
   const allies = createAllyUnits(targetState, party)
   const enemies = createEnemyUnits(dungeonIndex)
+  const enemyDefinitions = DUNGEONS[dungeonIndex].enemies
+  const intro = enemyDefinitions[0]?.encounterIntros?.[Math.floor(Math.random() * enemyDefinitions[0].encounterIntros.length)] ?? (Math.random() < 0.5 ? '주변에서 낯선 인기척이 느껴집니다.' : '수풀 너머에서 적의 모습이 드러납니다.')
   const savedVitals = partyVitals[party.id]
   if (savedVitals) allies.forEach((unit) => { const vital = savedVitals[unit.id]; if (vital) { unit.hp = Math.min(unit.maxHp, vital.hp); unit.mp = Math.min(unit.maxMp, vital.mp) } })
 
@@ -854,6 +856,7 @@ function startBattle(
     allies,
     enemies,
     logs: [
+      'exploration|' + intro,
       'skill|' + DUNGEONS[dungeonIndex].name + ' 전투 시작',
     ],
     round: 1,
@@ -1434,6 +1437,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

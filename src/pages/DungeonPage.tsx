@@ -47,6 +47,7 @@ function Fighter({
 export default function DungeonPage() {
   const game = useGameStore()
   const [watchedPartyId, setWatchedPartyId] = useState('')
+  const [selectedDungeon, setSelectedDungeon] = useState<number | null>(null)
   const activeParties = game.parties.filter(
     (party) => party.status !== 'idle',
   )
@@ -94,6 +95,7 @@ export default function DungeonPage() {
               <article
                 className="dungeon"
                 key={dungeon.name}
+                onClick={() => unlocked && setSelectedDungeon(dungeonIndex)}
                 style={{ opacity: unlocked ? 1 : 0.45 }}
               >
                 <div className="row">
@@ -222,7 +224,16 @@ export default function DungeonPage() {
           )}
         </div>
       </div>
-    </section>
+      {selectedDungeon !== null && (
+        <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setSelectedDungeon(null) }}>
+          <div className="sheet"><div className="head"><h2>원정대 구성</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>닫기</button></div>
+            {game.parties[0].members.map((memberId, index) => <select className="select" key={index} value={memberId ?? ''} onChange={(event) => gameStore.setPartyMember(0, index, event.target.value || null)}><option value="">용병 선택</option>{game.mercenaries.map((mercenary) => <option value={mercenary.id} key={mercenary.id}>{mercenary.base} Lv.{mercenary.level}</option>)}</select>)}
+            <button type="button" className="btn" onClick={() => { if (gameStore.assignDungeon(0, selectedDungeon)) setSelectedDungeon(null) }}>출전</button>
+          </div>
+        </div>
+      )}    </section>
   )
 }
+
+
 

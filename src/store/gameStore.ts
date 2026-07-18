@@ -387,6 +387,7 @@ function getFacilityUpgradeCost(facility: keyof GameState['facilities'], level: 
 }
 
 const battleStates: Record<string, BattleState> = {}
+const lastBattleStates: Record<string, BattleState> = {}
 const partyVitals: Record<string, Record<string, { hp: number; mp: number }>> = {}
 const partyLogs: Record<string, string[]> = {}
 
@@ -846,6 +847,7 @@ function startBattle(
   }
 
   party.busy = true
+  delete lastBattleStates[party.id]
   battleStates[party.id] = {
     allies,
     enemies,
@@ -940,7 +942,7 @@ export const gameStore = {
 
   subscribe,
   getBattleState(partyId: string): BattleState | undefined {
-    return battleStates[partyId]
+    return battleStates[partyId] ?? lastBattleStates[partyId]
   },
   getBattleLogs(partyId: string): string[] {
     return [...(partyLogs[partyId] ?? []), ...(battleStates[partyId]?.logs ?? [])]
@@ -1358,6 +1360,7 @@ export const gameStore = {
 
         if (battle?.result) {
           if (now >= battle.finishAt) {
+            lastBattleStates[party.id] = battle
             delete battleStates[party.id]
           }
           continue
@@ -1426,6 +1429,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

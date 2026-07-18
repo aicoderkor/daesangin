@@ -163,7 +163,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
             </div>
           ) : (
             <>
-              <div className="field">
+              {isSearching && <div className="search-status">다음 조우를 탐색 중...</div>}`r`n              <div className="field">
                 <div className="side">
                   {battle.allies.map((unit) => (
                     <Fighter
@@ -233,6 +233,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

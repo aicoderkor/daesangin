@@ -693,6 +693,7 @@ function dropBattleGear(
     stats,
   })
   targetState.recentLog += ' · 장비 발견'
+  return '낡은 ' + recipe.name
 }
 
 function rewardBattleVictory(
@@ -782,7 +783,8 @@ function rewardBattleVictory(
     Math.random() < 0.12 &&
     party.dungeon !== null
   ) {
-    dropBattleGear(targetState, party.dungeon)
+    const itemName = dropBattleGear(targetState, party.dungeon)
+    partyLogs[party.id] = [...(partyLogs[party.id] ?? []), 'skill|아이템 획득 · ' + itemName].slice(-120)
   }
 
   party.busy = false
@@ -1452,6 +1454,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

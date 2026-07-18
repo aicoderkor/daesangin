@@ -44,7 +44,7 @@ function Fighter({
   )
 }
 
-export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "parties") => void }) {
+export default function DungeonPage({ onNavigate: _onNavigate }: { onNavigate?: (screen: "parties") => void }) {
   const game = useGameStore()
   const [watchedPartyId, setWatchedPartyId] = useState('')
   const [selectedDungeon, setSelectedDungeon] = useState<number | null>(null)

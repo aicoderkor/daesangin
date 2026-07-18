@@ -75,8 +75,8 @@ function createParty(index: number, members: Array<string | null> = []): Party {
     runs: 0,
     loot: {},
     busy: false,
-    areaTotal: 8,
-    areasCompleted: 0,
+    areaTotal: party.areaTotal ?? 8,
+    areasCompleted: party.areasCompleted ?? 0,
   }
 }
 
@@ -144,6 +144,7 @@ function normalizeState(input: Partial<GameState>): GameState {
     candidatePaused: input.candidatePaused ?? false,
     candidateTimeRemaining: Math.max(0, input.candidateTimeRemaining ?? TAVERN_REFRESH_MS),
     parties: Array.isArray(input.parties) ? input.parties : fallback.parties,
+    expeditionSessions: input.expeditionSessions ?? {},
   }
 
   state.mercenaries = state.mercenaries.map((mercenary) => ({
@@ -169,8 +170,8 @@ function normalizeState(input: Partial<GameState>): GameState {
     ],
     loot: party.loot ?? {},
     busy: false,
-    areaTotal: 8,
-    areasCompleted: 0,
+    areaTotal: party.areaTotal ?? 8,
+    areasCompleted: party.areasCompleted ?? 0,
   }))
 
   state.candidatePaused = Boolean(state.candidatePaused)
@@ -1471,6 +1472,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

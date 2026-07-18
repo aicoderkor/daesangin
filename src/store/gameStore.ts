@@ -942,6 +942,9 @@ export const gameStore = {
   getBattleState(partyId: string): BattleState | undefined {
     return battleStates[partyId]
   },
+  getBattleLogs(partyId: string): string[] {
+    return [...(partyLogs[partyId] ?? []), ...(battleStates[partyId]?.logs ?? [])]
+  },
 
   getMercenaryCapacity,
   getTavernCapacity,
@@ -1423,6 +1426,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

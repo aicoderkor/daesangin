@@ -76,6 +76,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   const battle = watchedParty
     ? gameStore.getBattleState(watchedParty.id)
     : undefined
+  const battleLogs = watchedParty ? gameStore.getBattleLogs(watchedParty.id) : []
 
   return (
     <section className="screen dungeon-screen">
@@ -194,7 +195,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               </div>
 
               <div className="log">
-                {[...battle.logs].reverse().map((entry, index) => {
+                {[...battleLogs].reverse().map((entry, index) => {
                   const separator = entry.indexOf('|')
                   const tone =
                     separator >= 0
@@ -237,6 +238,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

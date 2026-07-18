@@ -1,4 +1,5 @@
 ﻿import { useSyncExternalStore } from 'react'
+import { randomExpeditionEvent } from '../data/expeditionEvents'
 import { CLASSES, DUNGEONS, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
 import type {
   BattleState,
@@ -829,6 +830,7 @@ function startBattle(
 
   const allies = createAllyUnits(targetState, party)
   const enemies = createEnemyUnits(dungeonIndex)
+  const autoEvent = Math.random() < 0.28 ? randomExpeditionEvent() : null
   const enemyDefinitions = DUNGEONS[dungeonIndex].enemies
   const intro = enemyDefinitions[0]?.encounterIntros?.[Math.floor(Math.random() * enemyDefinitions[0].encounterIntros.length)] ?? (Math.random() < 0.5 ? '주변에서 낯선 인기척이 느껴집니다.' : '수풀 너머에서 적의 모습이 드러납니다.')
   const savedVitals = partyVitals[party.id]
@@ -849,6 +851,7 @@ function startBattle(
     allies,
     enemies,
     logs: [
+      ...(autoEvent ? autoEvent.messages.map((message) => 'exploration|' + message) : []),
       'exploration|' + intro,
       'skill|' + DUNGEONS[dungeonIndex].name + ' 전투 시작',
     ],
@@ -1430,6 +1433,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

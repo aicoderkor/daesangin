@@ -790,6 +790,7 @@ function rewardBattleVictory(
 
   party.busy = false
   party.expeditionPhase = 'continuing'
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.phase = party.areasCompleted + 1 >= party.areaTotal ? 'completed' : 'continuing'; session.completedAreas = party.areasCompleted; session.nextProcessAt = now + 5_000 }
   if (party.areasCompleted >= party.areaTotal) {
     party.status = 'idle'
     party.dungeon = null
@@ -808,6 +809,7 @@ function applyBattleDefeat(
 
   party.status = 'idle'
   party.expeditionPhase = 'defeated'
+  if (targetState.expeditionSessions[party.id]) { targetState.expeditionSessions[party.id].phase = 'defeated'; targetState.expeditionSessions[party.id].nextProcessAt = Date.now() }
   party.busy = false
   party.dungeon = null
   party.members = [null, null, null, null]
@@ -872,6 +874,7 @@ function startBattle(
 
   party.busy = true
   party.expeditionPhase = 'combat'
+  if (targetState.expeditionSessions[party.id]) { targetState.expeditionSessions[party.id].phase = 'combat'; targetState.expeditionSessions[party.id].nextProcessAt = Date.now() + 2_000 }
   delete lastBattleStates[party.id]
   battleStates[party.id] = {
     allies,
@@ -1465,6 +1468,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

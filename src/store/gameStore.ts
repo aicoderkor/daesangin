@@ -1,4 +1,4 @@
-﻿import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
 import { CLASSES, DUNGEONS, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
 import type {
@@ -1434,8 +1434,12 @@ export const gameStore = {
         }
 
         if (battle) {
+          if (session && now -lt session.nextProcessAt) continue
           advanceBattle(next, party, battle, now)
-        } else if (now >= party.nextActionAt) {
+          if (session && battleStates[party.id] && !battle.result) {
+            session.nextProcessAt = now + 2_000
+          }
+        } else if (now -ge party.nextActionAt) {
           startBattle(next, party)
         }
       }

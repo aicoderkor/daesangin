@@ -93,7 +93,7 @@ button { cursor: pointer; }
 .ly { color: #ffe65c; }
 .item { background: #3d3d3d; }
 .material { font-size: 12px; color: #d1d1d1; }
-.tabs { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(520px,100%); display: grid; grid-template-columns: repeat(4,1fr); background: #2d2d2d; border-top: 1px solid #555; z-index: 35; }
+.tabs { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: min(520px,100%); display: grid; grid-template-columns: repeat(3,1fr); background: #2d2d2d; border-top: 1px solid #555; z-index: 35; }
 .tab { border: 0; background: none; color: #aaa; font-size: 12px; padding: 10px 2px 12px; }
 .tab b { display: block; font-size: 25px; margin-bottom: 3px; }
 .tab.on { color: var(--orange); }
@@ -137,3 +137,4 @@ button { cursor: pointer; }
 .battle-hidden{display:none}.battle-open{display:block}
 .battle-open{position:fixed;z-index:100;top:6vh;left:4vw;width:92vw;max-height:86vh;overflow:auto;background:var(--panel);box-shadow:0 0 0 100vmax #000b;border:2px solid var(--line);border-radius:18px;padding:18px}.battle-open .log{max-height:38vh}.battle-hidden{display:none}
 .battle-open{width:min(92vw,720px);left:50%;transform:translateX(-50%)}
+

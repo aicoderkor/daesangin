@@ -385,6 +385,7 @@ function getFacilityUpgradeCost(facility: keyof GameState['facilities'], level: 
 }
 
 const battleStates: Record<string, BattleState> = {}
+const partyVitals: Record<string, Record<string, { hp: number; mp: number }>> = {}
 
 function getTotalStats(mercenary: Mercenary, targetState: GameState) {
   const stats = getMercenaryStats(mercenary)
@@ -792,6 +793,7 @@ function finishBattle(
   now: number,
 ): void {
   battle.result = won ? 'victory' : 'defeat'
+  partyVitals[party.id] = Object.fromEntries(battle.allies.map((unit) => [unit.id, { hp: unit.hp, mp: unit.mp }]))
   battle.finishAt = now + 1_200
   pushBattleLog(
     battle,
@@ -819,6 +821,8 @@ function startBattle(
 
   const allies = createAllyUnits(targetState, party)
   const enemies = createEnemyUnits(dungeonIndex)
+  const savedVitals = partyVitals[party.id]
+  if (savedVitals) allies.forEach((unit) => { const vital = savedVitals[unit.id]; if (vital) { unit.hp = Math.min(unit.maxHp, vital.hp); unit.mp = Math.min(unit.maxMp, vital.mp) } })
 
   if (!allies.length || !enemies.length) {
     party.status = 'idle'
@@ -1405,6 +1409,8 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
 
 
 

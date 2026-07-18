@@ -75,7 +75,7 @@ function createParty(index: number, members: Array<string | null> = []): Party {
     runs: 0,
     loot: {},
     busy: false,
-    areaTotal: 8,
+    areaTotal: 80,
     areasCompleted: 0,
   }
 }
@@ -793,13 +793,7 @@ function rewardBattleVictory(
   party.busy = false
   party.expeditionPhase = 'continuing'
   if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.phase = party.areasCompleted + 1 >= party.areaTotal ? 'completed' : 'continuing'; session.completedAreas = party.areasCompleted; session.nextProcessAt = Date.now() + 5_000 }
-  if (party.areasCompleted >= party.areaTotal) {
-    party.status = 'idle'
-    party.dungeon = null
-    party.nextActionAt = 0
-    party.expeditionPhase = 'completed'
-    partyLogs[party.id] = [...(partyLogs[party.id] ?? []), 'good|원정 구역을 모두 통과했습니다.', 'good|원정이 완료되어 귀환합니다.'].slice(-120)
-  }
+
 }
 
 function applyBattleDefeat(
@@ -1488,6 +1482,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

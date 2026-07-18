@@ -155,12 +155,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
             </div>
           ) : !battle ? (
             <div
-              className={
-                'empty' +
-                (watchedParty.status === 'explore'
-                  ? ' pulse'
-                  : '')
-              }
+              className="small search-status"
             >
               {watchedParty.status === 'camp'
                 ? '야영지에서 회복 중'
@@ -238,6 +233,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

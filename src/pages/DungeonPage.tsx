@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { DUNGEONS, MATERIAL_NAMES } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
@@ -77,6 +77,18 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
   const battle = liveBattle
   const isSearching = Boolean(watchedParty && !liveBattle)
   const battleLogs = watchedParty ? gameStore.getExpeditionLogs(watchedParty.id) : []
+  const [displayedLogs, setDisplayedLogs] = useState<string[]>([])
+  const queuedLogs = useRef<string[]>([])
+  useEffect(() => {
+    if (!watchedParty) { setDisplayedLogs([]); queuedLogs.current = []; return }
+    const known = new Set([...displayedLogs, ...queuedLogs.current])
+    queuedLogs.current.push(...battleLogs.filter((log) => !known.has(log)))
+    const timer = window.setInterval(() => {
+      const next = queuedLogs.current.shift()
+      if (next) setDisplayedLogs((logs) => [...logs, next].slice(-120))
+    }, 500)
+    return () => window.clearInterval(timer)
+  }, [battleLogs, watchedPartyId])
 
   return (
     <section className="screen dungeon-screen">
@@ -185,7 +197,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
               </div>
 
               <div className="log">
-                {[...battleLogs].reverse().map((entry, index) => {
+                {[...displayedLogs].reverse().map((entry, index) => {
                   const separator = entry.indexOf('|')
                   const tone =
                     separator >= 0
@@ -228,6 +240,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

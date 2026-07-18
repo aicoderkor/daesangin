@@ -131,3 +131,4 @@ button { cursor: pointer; }
 
 .forge-materials { margin-top: 8px; }
 .merc-gear{font-size:.8rem;color:var(--muted);margin-top:4px}
+.merc-gear{display:flex;gap:6px;margin-top:6px}.gear-slot{width:34px;height:34px;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;font-size:18px;color:var(--muted)}

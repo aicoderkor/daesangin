@@ -149,7 +149,7 @@ export default function MercenaryPage({
                   <div className="stars">
                     {'★'.repeat(mercenary.traits.length)}
                   </div>
-                  <div className='merc-gear'>장비 {Object.values(mercenary.gear).filter(Boolean).length}/3</div>
+                  <div className="merc-gear">{(["weapon", "armor", "charm"] as const).map((slot) => { const item = game.items.find((candidate) => candidate.id === mercenary.gear[slot]); return <span className="gear-slot" key={slot} title={item?.name ?? "빈 슬롯"}>{item ? "⚔️" : ""}</span> })}</div>
                 </button>
               )
             })
@@ -358,6 +358,7 @@ function PromotionPanel({
     </>
   )
 }
+
 
 
 

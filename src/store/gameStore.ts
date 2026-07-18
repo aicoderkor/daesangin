@@ -1423,6 +1423,13 @@ export const gameStore = {
           continue
         }
 
+        const session = next.expeditionSessions[party.id]
+        if (session && !battle) {
+          session.phase = 'exploring'
+          session.nextProcessAt = party.nextActionAt
+          session.completedAreas = party.areasCompleted
+        }
+
         if (battle) {
           advanceBattle(next, party, battle, now)
         } else if (now >= party.nextActionAt) {
@@ -1472,6 +1479,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

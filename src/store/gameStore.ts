@@ -1329,6 +1329,659 @@ export const gameStore = {
   upgradeFacility(
     facility: keyof GameState['facilities'],
   ): boolean {
+    const l{
+  const recipe =
+    RECIPES[Math.floor(Math.random() * RECIPES.length)]
+  const multiplier = 0.55 + dungeonIndex * 0.08
+  const stats: StatMap = {}
+
+  for (const [key, value] of Object.entries(recipe.stats)) {
+    stats[key as keyof StatMap] = (value ?? 0) * multiplier
+  }
+
+  targetState.items.push({
+    id: createId('gear'),
+    name: '낡은 ' + recipe.name,
+    slot: recipe.slot,
+    stats,
+  })
+  targetState.recentLog += ' · 장비 발견'
+  return '낡은 ' + recipe.name
+}
+
+function rewardBattleVictory(
+  targetState: GameState,
+  party: Party,
+  allowGear = true,
+): void {
+  const dungeonIndex = party.dungeon
+  if (dungeonIndex === null) return
+
+  const dungeon = DUNGEONS[dungeonIndex]
+  const progressKey = String(dungeonIndex)
+  const progress = targetState.dungeonProgress[progressKey] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+  progress.runProgress += 1
+  progress.totalProgress += 1
+  const requirement = DUNGEON_PROGRESS_REQUIREMENTS[dungeonIndex] ?? 999999
+  if (progress.runProgress >= requirement) progress.cleared = true
+  targetState.dungeonProgress[progressKey] = progress
+  party.runs += 1
+  party.areasCompleted = Math.min(party.areaTotal, party.areasCompleted + 1)
+  const gold = 20 + dungeon.recommendedLevel * 12
+
+  targetState.gold += gold
+  targetState.fame += 2 + dungeon.recommendedLevel
+  const rewardLogs = [
+    'good|' + dungeon.name + '의 적이 쓰러졌습니다.',
+    'good|전투에서 승리했습니다.',
+    'skill|경험치와 ' + gold + '동을 획득했습니다.',
+  ]
+  partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...rewardLogs].slice(-120)
+
+  for (const [material, range] of Object.entries(
+    dungeon.materials,
+  )) {
+    if (!range) continue
+
+    const materialKey = material as MaterialKey
+    const quantity =
+      range[0] +
+      Math.floor(Math.random() * (range[1] - range[0] + 1))
+    const availableSpace = Math.max(
+      0,
+      getStorageCapacity(targetState) -
+        getMaterialTotal(targetState),
+    )
+    const accepted = Math.min(quantity, availableSpace)
+
+    targetState.materials[materialKey] += accepted
+    party.loot[materialKey] =
+      (party.loot[materialKey] ?? 0) + accepted
+  }
+
+  for (const mercenaryId of party.members) {
+    const mercenary = targetState.mercenaries.find(
+      (target) => target.id === mercenaryId,
+    )
+
+    if (mercenary) {
+      gainExperience(
+        targetState,
+        mercenary,
+        32 + dungeon.recommendedLevel * 12,
+      )
+    }
+  }
+
+  if (
+    progress.cleared &&
+    dungeonIndex === targetState.unlockedDungeonIndex &&
+    targetState.unlockedDungeonIndex < DUNGEONS.length - 1
+  ) {
+    targetState.unlockedDungeonIndex += 1
+    targetState.recentLog =
+      DUNGEONS[targetState.unlockedDungeonIndex].name + ' 해금'
+  } else {
+    targetState.recentLog =
+      party.name +
+      ': ' +
+      dungeon.name +
+      ' 승리 · ' +
+      gold +
+      ' 엽전'
+  }
+
+  if (
+    allowGear &&
+    Math.random() < 0.12 &&
+    party.dungeon !== null
+  ) {
+    const itemName = dropBattleGear(targetState, party.dungeon)
+    partyLogs[party.id] = [...(partyLogs[party.id] ?? []), 'skill|아이템 획득 · ' + itemName].slice(-120)
+  }
+
+  party.busy = false
+  if (party.areasCompleted >= party.areaTotal) {
+    party.status = 'idle'
+    party.dungeon = null
+    party.nextActionAt = 0
+    partyLogs[party.id] = [...(partyLogs[party.id] ?? []), 'good|원정 구역을 모두 통과했습니다.', 'good|원정이 완료되어 귀환합니다.'].slice(-120)
+  }
+}
+
+function applyBattleDefeat(
+  targetState: GameState,
+  party: Party,
+): void {
+  const dungeonIndex = party.dungeon
+  if (dungeonIndex === null) return
+
+  party.status = 'idle'
+  party.busy = false
+  party.dungeon = null
+  party.members = [null, null, null, null]
+  party.campUntil = 0
+  delete partyVitals[party.id]
+  targetState.recentLog = party.name + ' 전멸 · 야영 회복'
+}
+
+function finishBattle(
+  targetState: GameState,
+  party: Party,
+  battle: BattleState,
+  won: boolean,
+  now: number,
+): void {
+  battle.result = won ? 'victory' : 'defeat'
+  partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...battle.logs]
+  partyVitals[party.id] = Object.fromEntries(battle.allies.map((unit) => [unit.id, { hp: unit.hp, mp: unit.mp }]))
+  battle.finishAt = now + 1_200
+  pushBattleLog(
+    battle,
+    won ? 'good' : 'bad',
+    won ? '승리' : '전멸',
+  )
+
+  if (won) {
+    rewardBattleVictory(targetState, party)
+    if (party.dungeon !== null) {
+      party.nextActionAt =
+        now + DUNGEONS[party.dungeon].actionTime * 1_000
+    }
+  } else {
+    applyBattleDefeat(targetState, party)
+  }
+}
+
+function startBattle(
+  targetState: GameState,
+  party: Party,
+): void {
+  const dungeonIndex = party.dungeon
+  if (dungeonIndex === null) return
+
+  const allies = createAllyUnits(targetState, party)
+  const enemies = createEnemyUnits(dungeonIndex)
+  const autoEvent = Math.random() < 0.28 ? randomExpeditionEvent() : null
+  const enemyDefinitions = DUNGEONS[dungeonIndex].enemies
+  const intro = enemyDefinitions[0]?.encounterIntros?.[Math.floor(Math.random() * enemyDefinitions[0].encounterIntros.length)] ?? (Math.random() < 0.5 ? '주변에서 낯선 인기척이 느껴집니다.' : '수풀 너머에서 적의 모습이 드러납니다.')
+  const savedVitals = partyVitals[party.id]
+  if (savedVitals) allies.forEach((unit) => { const vital = savedVitals[unit.id]; if (vital) { unit.hp = Math.min(unit.maxHp, vital.hp); unit.mp = Math.min(unit.maxMp, vital.mp) } })
+
+  if (!allies.length || !enemies.length) {
+    party.status = 'idle'
+    party.dungeon = null
+    party.busy = false
+    targetState.recentLog =
+      party.name + ' 편성을 확인해 주세요.'
+    return
+  }
+
+  party.busy = true
+  delete lastBattleStates[party.id]
+  battleStates[party.id] = {
+    allies,
+    enemies,
+    logs: [
+      ...(autoEvent ? autoEvent.messages.map((message) => 'exploration|' + message) : []),
+      'exploration|' + intro,
+      'skill|' + DUNGEONS[dungeonIndex].name + ' 전투 시작',
+    ],
+    round: 1,
+    queue: [],
+    activeUnitId: null,
+    hitUnitId: null,
+    result: null,
+    finishAt: 0,
+  }
+}
+
+function advanceBattle(
+  targetState: GameState,
+  party: Party,
+  battle: BattleState,
+  now: number,
+): void {
+  if (
+    !unitsAlive(battle.allies) ||
+    !unitsAlive(battle.enemies) ||
+    battle.round > 40
+  ) {
+    finishBattle(
+      targetState,
+      party,
+      battle,
+      unitsAlive(battle.allies) &&
+        !unitsAlive(battle.enemies),
+      now,
+    )
+    return
+  }
+
+  if (!battle.queue.length) {
+    pushBattleLog(
+      battle,
+      'normal',
+      '— ' + battle.round + '턴 —',
+    )
+    battle.queue = [...battle.allies, ...battle.enemies]
+      .filter((unit) => unit.hp > 0)
+      .sort(
+        (left, right) =>
+          right.dex +
+          Math.random() * 5 -
+          (left.dex + Math.random() * 5),
+      )
+    battle.round += 1
+  }
+
+  const actor = battle.queue.shift()
+
+  if (actor && actor.hp > 0) {
+    performBattleAction(battle, actor)
+  }
+
+  if (
+    !unitsAlive(battle.allies) ||
+    !unitsAlive(battle.enemies)
+  ) {
+    finishBattle(
+      targetState,
+      party,
+      battle,
+      unitsAlive(battle.allies),
+      now,
+    )
+  }
+}
+
+function getSnapshot(): GameState {
+  return state
+}
+
+function subscribe(listener: Listener): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+export function useGameStore(): GameState {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+}
+
+export const gameStore = {
+  getState(): GameState {
+    return state
+  },
+
+  subscribe,
+  save(): void { persist() },
+  getLiveBattleState(partyId: string): BattleState | undefined {
+    return battleStates[partyId]
+  },
+  getBattleState(partyId: string): BattleState | undefined {
+    return battleStates[partyId] ?? lastBattleStates[partyId]
+  },
+  getBattleLogs(partyId: string): string[] {
+    return [...(partyLogs[partyId] ?? []), ...(battleStates[partyId]?.logs ?? [])]
+  },
+
+  getMercenaryCapacity,
+  getTavernCapacity,
+  getStorageCapacity,
+  getMaterialTotal,
+  getHireCost,
+  getFacilityUpgradeCost,
+
+  fillTavernCandidates(): void {
+    setState((current) => {
+      const candidates = Array.from({ length: getTavernCapacity(current) }, () => createMercenary())
+      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS / current.tavernSpeedMultiplier, candidateTimeRemaining: TAVERN_REFRESH_MS / current.tavernSpeedMultiplier }
+    })
+  },
+
+  refreshCandidates(): boolean {
+    setState((current) => {
+      const candidates = [...current.candidates, createMercenary()]
+      const capacity = getTavernCapacity(current)
+      while (candidates.length > capacity) candidates.shift()
+      return { ...current, candidates, candidateRefreshAt: Date.now() + TAVERN_REFRESH_MS, candidatePaused: false, candidateTimeRemaining: TAVERN_REFRESH_MS }
+    })
+    return true
+  },
+
+  toggleCandidatePause(): boolean {
+    const now = Date.now()
+    setState((current) => current.candidatePaused
+      ? { ...current, candidatePaused: false, candidateRefreshAt: now + Math.max(1_000, current.candidateTimeRemaining || TAVERN_REFRESH_MS) }
+      : { ...current, candidatePaused: true, candidateTimeRemaining: Math.max(1_000, current.candidateRefreshAt - now), candidateRefreshAt: 0 })
+    return true
+  },
+
+  hireMercenary(mercenaryId: string): boolean {
+    const candidate = state.candidates.find((mercenary) => mercenary.id === mercenaryId)
+    if (!candidate || state.mercenaries.length >= getMercenaryCapacity()) return false
+    setState((current) => ({ ...current, mercenaries: [...current.mercenaries, candidate], candidates: current.candidates.filter((mercenary) => mercenary.id !== mercenaryId), recentLog: `${candidate.base}이 상단에 합류했습니다.` }))
+    return true
+  },
+
+  dismissMercenary(mercenaryId: string): boolean {
+    if (!state.mercenaries.some((target) => target.id === mercenaryId)) return false
+    setState((current) => ({ ...current, mercenaries: current.mercenaries.filter((target) => target.id !== mercenaryId), parties: current.parties.map((party) => ({ ...party, members: party.members.map((id) => id === mercenaryId ? null : id) as typeof party.members })) }))
+    return true
+  },
+
+  promoteMercenary(
+    mercenaryId: string,
+    branchIndex: number,
+  ): boolean {
+    const mercenary = state.mercenaries.find(
+      (target) => target.id === mercenaryId,
+    )
+
+    if (!mercenary) {
+      return false
+    }
+
+    const promotionReady =
+      (mercenary.path.length === 0 && mercenary.level >= 5) ||
+      (mercenary.path.length === 1 && mercenary.level >= 10)
+
+    let branches = CLASSES[mercenary.base].branches
+
+    for (const pathIndex of mercenary.path) {
+      const selectedBranch = branches[pathIndex]
+      if (!selectedBranch) return false
+      branches = selectedBranch.branches ?? []
+    }
+
+    if (!promotionReady || !branches[branchIndex]) {
+      return false
+    }
+
+    setState((current) => {
+      const next = structuredClone(current)
+      const target = next.mercenaries.find(
+        (item) => item.id === mercenaryId,
+      )
+      if (!target) return current
+
+      target.path.push(branchIndex)
+      next.fame += 40
+      next.recentLog = target.base + ' 전직 완료'
+      return next
+    })
+
+    return true
+  },
+  setPartyMember(
+    partyIndex: number,
+    slotIndex: number,
+    mercenaryId: string | null,
+  ): boolean {
+    const party = state.parties[partyIndex]
+
+    if (!party || slotIndex < 0 || slotIndex > 3) {
+      return false
+    }
+
+    if (
+      mercenaryId &&
+      state.parties.some(
+        (targetParty, targetIndex) =>
+          targetIndex !== partyIndex &&
+          targetParty.members.includes(mercenaryId),
+      )
+    ) {
+      return false
+    }
+
+    setState((current) => {
+      const next = structuredClone(current)
+      const targetParty = next.parties[partyIndex]
+
+      if (mercenaryId) {
+        targetParty.members = targetParty.members.map((memberId, index) =>
+          index !== slotIndex && memberId === mercenaryId ? null : memberId,
+        ) as Party['members']
+      }
+
+      targetParty.members[slotIndex] = mercenaryId
+      removeDuplicatePartyMembers(next)
+
+      return next
+    })
+
+    return true
+  },
+
+  assignDungeon(partyIndex: number, dungeonIndex: number): boolean {
+    const party = state.parties[partyIndex]
+
+    if (
+      !party ||
+      dungeonIndex < 0 ||
+      dungeonIndex > state.unlockedDungeonIndex ||
+      !party.members.some(Boolean)
+    ) {
+      return false
+    }
+
+    setState((current) => {
+      const next = structuredClone(current)
+      const targetParty = next.parties[partyIndex]
+
+      targetParty.dungeon = dungeonIndex
+      targetParty.status = 'explore'
+      targetParty.nextActionAt = Date.now() + 1_200
+      targetParty.campUntil = 0
+      targetParty.busy = false
+      targetParty.areasCompleted = 0
+      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
+      progress.runProgress = 0
+      next.dungeonProgress[String(dungeonIndex)] = progress
+      next.recentLog = `${targetParty.name}이 원정을 시작했습니다.`
+
+      return next
+    })
+
+    return true
+  },
+
+  recallParty(partyIndex: number): boolean {
+    const party = state.parties[partyIndex]
+
+    if (!party) {
+      return false
+    }
+
+    setState((current) => {
+      const next = structuredClone(current)
+      const targetParty = next.parties[partyIndex]
+
+      targetParty.dungeon = null
+      targetParty.status = 'idle'
+      targetParty.nextActionAt = 0
+      targetParty.campUntil = 0
+      targetParty.busy = false
+      next.recentLog = `${targetParty.name}이 귀환했습니다.`
+
+      return next
+    })
+
+    return true
+  },
+
+  addMaterial(material: MaterialKey, quantity: number): number {
+    const remainingCapacity = Math.max(
+      0,
+      getStorageCapacity() - getMaterialTotal(),
+    )
+
+    const acceptedQuantity = Math.max(
+      0,
+      Math.min(quantity, remainingCapacity),
+    )
+
+    if (acceptedQuantity === 0) {
+      return 0
+    }
+
+    setState((current) => ({
+      ...current,
+      materials: {
+        ...current.materials,
+        [material]: current.materials[material] + acceptedQuantity,
+      },
+    }))
+
+    return acceptedQuantity
+  },
+
+  addGold(quantity: number): void {
+    setState((current) => ({
+      ...current,
+      gold: Math.max(0, current.gold + quantity),
+    }))
+  },
+
+  addFame(quantity: number): void {
+    setState((current) => ({
+      ...current,
+      fame: Math.max(0, current.fame + quantity),
+    }))
+  },
+
+  equipItem(
+    itemId: string,
+    mercenaryId: string | null,
+  ): boolean {
+    const item = state.items.find(
+      (target) => target.id === itemId,
+    )
+
+    if (!item) return false
+
+    if (
+      mercenaryId &&
+      !state.mercenaries.some(
+        (target) => target.id === mercenaryId,
+      )
+    ) {
+      return false
+    }
+
+    setState((current) => {
+      const next = structuredClone(current)
+
+      for (const mercenary of next.mercenaries) {
+        if (mercenary.gear[item.slot] === itemId) {
+          mercenary.gear[item.slot] = null
+        }
+      }
+
+      if (mercenaryId) {
+        const mercenary = next.mercenaries.find(
+          (target) => target.id === mercenaryId,
+        )
+        if (mercenary) {
+          mercenary.gear[item.slot] = itemId
+        }
+      }
+
+      return next
+    })
+
+    return true
+  },
+
+  sellSurplusMaterials(): number {
+    let earned = 0
+
+    setState((current) => {
+      const next = structuredClone(current)
+      const prices: Record<MaterialKey, number> = {
+        wood: 4,
+        ore: 8,
+        fiber: 4,
+        hide: 4,
+        herb: 4,
+        essence: 20,
+      }
+
+      for (
+        const material of Object.keys(
+          next.materials,
+        ) as MaterialKey[]
+      ) {
+        const keep =
+          material === 'essence'
+            ? next.materials[material]
+            : Math.min(next.materials[material], 10)
+        const quantity = next.materials[material] - keep
+
+        earned += quantity * prices[material]
+        next.materials[material] = keep
+      }
+
+      next.gold += earned
+      next.recentLog =
+        earned > 0
+          ? '재료 판매 · ' + earned + ' 엽전'
+          : '판매할 잉여 재료가 없습니다.'
+      return next
+    })
+
+    return earned
+  },
+
+  craftItem(recipeIndex: number): boolean {
+    const recipe = RECIPES[recipeIndex]
+    const visibleRecipeCount = Math.min(
+      RECIPES.length,
+      2 + state.facilities.forge * 2,
+    )
+
+    if (!recipe || recipeIndex >= visibleRecipeCount) {
+      return false
+    }
+
+    const canCraft = Object.entries(
+      recipe.requiredMaterials,
+    ).every(
+      ([material, quantity]) =>
+        state.materials[material as MaterialKey] >=
+        (quantity ?? 0),
+    )
+
+    if (!canCraft) return false
+
+    setState((current) => {
+      const next = structuredClone(current)
+
+      for (const [material, quantity] of Object.entries(
+        recipe.requiredMaterials,
+      )) {
+        next.materials[material as MaterialKey] -=
+          quantity ?? 0
+      }
+
+      next.items.push({
+        id: createId('gear'),
+        name: recipe.name,
+        slot: recipe.slot,
+        stats: { ...recipe.stats },
+      })
+      next.fame += 10
+      next.recentLog = recipe.name + ' 제작 완료'
+      return next
+    })
+
+    return true
+  },
+
+  upgradeFacility(
+    facility: keyof GameState['facilities'],
+  ): boolean {
     const level = state.facilities[facility]
     const cost = getFacilityUpgradeCost(facility, level)
 
@@ -1454,6 +2107,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

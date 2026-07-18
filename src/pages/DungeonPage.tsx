@@ -67,6 +67,8 @@ export default function DungeonPage() {
     }
   }, [activeParties, watchedPartyId])
 
+  useEffect(() => { if (watchedPartyId) document.getElementById("battle-viewer")?.scrollIntoView({ behavior: "smooth", block: "start" }) }, [watchedPartyId])
+
   const watchedParty = activeParties.find(
     (party) => party.id === watchedPartyId,
   )
@@ -236,6 +238,7 @@ export default function DungeonPage() {
       )}    </section>
   )
 }
+
 
 
 

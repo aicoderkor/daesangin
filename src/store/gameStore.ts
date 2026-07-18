@@ -959,6 +959,7 @@ export const gameStore = {
   },
 
   subscribe,
+  save(): void { persist() }
   getLiveBattleState(partyId: string): BattleState | undefined {
     return battleStates[partyId]
   },
@@ -1451,6 +1452,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

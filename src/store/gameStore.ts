@@ -1096,9 +1096,6 @@ export const gameStore = {
       const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
       progress.runProgress = 0
       next.dungeonProgress[String(dungeonIndex)] = progress
-      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
-      progress.runProgress = 0
-      next.dungeonProgress[String(dungeonIndex)] = progress
       next.recentLog = `${targetParty.name}이 원정을 시작했습니다.`
 
       return next
@@ -1123,12 +1120,6 @@ export const gameStore = {
       targetParty.nextActionAt = 0
       targetParty.campUntil = 0
       targetParty.busy = false
-      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
-      progress.runProgress = 0
-      next.dungeonProgress[String(dungeonIndex)] = progress
-      const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
-      progress.runProgress = 0
-      next.dungeonProgress[String(dungeonIndex)] = progress
       next.recentLog = `${targetParty.name}이 귀환했습니다.`
 
       return next
@@ -1432,6 +1423,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

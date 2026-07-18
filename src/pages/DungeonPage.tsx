@@ -153,7 +153,9 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
             <div className="empty">
               진행 중인 원정대를 선택하세요.
             </div>
-          ) : !battle ? (`r`n            <div className="search-status">다음 조우를 탐색 중...</div>`r`n          ) : (
+          ) : !battle ? (
+            <div className="search-status">다음 조우를 탐색 중...</div>
+          ) : (
             <>
               {isSearching && <div className="search-status">다음 조우를 탐색 중...</div>}
               <div className="field">
@@ -226,6 +228,7 @@ export default function DungeonPage({ onNavigate }: { onNavigate: (screen: "part
       )}    </section>
   )
 }
+
 
 
 

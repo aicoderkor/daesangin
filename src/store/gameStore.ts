@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+﻿import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
 import { CLASSES, DUNGEONS, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
 import type {

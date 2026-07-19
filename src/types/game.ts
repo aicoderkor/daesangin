@@ -220,6 +220,7 @@ export interface BattleState {
   hitUnitId: string | null
   result: 'victory' | 'defeat' | null
   finishAt: number
+  introQueue?: string[]
 }
 
 

@@ -1,4 +1,4 @@
-﻿import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
 import { CLASSES, DUNGEONS, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
 import type {
@@ -728,7 +728,7 @@ function rewardBattleVictory(
   ]
   partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...rewardLogs].slice(-120)
   if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'reward', message: '전투 승리 · ' + gold + '동 획득', createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
-  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'reward', message: '進行도 업데이트: ' + progress.runProgress + '/' + requirement + ' · 최고 진행도: ' + progress.totalProgress, createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'reward', message: '\uC9C4\uD589\uB3C4 \uC5C5\uB370\uC774\uD2B8: ' + progress.runProgress + '/' + requirement + ' · \uCD5C\uACE0 \uC9C4\uD589\uB3C4: ' + progress.totalProgress, createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
 
   for (const [material, range] of Object.entries(
     dungeon.materials,

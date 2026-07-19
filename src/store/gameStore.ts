@@ -340,7 +340,7 @@ function removeDuplicatePartyMembers(targetState: GameState): void {
 }
 
 function ensurePartyCount(targetState: GameState): void {
-  const requiredCount = Math.max(1, targetState.facilities.party)
+  const requiredCount = Math.max(1, targetState.facilities.party, DUNGEONS.length)
 
   while (targetState.parties.length < requiredCount) {
     targetState.parties.push(createParty(targetState.parties.length))
@@ -1088,8 +1088,7 @@ export const gameStore = {
     slotIndex: number,
     mercenaryId: string | null,
   ): boolean {
-    const requestedParty = state.parties[partyIndex]
-    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? (requestedParty?.dungeon === null ? requestedParty : undefined)
+    const party = state.parties[partyIndex]
 
     if (!party || slotIndex < 0 || slotIndex > 3) {
       return false
@@ -1166,8 +1165,7 @@ export const gameStore = {
     return true
   },
   assignDungeon(partyIndex: number, dungeonIndex: number): boolean {
-    const requestedParty = state.parties[partyIndex]
-    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? (requestedParty?.dungeon === null ? requestedParty : undefined)
+    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? state.parties[partyIndex]
 
     if (
       !party ||
@@ -1180,13 +1178,7 @@ export const gameStore = {
 
     setState((current) => {
       const next = structuredClone(current)
-      let targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
-      if (!targetParty) {
-        targetParty = createParty(next.parties.length)
-        next.parties.push(targetParty)
-      }
-      const assignmentIds = next.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds ?? []
-      targetParty.members = [...assignmentIds.slice(0, 4), null, null, null, null].slice(0, 4) as Party['members']
+      const targetParty = next.parties[partyIndex]
 
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'
@@ -1208,8 +1200,7 @@ export const gameStore = {
   },
 
   recallParty(partyIndex: number): boolean {
-    const requestedParty = state.parties[partyIndex]
-    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? (requestedParty?.dungeon === null ? requestedParty : undefined)
+    const party = state.parties[partyIndex]
 
     if (!party) {
       return false

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { DUNGEONS, MATERIAL_NAMES } from '../data/gameData'
+import { DUNGEONS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
   CombatUnit,
@@ -37,10 +37,84 @@ function Fighter({
       }
     >
       <b>{unit.name}</b>
+      <div className="small">{unit.className ?? ''}</div>
+      <div className="hp">
+        <i style={{ width: hpPercent + '%' }} />
+      </div>
+      <div className="hp mp">
+        <i style={{ width: mpPercent + '%' }} />
+      </div>
+    </div>
+  )
+}
+
+export default function DungeonPage({}: { onNavigate?: (screen: never) => void }) {
+  const game = useGameStore()
+  const [watchedPartyId, setWatchedPartyId] = useState('')
+  const [selectedDungeon, setSelectedDungeon] = useState<number | null>(null)
+  const [battleOpen, setBattleOpen] = useState(false)
+  const activeParties = game.parties.filter(
+    (party) => party.status === 'explore',
+  )
+
+  useEffect(() => {
+    if (
+      activeParties.length > 0 &&
+      !activeParties.some(
+        (party) => party.id === watchedPartyId,
+      )
+    ) {
+      setWatchedPartyId(activeParties[0].id)
+    }
+
+    if (activeParties.length === 0 && watchedPartyId) {
+      setWatchedPartyId('')
+    }
+  }, [activeParties, watchedPartyId])
+
+  useEffect(() => { if (watchedPartyId) document.getElementById("battle-viewer")?.scrollIntoView({ behavior: "smooth", block: "start" }) }, [watchedPartyId])
+
+  const watchedParty = activeParties.find(
+    (party) => party.id === watchedPartyId,
+  )
+  const battle = watchedParty ? gameStore.getBattleState(watchedParty.id) : undefined
+  const battleLogs = watchedParty ? gameStore.getExpeditionLogs(watchedParty.id) : []
+  const displayedLogs = battleLogs.slice(-120)
+  return (
+    <section className="screen dungeon-screen">
+      <div className="card">
+        <div className="head">
+          <div>
+            <h2>던전</h2>
+            <div className="small">
+              파티가 실시간으로 탐색하고 전투합니다.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          {DUNGEONS.map((dungeon, dungeonIndex) => {
+            const unlocked =
+              dungeonIndex <= game.unlockedDungeonIndex
+
+            return (
+              <article
+                className="dungeon"
+                key={dungeon.name}
+                onClick={() => { const active = game.parties.find((party) => party.dungeon === dungeonIndex && party.status === "explore"); if (active) { setWatchedPartyId(active.id); setBattleOpen(true) } else if (unlocked) setSelectedDungeon(dungeonIndex) }}
+                style={{ opacity: unlocked ? 1 : 0.45 }}
+              >
+                <div className="row">
+                  <div>
+                    <b>{dungeon.name}</b>
+                    <div className="small">
+                    </div>
                   </div>
 
                   <span>{unlocked ? '해금' : '잠김'}</span>
-                </div>                {(() => { const ids = game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds ?? []; const names = ids.map((id) => game.mercenaries.find((mercenary) => mercenary.id === id)?.base).filter(Boolean).join(' · '); return names ? <div className="small">{names}</div> : null })()}
+                </div>
+                {game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds?.length ? <div className="small">참여 용병 {game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds?.length}명</div> : null}
+
               </article>
             )
           })}

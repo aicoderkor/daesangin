@@ -878,8 +878,8 @@ function startBattle(
   battleStates[party.id] = {
     allies,
     enemies,
-    logs: ['skill|' + DUNGEONS[dungeonIndex].name + ' 전투 시작'],
-    introQueue: [...(autoEvent ? autoEvent.messages : []), intro],
+    logs: [],
+    introQueue: [...(autoEvent ? autoEvent.messages : []), intro, ${enemies[0]?.name ?? '적'}와의 전투가 시작됩니다.],
     round: 1,
     queue: [],
     activeUnitId: null,

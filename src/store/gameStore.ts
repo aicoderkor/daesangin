@@ -1164,7 +1164,7 @@ export const gameStore = {
     })
     return true
   },
-  assignDungeon(partyIndex: number, dungeonIndex: number): boolean {
+  assignDungeon(_partyIndex: number, dungeonIndex: number): boolean {
     const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? state.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
 
     if (
@@ -1179,6 +1179,7 @@ export const gameStore = {
     setState((current) => {
       const next = structuredClone(current)
       const targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
+      if (!targetParty) return next
 
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'

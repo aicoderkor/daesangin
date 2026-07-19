@@ -3,7 +3,6 @@ import { DUNGEONS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
   CombatUnit,
-  MaterialKey,
 } from '../types/game'
 
 function renderLogMessage(message: string) {

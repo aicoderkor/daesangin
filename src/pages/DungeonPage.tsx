@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { DUNGEONS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type {
@@ -112,7 +112,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
 
                   <span>{unlocked ? '해금' : '잠김'}</span>
                 </div>
-                {game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds?.length ? <div className="small">참여 용병 {game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds?.length}명</div> : null}
+                {(() => { const ids = game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds ?? []; const names = ids.map((id) => game.mercenaries.find((mercenary) => mercenary.id === id)?.base).filter(Boolean).join(" / "); return names ? <div className="small">{names}</div> : null })()}
 
               </article>
             )

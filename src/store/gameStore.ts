@@ -879,7 +879,6 @@ function startBattle(
   party.busy = true
   party.expeditionPhase = 'combat'
   if (targetState.expeditionSessions[party.id]) { targetState.expeditionSessions[party.id].phase = 'combat'; targetState.expeditionSessions[party.id].nextProcessAt = Date.now() + 2_000 }
-  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'enemy', message: intro, createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
   delete lastBattleStates[party.id]
   battleStates[party.id] = {
     allies,

@@ -127,7 +127,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
         </div>
       </div>
 
-      <div className={`card ${battleOpen ? "battle-open" : "battle-hidden"}`} id="battle-viewer"><div className="head"><h3>전투 관전</h3><button type="button" className="btn sm" onClick={() => setBattleOpen(false)}>닫기</button>
+      <div className={`card ${battleOpen ? "battle-open" : "battle-hidden"}`} id="battle-viewer"><div className="head"><h3>전투 관전</h3><button type="button" className="btn sm" onClick={() => setBattleOpen(false)}>닫기</button>{watchedParty && <button type="button" className="btn sm" onClick={() => { const index = game.parties.findIndex((party) => party.id === watchedParty.id); if (index >= 0) gameStore.recallParty(index); setBattleOpen(false) }}>귀환</button>}
 
           <select className="select battle-select" value={watchedPartyId} onChange={(event) => setWatchedPartyId(event.target.value)}><option value="">전투 관전 선택</option>{activeParties.map((party) => <option value={party.id} key={party.id}>{party.dungeon !== null ? DUNGEONS[party.dungeon].name : party.id}</option>)}</select>
         </div>

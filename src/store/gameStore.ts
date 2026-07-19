@@ -879,7 +879,7 @@ function startBattle(
     allies,
     enemies,
     logs: [],
-    introQueue: [...(autoEvent ? autoEvent.messages : []), intro, ${enemies[0]?.name ?? '적'}와의 전투가 시작됩니다.],
+    introQueue: [...(autoEvent ? autoEvent.messages : []), intro, (enemies[0]?.name ?? '적') + '와의 전투가 시작됩니다.'],
     round: 1,
     queue: [],
     activeUnitId: null,

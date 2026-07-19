@@ -1135,7 +1135,6 @@ export const gameStore = {
       const progress = next.dungeonProgress[String(dungeonIndex)] ?? { runProgress: 0, totalProgress: 0, cleared: false }
       progress.assignedMercenaryIds = Array.from(new Set([...(progress.assignedMercenaryIds ?? []), mercenaryId]))
       next.dungeonProgress[String(dungeonIndex)] = progress
-      next.expeditionSessions[targetParty.id].logs.push({ id: createId('log'), type: 'exploration', message: DUNGEONS[dungeonIndex].name + ' \uC9C4\uD589\uB3C4 1/' + (DUNGEON_PROGRESS_REQUIREMENTS[dungeonIndex] ?? 999999) + ' · \uCD5C\uACE0 \uC9C4\uD589\uB3C4: ' + progress.totalProgress, createdAt: Date.now() })
       const party = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.status === 'idle' && candidate.dungeon === null)
       if (party) {
         party.dungeon = dungeonIndex

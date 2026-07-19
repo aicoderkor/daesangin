@@ -1178,7 +1178,7 @@ export const gameStore = {
 
     setState((current) => {
       const next = structuredClone(current)
-      const targetParty = next.parties[partyIndex]
+      const targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
 
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'

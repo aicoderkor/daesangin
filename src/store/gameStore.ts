@@ -1165,7 +1165,7 @@ export const gameStore = {
     return true
   },
   assignDungeon(partyIndex: number, dungeonIndex: number): boolean {
-    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? state.parties[partyIndex]
+    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? state.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
 
     if (
       !party ||

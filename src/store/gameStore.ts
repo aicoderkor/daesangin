@@ -1201,6 +1201,15 @@ export const gameStore = {
       const targetParty = next.parties[partyIndex]
 
       if (next.expeditionSessions[targetParty.id]) delete next.expeditionSessions[targetParty.id]
+      if (targetParty.dungeon !== null) {
+        const assignment = next.dungeonProgress[String(targetParty.dungeon)]
+        for (const mercenaryId of assignment?.assignedMercenaryIds ?? targetParty.members.filter((id): id is string => Boolean(id))) {
+          const mercenary = next.mercenaries.find((candidate) => candidate.id === mercenaryId)
+          if (mercenary) mercenary.assignedDungeonId = null
+        }
+        if (assignment) assignment.assignedMercenaryIds = []
+      }
+      targetParty.members = [null, null, null, null]
       targetParty.dungeon = null
       targetParty.status = 'idle'
       targetParty.nextActionAt = 0

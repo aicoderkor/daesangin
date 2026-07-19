@@ -1088,7 +1088,8 @@ export const gameStore = {
     slotIndex: number,
     mercenaryId: string | null,
   ): boolean {
-    const party = state.parties[partyIndex]
+    const requestedParty = state.parties[partyIndex]
+    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? (requestedParty?.dungeon === null ? requestedParty : undefined)
 
     if (!party || slotIndex < 0 || slotIndex > 3) {
       return false
@@ -1165,7 +1166,8 @@ export const gameStore = {
     return true
   },
   assignDungeon(partyIndex: number, dungeonIndex: number): boolean {
-    const party = state.parties[partyIndex]
+    const requestedParty = state.parties[partyIndex]
+    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? (requestedParty?.dungeon === null ? requestedParty : undefined)
 
     if (
       !party ||
@@ -1178,7 +1180,13 @@ export const gameStore = {
 
     setState((current) => {
       const next = structuredClone(current)
-      const targetParty = next.parties[partyIndex]
+      let targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
+      if (!targetParty) {
+        targetParty = createParty(next.parties.length)
+        next.parties.push(targetParty)
+      }
+      const assignmentIds = next.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds ?? []
+      targetParty.members = [...assignmentIds.slice(0, 4), null, null, null, null].slice(0, 4) as Party['members']
 
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'
@@ -1200,7 +1208,8 @@ export const gameStore = {
   },
 
   recallParty(partyIndex: number): boolean {
-    const party = state.parties[partyIndex]
+    const requestedParty = state.parties[partyIndex]
+    const party = state.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? (requestedParty?.dungeon === null ? requestedParty : undefined)
 
     if (!party) {
       return false

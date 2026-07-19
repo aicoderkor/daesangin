@@ -6,6 +6,10 @@ import type {
   MaterialKey,
 } from '../types/game'
 
+function renderLogMessage(message: string) {
+  const parts = message.split(/(\d+(?:\.\d+)?(?:의 피해|피해))/g)
+  return parts.map((part, index) => /\d+(?:\.\d+)?(?:의 피해|피해)/.test(part) ? <strong className="damage-value" key={index}>{part}</strong> : <span key={index}>{part}</span>)
+}
 function Fighter({
   unit,
   active,
@@ -192,7 +196,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
                       className={className}
                       key={index + '-' + entry}
                     >
-                      {message}
+                      {renderLogMessage(message)}
                     </div>
                   )
                 })}

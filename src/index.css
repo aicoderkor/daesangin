@@ -1,4 +1,4 @@
-﻿@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 :root {
   --bg: #0d0d0d;
@@ -146,3 +146,5 @@ button { cursor: pointer; }
 
 
 
+
+.damage-value { color: #ffd166; font-weight: 800; text-shadow: 0 0 4px rgba(255, 209, 102, .45); }

@@ -241,7 +241,7 @@ export const DUNGEONS: DungeonDefinition[] = [
   {
     name: '들쥐 소굴',
     recommendedLevel: 1,
-    actionTime: 8,
+    actionTime: 5,
     materials: {
       wood: [1, 3],
       fiber: [1, 3],
@@ -268,7 +268,7 @@ export const DUNGEONS: DungeonDefinition[] = [
   {
     name: '산적 초소',
     recommendedLevel: 3,
-    actionTime: 10,
+    actionTime: 5,
     materials: {
       wood: [2, 5],
       ore: [1, 3],
@@ -304,7 +304,7 @@ export const DUNGEONS: DungeonDefinition[] = [
   {
     name: '폐사원',
     recommendedLevel: 6,
-    actionTime: 12,
+    actionTime: 5,
     materials: {
       ore: [2, 5],
       herb: [1, 4],
@@ -340,7 +340,7 @@ export const DUNGEONS: DungeonDefinition[] = [
   {
     name: '검은 고개',
     recommendedLevel: 9,
-    actionTime: 14,
+    actionTime: 5,
     materials: {
       ore: [4, 8],
       hide: [2, 5],

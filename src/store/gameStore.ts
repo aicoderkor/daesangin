@@ -895,6 +895,11 @@ function advanceBattle(
   battle: BattleState,
   now: number,
 ): void {
+  if (battle.introQueue?.length) {
+    pushBattleLog(battle, 'normal', battle.introQueue.shift() ?? '')
+    return
+  }
+
   if (
     !unitsAlive(battle.allies) ||
     !unitsAlive(battle.enemies) ||

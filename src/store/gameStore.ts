@@ -897,6 +897,8 @@ function advanceBattle(
 ): void {
   if (battle.introQueue?.length) {
     pushBattleLog(battle, 'normal', battle.introQueue.shift() ?? '')
+    const introSession = targetState.expeditionSessions[party.id]
+    if (introSession) introSession.nextProcessAt = now + EXPEDITION_TIMINGS.encounterIntroMs
     return
   }
 

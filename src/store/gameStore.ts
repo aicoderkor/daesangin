@@ -808,6 +808,12 @@ function applyBattleDefeat(
   party.expeditionPhase = 'defeated'
   if (targetState.expeditionSessions[party.id]) { targetState.expeditionSessions[party.id].phase = 'defeated'; targetState.expeditionSessions[party.id].nextProcessAt = Date.now() }
   party.busy = false
+  const assignment = targetState.dungeonProgress[String(dungeonIndex)]
+  for (const mercenaryId of assignment?.assignedMercenaryIds ?? party.members.filter((id): id is string => Boolean(id))) {
+    const mercenary = targetState.mercenaries.find((candidate) => candidate.id === mercenaryId)
+    if (mercenary) mercenary.assignedDungeonId = null
+  }
+  if (assignment) assignment.assignedMercenaryIds = []
   party.dungeon = null
   party.members = [null, null, null, null]
   party.campUntil = 0

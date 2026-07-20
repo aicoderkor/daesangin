@@ -15,6 +15,16 @@ import type {
 
 import { getClassName, getMercenaryStats, getXpRequired } from '../utils/mercenary'
 import { EXPEDITION_TIMINGS } from '../config/expedition'
+import {
+  calculateCriticalMultiplier,
+  calculateDamageRange,
+  calculateFinalHitRate,
+  calculatePhysicalDamage,
+  getCombatMainStat,
+  mapJobToCombatClass,
+  rollBaseDamage,
+  rollChance,
+} from '../game/combat'
 
 const STORAGE_KEY = 'daesangin-react-v3'
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
@@ -446,6 +456,9 @@ function createAllyUnits(
     const stats = getTotalStats(mercenary, targetState)
     units.push({
       kind: 'ally',
+      combatClass: mapJobToCombatClass(mercenary.base),
+      constitution: stats.con,
+      intelligence: stats.int,
       id: mercenary.id,
       name: getClassName(mercenary),
       className: getClassName(mercenary),
@@ -475,6 +488,9 @@ function createAllyUnits(
 function createEnemyUnits(dungeonIndex: number): CombatUnit[] {
   return DUNGEONS[dungeonIndex].enemies.map((enemy, index) => ({
     kind: 'enemy',
+    combatClass: 'warrior',
+    constitution: enemy.attack,
+    intelligence: enemy.attack,
     id: 'enemy-' + index + '-' + createId('combat'),
     name: enemy.name,
     hp: enemy.hp,
@@ -584,7 +600,17 @@ function performBattleAction(
   const target = selectWeightedTarget(targets)
   if (!target) return
 
-  if (Math.random() > actor.hit - target.evade) {
+  const actorMainStat = getCombatMainStat(actor.combatClass, {
+    constitution: actor.constitution,
+    dexterity: actor.dex,
+    intelligence: actor.intelligence,
+  })
+  const finalHitRate = calculateFinalHitRate({
+    attackerMainStat: actorMainStat,
+    defenderRelevantStat: target.dex,
+    focusBonusRate: Math.max(0, actor.hit - 0.9),
+  })
+  if (!rollChance(finalHitRate)) {
     pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + subjectParticle(target.name) + (Math.random() < 0.5 ? ' 몸을 틀어 피했습니다.' : ' 재빠르게 회피했습니다.'))
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
     return
@@ -633,19 +659,22 @@ function performBattleAction(
     for (let hitIndex = 0; hitIndex < hitCount; hitIndex += 1) {
       if (hitTarget.hp <= 0) continue
 
-      const critical = Math.random() < actor.crit
+      const critical = rollChance(actor.crit)
       const defense = magic ? hitTarget.mdef : hitTarget.def
-      let damage = Math.max(
-        1,
-        Math.round(
-          actor.atk *
-            multiplier *
-            (0.85 + Math.random() * 0.3) -
-            defense * 0.5,
-        ),
-      )
-
-      if (critical) damage = Math.round(damage * 1.7)
+      const damageRange = calculateDamageRange(actor.combatClass, {
+        constitution: actor.constitution,
+        dexterity: actor.dex,
+        intelligence: actor.intelligence,
+        maxHp: actor.maxHp,
+        magicDefenseRate: 0,
+      })
+      const damage = calculatePhysicalDamage({
+        baseDamage: rollBaseDamage(damageRange),
+        skillMultiplier: multiplier,
+        isCritical: critical,
+        criticalMultiplier: calculateCriticalMultiplier(),
+        flatDamageReduction: defense * 0.5,
+      })
       hitTarget.hp = Math.max(0, hitTarget.hp - damage)
       battle.hitUnitId = hitTarget.id
 

@@ -200,6 +200,9 @@ export interface GameState {
 
 export interface CombatUnit {
   kind: 'ally' | 'enemy'
+  combatClass: import('../game/combat/combat.types').CombatClass
+  constitution: number
+  intelligence: number
   id: string
   name: string
   className?: string

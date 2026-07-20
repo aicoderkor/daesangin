@@ -1,4 +1,5 @@
 import { MATERIAL_NAMES } from '../data/gameData'
+import { useState } from 'react'
 import { gameStore, useGameStore } from '../store/gameStore'
 import { getClassName } from '../utils/mercenary'
 import type {
@@ -40,7 +41,7 @@ function getEquippedMercenaryId(
 export default function WarehousePage({
   onToast,
 }: WarehousePageProps) {
-  const game = useGameStore()
+  const game = useGameStore()\n  const [selectedMaterial, setSelectedMaterial] = useState<MaterialKey | null>(null)\n  const [quantity, setQuantity] = useState(1)
   const materialTotal = gameStore.getMaterialTotal(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
 
@@ -61,7 +62,7 @@ export default function WarehousePage({
         </div>
 
         <div>
-          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).filter((material) => game.materials[material] > 0).map((material) => (<div className="item row" key={material}><span>{MATERIAL_NAMES[material]}</span><b>{game.materials[material]}</b><button type="button" className="btn sm" onClick={() => { if (gameStore.sellMaterial(material, game.materials[material])) onToast?.("시장에 판매 등록했습니다.") }}>시장 판매</button></div>))}
+          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).filter((material) => game.materials[material] > 0).map((material) => (<button type="button" className="item row" key={material} onClick={() => { setSelectedMaterial(material); setQuantity(1) }}><span>{MATERIAL_NAMES[material]}</span><b>{game.materials[material]}</b></button>))}
         </div>
       </div>
 

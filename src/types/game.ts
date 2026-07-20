@@ -1,4 +1,4 @@
-export type ScreenId =
+﻿export type ScreenId =
   | 'home'
   | 'tavern'
   | 'mercs'
@@ -32,12 +32,6 @@ export type StatKey =
   | 'lifesteal'
 
 export type StatMap = Partial<Record<StatKey, number>>
-
-export interface TraitDefinition {
-  name: string
-  description: string
-  modifiers: StatMap
-}
 
 export interface SkillDefinition {
   name: string
@@ -86,7 +80,7 @@ export interface MercenaryGear {
 export interface Mercenary {
   id: string
   base: MercenaryBase
-  traits: string[]
+  traits: import('../game/traits/trait.types').MercenaryTraits
   level: number
   xp: number
   path: number[]
@@ -222,6 +216,13 @@ export interface CombatUnit {
   mana: number
   regen: number
   lifesteal: number
+  flatDamageReduction: number
+  initiativePriority: number
+  turnRegenerationFlat: number
+  turnHpLossRate: number
+  criticalMultiplier: number
+  missChanceMultiplier: number
+  healingMultiplier: number
   skill: SkillDefinition
 }
 
@@ -238,6 +239,8 @@ export interface BattleState {
   finishAt: number
   introQueue?: string[]
 }
+
+
 
 
 

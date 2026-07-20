@@ -17,6 +17,7 @@ export interface AccuracyOptions {
   darknessRate?: number
   hasNightVision?: boolean
   focusBonusRate?: number
+  missChanceMultiplier?: number
 }
 export interface CriticalOptions {
   additiveCriticalDamageRate?: number

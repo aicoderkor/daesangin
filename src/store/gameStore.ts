@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
-import { CLASSES, DUNGEONS, MATERIAL_NAMES, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
+import { CLASSES, DUNGEONS, MATERIAL_NAMES, MERCENARY_BASES, RECIPES } from '../data/gameData'
 import type {
   BattleState,
   CombatUnit,
@@ -25,6 +25,7 @@ import {
   rollBaseDamage,
   rollChance,
 } from '../game/combat'
+import { generateMercenaryTraits, getTraitCombatEffects, normalizeMercenaryTraits } from '../game/traits'
 
 const STORAGE_KEY = 'daesangin-react-v3'
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
@@ -45,24 +46,14 @@ function randomItem<T>(items: readonly T[]): T {
 
 function createMercenary(base?: MercenaryBase): Mercenary {
   const selectedBase = base ?? randomItem(MERCENARY_BASES)
-  const traitCount = Math.random() < 0.58 ? 1 : Math.random() < 0.85 ? 2 : 3
-  const selectedTraits = [...TRAITS]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, traitCount)
-    .map((trait) => trait.name)
-
   return {
     id: createId('mercenary'),
     base: selectedBase,
-    traits: selectedTraits,
+    traits: generateMercenaryTraits(),
     level: 1,
     xp: 0,
     path: [],
-    gear: {
-      weapon: null,
-      armor: null,
-      charm: null,
-    },
+    gear: { weapon: null, armor: null, charm: null },
     status: 'idle',
   }
 }
@@ -160,7 +151,7 @@ function normalizeState(input: Partial<GameState>): GameState {
 
   state.mercenaries = state.mercenaries.map((mercenary) => ({
     ...mercenary,
-    traits: Array.isArray(mercenary.traits) ? mercenary.traits : [],
+    traits: normalizeMercenaryTraits(mercenary.traits),
     path: Array.isArray(mercenary.path) ? mercenary.path : [],
     gear: {
       weapon: mercenary.gear?.weapon ?? null,
@@ -170,6 +161,17 @@ function normalizeState(input: Partial<GameState>): GameState {
     status: mercenary.status ?? 'idle',
   }))
 
+  state.candidates = state.candidates.map((mercenary) => ({
+    ...mercenary,
+    traits: normalizeMercenaryTraits(mercenary.traits),
+    path: Array.isArray(mercenary.path) ? mercenary.path : [],
+    gear: {
+      weapon: mercenary.gear?.weapon ?? null,
+      armor: mercenary.gear?.armor ?? null,
+      charm: mercenary.gear?.charm ?? null,
+    },
+    status: mercenary.status ?? 'idle',
+  }))
   state.parties = state.parties.map((party, index) => ({
     ...createParty(index),
     ...party,
@@ -454,6 +456,7 @@ function createAllyUnits(
     if (!mercenary) continue
 
     const stats = getTotalStats(mercenary, targetState)
+    const traitEffects = getTraitCombatEffects(mercenary.traits, mercenary.path.length + 1)
     units.push({
       kind: 'ally',
       combatClass: mapJobToCombatClass(mercenary.base),
@@ -470,14 +473,21 @@ function createAllyUnits(
       def: stats.def,
       mdef: stats.mdef,
       dex: stats.dex,
-      threat: stats.threat,
+      threat: stats.threat * traitEffects.threatMultiplier,
       heal: stats.heal,
       crit: stats.crit,
-      evade: stats.evade,
+      evade: stats.evade + traitEffects.dodgeRate,
       hit: stats.hit,
-      mana: stats.mana,
+      mana: stats.mana + traitEffects.manaRegenerationFlat,
       regen: stats.regen,
-      lifesteal: stats.lifesteal,
+      lifesteal: stats.lifesteal + traitEffects.lifestealRate,
+      flatDamageReduction: traitEffects.flatDamageReduction,
+      initiativePriority: traitEffects.initiativePriority,
+      turnRegenerationFlat: traitEffects.turnRegenerationFlat,
+      turnHpLossRate: traitEffects.turnHpLossRate,
+      criticalMultiplier: traitEffects.criticalMultiplier,
+      missChanceMultiplier: traitEffects.missChanceMultiplier,
+      healingMultiplier: traitEffects.healingMultiplier,
       skill: getCombatSkill(mercenary),
     })
   }
@@ -509,6 +519,13 @@ function createEnemyUnits(dungeonIndex: number): CombatUnit[] {
     mana: 7,
     regen: 0,
     lifesteal: 0,
+    flatDamageReduction: 0,
+    initiativePriority: 0,
+    turnRegenerationFlat: 0,
+    turnHpLossRate: 0,
+    criticalMultiplier: 1,
+    missChanceMultiplier: 1,
+    healingMultiplier: 1,
     skill: { name: '공격', cost: 999, type: 'none' },
   }))
 }
@@ -581,7 +598,7 @@ function performBattleAction(
     actor.skill.type === 'heal'
   ) {
     const quantity = Math.round(
-      actor.heal * (1 + Math.random() * 0.25),
+      actor.heal * actor.healingMultiplier * (1 + Math.random() * 0.25),
     )
     healTarget.hp = Math.min(
       healTarget.maxHp,
@@ -608,7 +625,8 @@ function performBattleAction(
   const finalHitRate = calculateFinalHitRate({
     attackerMainStat: actorMainStat,
     defenderRelevantStat: target.dex,
-    focusBonusRate: Math.max(0, actor.hit - 0.9),
+    focusBonusRate: Math.max(0, actor.hit - 0.9) - target.evade,
+    missChanceMultiplier: actor.missChanceMultiplier,
   })
   if (!rollChance(finalHitRate)) {
     pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + subjectParticle(target.name) + (Math.random() < 0.5 ? ' 몸을 틀어 피했습니다.' : ' 재빠르게 회피했습니다.'))
@@ -672,8 +690,8 @@ function performBattleAction(
         baseDamage: rollBaseDamage(damageRange),
         skillMultiplier: multiplier,
         isCritical: critical,
-        criticalMultiplier: calculateCriticalMultiplier(),
-        flatDamageReduction: defense * 0.5,
+        criticalMultiplier: calculateCriticalMultiplier({ multiplicativeCriticalModifiers: [actor.criticalMultiplier] }),
+        flatDamageReduction: defense * 0.5 + hitTarget.flatDamageReduction,
       })
       hitTarget.hp = Math.max(0, hitTarget.hp - damage)
       battle.hitUnitId = hitTarget.id
@@ -965,9 +983,9 @@ function advanceBattle(
       .filter((unit) => unit.hp > 0)
       .sort(
         (left, right) =>
-          right.dex +
+          right.dex + right.initiativePriority +
           Math.random() * 5 -
-          (left.dex + Math.random() * 5),
+          (left.dex + left.initiativePriority + Math.random() * 5),
       )
     battle.round += 1
   }
@@ -975,7 +993,17 @@ function advanceBattle(
   const actor = battle.queue.shift()
 
   if (actor && actor.hp > 0) {
-    performBattleAction(battle, actor)
+    if (actor.turnHpLossRate > 0) {
+      const loss = Math.max(1, Math.floor(actor.maxHp * actor.turnHpLossRate))
+      actor.hp = Math.max(0, actor.hp - loss)
+      pushBattleLog(battle, actor.kind === 'ally' ? 'bad' : 'good', subjectParticle(actor.name) + ' 저주의 대가로 HP ' + loss + '을 잃었습니다.')
+    }
+    if (actor.hp > 0 && actor.turnRegenerationFlat > 0) {
+      const restored = Math.min(actor.turnRegenerationFlat, actor.maxHp - actor.hp)
+      actor.hp += restored
+      if (restored > 0) pushBattleLog(battle, actor.kind === 'ally' ? 'good' : 'bad', subjectParticle(actor.name) + ' HP ' + restored + '을 재생했습니다.')
+    }
+    if (actor.hp > 0) performBattleAction(battle, actor)
   }
 
   if (

@@ -1,4 +1,5 @@
-import { CLASSES, TRAITS } from '../data/gameData'
+﻿import { CLASSES } from '../data/gameData'
+import { applyPrimaryTraitStats } from '../game/traits'
 import type {
   ClassBranch,
   Mercenary,
@@ -112,15 +113,6 @@ export function getMercenaryStats(
     branches = branch.branches ?? []
   }
 
-  for (const traitName of mercenary.traits) {
-    const trait = TRAITS.find(
-      (targetTrait) => targetTrait.name === traitName,
-    )
-
-    if (trait) {
-      applyModifiers(stats, trait.modifiers)
-    }
-  }
 
   const levelOffset = Math.max(0, mercenary.level - 1)
 
@@ -130,6 +122,14 @@ export function getMercenaryStats(
   stats.mdef *= 1 + levelOffset * 0.055
   stats.heal *= 1 + levelOffset * 0.07
 
+  const adjusted = applyPrimaryTraitStats({
+    constitution: stats.con,
+    dexterity: stats.dex,
+    intelligence: stats.int,
+  }, mercenary.traits)
+  stats.con = adjusted.constitution
+  stats.dex = adjusted.dexterity
+  stats.int = adjusted.intelligence
   return stats
 }
 
@@ -159,3 +159,5 @@ export function applyModifiers(
     }
   }
 }
+
+

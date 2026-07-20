@@ -1,11 +1,9 @@
-import type {
+﻿import type {
   ClassDefinition,
   DungeonDefinition,
   MaterialKey,
   MercenaryBase,
-  RecipeDefinition,
-  TraitDefinition,
-} from '../types/game'
+  RecipeDefinition,} from '../types/game'
 
 export const MATERIAL_NAMES: Record<MaterialKey, string> = {
   wood: '목재',
@@ -15,19 +13,6 @@ export const MATERIAL_NAMES: Record<MaterialKey, string> = {
   herb: '약초',
   essence: '정수',
 }
-
-export const TRAITS: TraitDefinition[] = [
-  { name: '괴력', description: 'CON +15%', modifiers: { con: 1.15 } },
-  { name: '야성', description: 'DEX +15%', modifiers: { dex: 1.15 } },
-  { name: '총명', description: 'INT +15%', modifiers: { int: 1.15 } },
-  { name: '무자비', description: '치명타 +10%', modifiers: { crit: 0.1 } },
-  { name: '위압', description: '위협도 +35%', modifiers: { threat: 1.35 } },
-  { name: '공감', description: '회복량 +18%', modifiers: { heal: 1.18 } },
-  { name: '집중', description: '명중 +8%', modifiers: { hit: 0.08 } },
-  { name: '민첩', description: '회피 +8%', modifiers: { evade: 0.08 } },
-  { name: '재능', description: '마나 회복 +25%', modifiers: { mana: 1.25 } },
-  { name: '강인', description: 'HP +18%', modifiers: { hp: 1.18 } },
-]
 
 export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
   창잡이: {
@@ -415,3 +400,5 @@ export const RECIPES: RecipeDefinition[] = [
 ]
 
 export const MERCENARY_BASES = Object.keys(CLASSES) as MercenaryBase[]
+
+

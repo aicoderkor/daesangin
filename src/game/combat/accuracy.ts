@@ -25,7 +25,9 @@ export function applyDarknessToHitRate(baseHitRate: number, darknessRate: number
 export function calculateFinalHitRate(options: AccuracyOptions): number {
   const base = calculateBaseHitRate(options.attackerMainStat, options.defenderRelevantStat)
   const darknessAdjusted = applyDarknessToHitRate(base, options.darknessRate ?? 0, options.hasNightVision ?? false)
-  return clampRate(darknessAdjusted + (options.focusBonusRate ?? 0))
+  const additiveAdjusted = clampRate(darknessAdjusted + (options.focusBonusRate ?? 0))
+  const missChanceMultiplier = Math.max(0, options.missChanceMultiplier ?? 1)
+  return clampRate(1 - (1 - additiveAdjusted) * missChanceMultiplier)
 }
 
 export function rollChance(rate: number, random: () => number = Math.random): boolean {

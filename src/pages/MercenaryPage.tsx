@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { CLASSES } from '../data/gameData'
+import { getMercenaryTraitDefinitions, getTraitCount } from '../game/traits'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { Mercenary, SkillDefinition, StatMap } from '../types/game'
 import { calculateDamageRange, calculateHealing, mapJobToCombatClass } from '../game/combat'
@@ -129,10 +130,8 @@ export default function MercenaryPage({
                     </div>
 
                     <div className="tags">
-                      {mercenary.traits.map((trait) => (
-                        <span className="tag" key={trait}>
-                          {trait}
-                        </span>
+                      {Object.values(getMercenaryTraitDefinitions(mercenary.traits)).map((trait) => trait && (
+                        <span className="tag" key={trait.id}>{trait.name}</span>
                       ))}
                     </div>
 
@@ -142,7 +141,7 @@ export default function MercenaryPage({
                   </div>
 
                   <div className="stars">
-                    {'★'.repeat(mercenary.traits.length)}
+                    {'★'.repeat(getTraitCount(mercenary.traits))}
                   </div>
                   <div className="merc-gear">{(["weapon", "armor", "charm"] as const).map((slot) => { const item = game.items.find((candidate) => candidate.id === mercenary.gear[slot]); return <span className="gear-slot" key={slot} title={item?.name ?? "빈 슬롯"}>{item ? "⚔️" : ""}</span> })}</div>
                 </button>
@@ -275,7 +274,7 @@ function MercenaryDetail({
 
       <div className="merc-skills">
         <div><b>액티브 스킬</b><span>{skill.name}</span></div>
-        <div><b>패시브 특성</b><span>{mercenary.traits.length ? mercenary.traits.join(' · ') : '없음'}</span></div>
+        <div><b>패시브 특성</b><span>{Object.values(getMercenaryTraitDefinitions(mercenary.traits)).filter(Boolean).map((trait) => trait!.name).join(' · ') || '없음'}</span></div>
       </div>
 
       <div className="merc-stat-page">
@@ -336,7 +335,10 @@ function MercenaryDetail({
               const item = items.find((candidate) => candidate.id === mercenary.gear[slot])
               return <span key={slot}>{slot === 'weapon' ? '무기' : slot === 'armor' ? '방어구' : '장신구'}: {item?.name ?? '비어 있음'}</span>
             })}
-            <span>특성: {mercenary.traits.length ? mercenary.traits.join(', ') : '없음'}</span>
+            {(['primary', 'secondary'] as const).map((slot) => {
+              const trait = getMercenaryTraitDefinitions(mercenary.traits)[slot]
+              return <span key={slot}>{slot === 'primary' ? '기본 특성' : '추가 특성'}: {trait ? `${trait.name} — ${trait.description}` : '없음'}</span>
+            })}
           </div>
         )}
       </div>
@@ -411,6 +413,8 @@ function PromotionPanel({
     </>
   )
 }
+
+
 
 
 

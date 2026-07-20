@@ -161,6 +161,19 @@ export interface DungeonProgress {
   status?: 'idle' | 'exploring' | 'combat' | 'completed'
 }
 
+export interface MarketListing {
+  id: string
+  kind: 'material' | 'gear'
+  itemId: string
+  name: string
+  quantity: number
+  unitPrice: number
+  durationMs: number
+  startedAt: number
+  completedAt: number
+  claimed: boolean
+}
+
 export interface GameState {
   gold: number
   fame: number
@@ -176,7 +189,7 @@ export interface GameState {
   facilities: FacilityLevels
   marketSlots: number
   marketSpeedMultiplier: number
-  marketListings: string[]
+  marketListings: MarketListing[]
   parties: Party[]
   expeditionSessions: Record<string, import('./expedition').ExpeditionSession>
   unlockedDungeonIndex: number

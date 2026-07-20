@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
-import { CLASSES, DUNGEONS, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
+import { CLASSES, DUNGEONS, MATERIAL_NAMES, MERCENARY_BASES, RECIPES, TRAITS } from '../data/gameData'
 import type {
   BattleState,
   CombatUnit,
@@ -1327,6 +1327,33 @@ export const gameStore = {
     return true
   },
 
+  sellMaterial(material: MaterialKey, quantity: number): boolean {
+    const price: Record<MaterialKey, number> = { wood: 1, ore: 2, fiber: 1, hide: 2, herb: 2, essence: 5 }
+    const seconds: Record<MaterialKey, number> = { wood: 3, ore: 4, fiber: 5, hide: 5, herb: 5, essence: 8 }
+    const amount = Math.max(0, Math.floor(quantity))
+    if (!amount || state.materials[material] < amount || state.marketListings.length >= state.marketSlots) return false
+    setState((current) => {
+      const next = structuredClone(current)
+      next.materials[material] -= amount
+      next.marketListings.push({ id: createId('listing'), kind: 'material', itemId: material, name: MATERIAL_NAMES[material], quantity: amount, unitPrice: price[material], durationMs: amount * seconds[material] * 1000 / Math.max(1, next.marketSpeedMultiplier), startedAt: Date.now(), completedAt: Date.now() + amount * seconds[material] * 1000 / Math.max(1, next.marketSpeedMultiplier), claimed: false })
+      return next
+    })
+    return true
+  },
+
+  claimMarketListing(id: string): boolean {
+    let claimed = false
+    setState((current) => {
+      const next = structuredClone(current)
+      const listing = next.marketListings.find((item) => item.id === id)
+      if (!listing || listing.claimed || Date.now() < listing.completedAt) return next
+      listing.claimed = true
+      next.gold += listing.quantity * listing.unitPrice
+      claimed = true
+      return next
+    })
+    return claimed
+  },
   sellSurplusMaterials(): number {
     let earned = 0
 

@@ -152,7 +152,7 @@ export default function HomePage({
             <p>이곳에서 판매하기 위해 올려둔 아이템을 볼 수 있습니다.</p>
             <p>판매 슬롯: {game.marketSlots}</p><p>속도 배수: x{game.marketSpeedMultiplier.toFixed(2)}</p>
             <div className="row"><button type="button" className="btn" disabled={game.gold < 20} onClick={() => gameStore.upgradeMarketSlots()}>목록 +1 · 20동</button><button type="button" className="btn" disabled={game.gold < 10} onClick={() => gameStore.upgradeMarketSpeed()}>속도 +10% · 10동</button></div>
-            <p className="empty">{game.marketListings.length ? game.marketListings.join(', ') : '시장 판매 목록이 비어 있습니다.'}</p>
+            <div className="market-listings">{game.marketListings.length ? game.marketListings.map((listing) => { const done = Date.now() >= listing.completedAt; return <div className="item row" key={listing.id}><span>{listing.name} x{listing.quantity} · {done ? "판매 완료" : "판매 중"}</span><button type="button" className="btn sm" disabled={!done || listing.claimed} onClick={() => gameStore.claimMarketListing(listing.id)}>{listing.claimed ? "수령 완료" : "수령"}</button></div> }) : <p className="empty">시장 판매 목록이 비어 있습니다.</p>}</div>
           </div>
         </div>
       )}      {lodgingOpen && (

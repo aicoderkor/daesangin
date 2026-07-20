@@ -1341,6 +1341,13 @@ export const gameStore = {
     return true
   },
 
+  sellGear(itemId: string): boolean {
+    const item = state.items.find((entry) => entry.id === itemId)
+    if (!item || state.mercenaries.some((mercenary) => Object.values(mercenary.gear).includes(itemId)) || state.marketListings.length >= state.marketSlots) return false
+    setState((current) => { const next = structuredClone(current); next.items = next.items.filter((entry) => entry.id !== itemId); const duration = 10_000 / Math.max(1, next.marketSpeedMultiplier); next.marketListings.push({ id: createId('listing'), kind: 'gear', itemId, name: item.name, quantity: 1, unitPrice: 10, durationMs: duration, startedAt: Date.now(), completedAt: Date.now() + duration, claimed: false }); return next })
+    return true
+  },
+
   claimMarketListing(id: string): boolean {
     let claimed = false
     setState((current) => {

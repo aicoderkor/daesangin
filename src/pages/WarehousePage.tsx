@@ -78,7 +78,7 @@ export default function WarehousePage({
               <article className="item" key={item.id}>
                 <div className="row">
                   <div>
-                    <b>{item.name}</b>
+                    <b>{item.name}</b><button type="button" className="btn sm" onClick={() => { if (gameStore.sellGear(item.id)) onToast?.("시장에 판매 등록했습니다.") }}>시장 판매</button>
                     <div className="small">
                       {formatItemStats(item.stats)}
                     </div>

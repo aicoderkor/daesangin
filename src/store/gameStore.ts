@@ -1354,8 +1354,8 @@ export const gameStore = {
       const next = structuredClone(current)
       const listing = next.marketListings.find((item) => item.id === id)
       if (!listing || listing.claimed || Date.now() < listing.completedAt) return next
-      listing.claimed = true
       next.gold += listing.quantity * listing.unitPrice
+      next.marketListings = next.marketListings.filter((item) => item.id !== id)
       claimed = true
       return next
     })

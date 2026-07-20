@@ -1,5 +1,4 @@
 import { MATERIAL_NAMES } from '../data/gameData'
-import { useState } from 'react'
 import { gameStore, useGameStore } from '../store/gameStore'
 import { getClassName } from '../utils/mercenary'
 import type {
@@ -42,8 +41,6 @@ export default function WarehousePage({
   onToast,
 }: WarehousePageProps) {
   const game = useGameStore()
-  const [selectedMaterial, setSelectedMaterial] = useState<MaterialKey | null>(null)
-  const [quantity, setQuantity] = useState(1)
   const materialTotal = gameStore.getMaterialTotal(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
 

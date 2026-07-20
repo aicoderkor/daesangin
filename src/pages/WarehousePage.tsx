@@ -61,7 +61,7 @@ export default function WarehousePage({
         </div>
 
         <div>
-          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).filter((material) => game.materials[material] > 0).map((material) => (<button type="button" className="item row" key={material} onClick={() => { setSelectedMaterial(material); setQuantity(1) }}><span>{MATERIAL_NAMES[material]}</span><b>{game.materials[material]}</b></button>))}
+          {(Object.keys(MATERIAL_NAMES) as MaterialKey[]).filter((material) => game.materials[material] > 0).map((material) => (<div className="item row" key={material}><span>{MATERIAL_NAMES[material]}</span><b>{game.materials[material]}</b><button type="button" className="btn sm" onClick={() => { if (gameStore.sellMaterial(material, game.materials[material])) onToast?.("시장에 판매 등록했습니다.") }}>시장 판매</button></div>))}
         </div>
       </div>
 

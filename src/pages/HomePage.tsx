@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { ScreenId } from '../types/game'
 
@@ -14,6 +14,8 @@ export default function HomePage({
   const game = useGameStore()
   const [lodgingOpen, setLodgingOpen] = useState(false)
   const [marketOpen, setMarketOpen] = useState(false)
+  const [marketNow, setMarketNow] = useState(Date.now())
+  useEffect(() => { const timer = window.setInterval(() => setMarketNow(Date.now()), 1000); return () => window.clearInterval(timer) }, [])
   const mercenaryCapacity = gameStore.getMercenaryCapacity(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
   const materialTotal = gameStore.getMaterialTotal(game)
@@ -152,7 +154,7 @@ export default function HomePage({
             <p>이곳에서 판매하기 위해 올려둔 아이템을 볼 수 있습니다.</p>
             <p>판매 슬롯: {game.marketSlots}</p><p>속도 배수: x{game.marketSpeedMultiplier.toFixed(2)}</p>
             <div className="row"><button type="button" className="btn" disabled={game.gold < 20} onClick={() => gameStore.upgradeMarketSlots()}>목록 +1 · 20동</button><button type="button" className="btn" disabled={game.gold < 10} onClick={() => gameStore.upgradeMarketSpeed()}>속도 +10% · 10동</button></div>
-            <div className="market-listings">{game.marketListings.length ? game.marketListings.map((listing) => { const done = Date.now() >= listing.completedAt; return <div className="item row" key={listing.id}><span>{listing.name} x{listing.quantity} · {done ? "판매 완료" : "판매 중"}</span><button type="button" className="btn sm" disabled={!done || listing.claimed} onClick={() => gameStore.claimMarketListing(listing.id)}>{listing.claimed ? "수령 완료" : "수령"}</button></div> }) : <p className="empty">시장 판매 목록이 비어 있습니다.</p>}</div>
+            <div className="market-listings">{game.marketListings.length ? game.marketListings.map((listing) => { const remaining = Math.max(0, Math.ceil((listing.completedAt - marketNow) / 1000)); const done = remaining === 0; const progress = Math.min(100, Math.max(0, ((marketNow - listing.startedAt) / listing.durationMs) * 100)); return <div className="item market-listing" key={listing.id}><div className="row"><span>{listing.name} x{listing.quantity} · {listing.unitPrice * listing.quantity}동</span><button type="button" className="btn sm" disabled={!done || listing.claimed} onClick={() => gameStore.claimMarketListing(listing.id)}>{listing.claimed ? "수령 완료" : done ? "수령" : `${remaining}초`}</button></div><div className="market-progress"><i style={{ width: `${progress}%` }} /></div></div> }) : <p className="empty">시장 판매 목록이 비어 있습니다.</p>}</div>
           </div>
         </div>
       )}      {lodgingOpen && (

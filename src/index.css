@@ -148,3 +148,15 @@ button { cursor: pointer; }
 
 
 .damage-value { color: #ffd166; font-weight: 800; text-shadow: 0 0 4px rgba(255, 209, 102, .45); }
+
+.warehouse-choice { width: 100%; color: inherit; text-align: left; background: transparent; border: 0; cursor: pointer; }
+.gear-choice { color: inherit; text-align: left; background: transparent; border: 0; cursor: pointer; flex: 1; }
+.sale-sheet { max-width: 520px; }
+.sale-preview { display: flex; justify-content: space-between; align-items: center; padding: 18px; border: 2px solid #c9c9c9; border-radius: 16px; font-size: 1.15rem; }
+.sale-quantity { display: flex; justify-content: center; align-items: center; gap: 16px; margin: 20px 0; }
+.sale-quantity b { min-width: 48px; text-align: center; font-size: 1.25rem; }
+.sale-range { width: 100%; accent-color: #d88a32; }
+.row.end { justify-content: flex-end; }
+.market-listing { display: block; margin: 10px 0; }
+.market-progress { height: 8px; margin-top: 9px; overflow: hidden; background: #1c1c1c; border-radius: 999px; }
+.market-progress i { display: block; height: 100%; background: #d88a32; transition: width .3s linear; }

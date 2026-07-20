@@ -1,4 +1,4 @@
-﻿import { CLASSES } from '../data/gameData'
+import { CLASSES } from '../data/gameData'
 import { applyPrimaryTraitStats } from '../game/traits'
 import type {
   ClassBranch,
@@ -70,10 +70,6 @@ export function getNextPromotionLevel(
   }
 
   return null
-}
-
-export function getXpRequired(level: number): number {
-  return 55 + level * 35
 }
 
 export function getMercenaryStats(
@@ -159,5 +155,3 @@ export function applyModifiers(
     }
   }
 }
-
-

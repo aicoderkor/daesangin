@@ -1,6 +1,7 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CLASSES } from '../data/gameData'
 import { getMercenaryTraitDefinitions, getTraitCount } from '../game/traits'
+import { getCurrentLevelExp, getLevelProgress, getRequiredExpForLevel, MAX_DEFINED_LEVEL, MAX_DEFINED_TOTAL_EXP } from '../game/progression'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { Mercenary, SkillDefinition, StatMap } from '../types/game'
 import { calculateDamageRange, calculateHealing, mapJobToCombatClass } from '../game/combat'
@@ -10,9 +11,10 @@ import {
   getMercenaryStats,
   getNextPromotionBranches,
   getNextPromotionLevel,
-  getXpRequired,
   isPromotionReady,
 } from '../utils/mercenary'
+
+const formatExp = (value: number) => value.toLocaleString('ko-KR')
 
 type MercenaryPageProps = {
   onToast?: (message: string) => void
@@ -99,11 +101,7 @@ export default function MercenaryPage({
             <div className="empty">보유 용병이 없습니다.</div>
           ) : (
             game.mercenaries.map((mercenary) => {
-              const requiredXp = getXpRequired(mercenary.level)
-              const progress = Math.min(
-                100,
-                (mercenary.xp / requiredXp) * 100,
-              )
+              const progress = getLevelProgress(mercenary.level, mercenary.totalExp) * 100
 
               return (
                 <button
@@ -230,8 +228,10 @@ function MercenaryDetail({
     magicDefenseRate: 0,
   })
   const skill = getMercenarySkill(mercenary)
-  const requiredXp = getXpRequired(mercenary.level)
-  const xpProgress = Math.min(100, (mercenary.xp / requiredXp) * 100)
+  const requiredExp = getRequiredExpForLevel(mercenary.level)
+  const currentLevelExp = getCurrentLevelExp(mercenary.level, mercenary.totalExp)
+  const xpProgress = getLevelProgress(mercenary.level, mercenary.totalExp) * 100
+  const atCurrentMaxExp = mercenary.level === MAX_DEFINED_LEVEL && mercenary.totalExp >= MAX_DEFINED_TOTAL_EXP
   const baseHealing = calculateHealing({ baseDamage: damageRange.average })
   const healingRate = CLASSES[mercenary.base].heal
     ? stats.heal / (CLASSES[mercenary.base].heal ?? stats.heal)
@@ -259,9 +259,11 @@ function MercenaryDetail({
       <div className="merc-profile">
         <div className="merc-portrait">{getBaseIcon(mercenary.base)}</div>
         <div className="merc-level">
-          <b>레벨 {mercenary.level}</b>
-          <span>경험치 {mercenary.xp}/{requiredXp}</span>
+          <b>Lv. {mercenary.level}</b>
+          <span>{formatExp(currentLevelExp)} / {formatExp(requiredExp)} EXP</span>
           <div className="bar"><i style={{ width: `${xpProgress}%` }} /></div>
+          <span>총 누적 경험치 {formatExp(mercenary.totalExp)}</span>
+          {atCurrentMaxExp && <span>현재 최고 레벨</span>}
         </div>
       </div>
 
@@ -413,18 +415,3 @@ function PromotionPanel({
     </>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

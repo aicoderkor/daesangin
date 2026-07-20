@@ -13,7 +13,8 @@ import type {
   StatMap,
 } from '../types/game'
 
-import { getClassName, getMercenaryStats, getXpRequired } from '../utils/mercenary'
+import { getClassName, getMercenaryStats } from '../utils/mercenary'
+import { grantBattleExperience, normalizeMercenaryProgression } from '../game/progression'
 import { EXPEDITION_TIMINGS } from '../config/expedition'
 import {
   calculateCriticalMultiplier,
@@ -51,7 +52,7 @@ function createMercenary(base?: MercenaryBase): Mercenary {
     base: selectedBase,
     traits: generateMercenaryTraits(),
     level: 1,
-    xp: 0,
+    totalExp: 0,
     path: [],
     gear: { weapon: null, armor: null, charm: null },
     status: 'idle',
@@ -159,6 +160,7 @@ function normalizeState(input: Partial<GameState>): GameState {
       charm: mercenary.gear?.charm ?? null,
     },
     status: mercenary.status ?? 'idle',
+    ...normalizeMercenaryProgression(mercenary as Mercenary & { xp?: number }),
   }))
 
   state.candidates = state.candidates.map((mercenary) => ({
@@ -171,6 +173,7 @@ function normalizeState(input: Partial<GameState>): GameState {
       charm: mercenary.gear?.charm ?? null,
     },
     status: mercenary.status ?? 'idle',
+    ...normalizeMercenaryProgression(mercenary as Mercenary & { xp?: number }),
   }))
   state.parties = state.parties.map((party, index) => ({
     ...createParty(index),
@@ -721,13 +724,9 @@ function gainExperience(
   mercenary: Mercenary,
   quantity: number,
 ): void {
-  mercenary.xp += quantity
-
-  while (mercenary.xp >= getXpRequired(mercenary.level)) {
-    mercenary.xp -= getXpRequired(mercenary.level)
-    mercenary.level += 1
-    targetState.fame += 3
-  }
+  const granted = grantBattleExperience(mercenary, quantity)
+  Object.assign(mercenary, granted.mercenary)
+  targetState.fame += granted.result.levelsGained * 3
 }
 
 function dropBattleGear(
@@ -757,6 +756,7 @@ function rewardBattleVictory(
   targetState: GameState,
   party: Party,
   allowGear = true,
+  battle?: BattleState,
 ): void {
   const dungeonIndex = party.dungeon
   if (dungeonIndex === null) return
@@ -802,12 +802,17 @@ function rewardBattleVictory(
       (party.loot[materialKey] ?? 0) + accepted
   }
 
+  const survivingMercenaryIds = new Set(
+    battle?.allies.filter((unit) => unit.hp > 0).map((unit) => unit.id) ??
+      party.members.filter((member): member is string => member !== null),
+  )
+
   for (const mercenaryId of party.members) {
     const mercenary = targetState.mercenaries.find(
       (target) => target.id === mercenaryId,
     )
 
-    if (mercenary) {
+    if (mercenaryId && mercenary && survivingMercenaryIds.has(mercenaryId)) {
       gainExperience(
         targetState,
         mercenary,
@@ -890,7 +895,7 @@ function finishBattle(
   )
 
   if (won) {
-    rewardBattleVictory(targetState, party)
+    rewardBattleVictory(targetState, party, true, battle)
     if (party.dungeon !== null) {
       party.nextActionAt =
         now + DUNGEONS[party.dungeon].actionTime * 1_000
@@ -1660,108 +1665,3 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

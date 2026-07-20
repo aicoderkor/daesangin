@@ -1,4 +1,4 @@
-﻿export type ScreenId =
+export type ScreenId =
   | 'home'
   | 'tavern'
   | 'mercs'
@@ -82,7 +82,7 @@ export interface Mercenary {
   base: MercenaryBase
   traits: import('../game/traits/trait.types').MercenaryTraits
   level: number
-  xp: number
+  totalExp: number
   path: number[]
   gear: MercenaryGear
   status: MercenaryStatus
@@ -239,18 +239,3 @@ export interface BattleState {
   finishAt: number
   introQueue?: string[]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

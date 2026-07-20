@@ -41,7 +41,9 @@ function getEquippedMercenaryId(
 export default function WarehousePage({
   onToast,
 }: WarehousePageProps) {
-  const game = useGameStore()\n  const [selectedMaterial, setSelectedMaterial] = useState<MaterialKey | null>(null)\n  const [quantity, setQuantity] = useState(1)
+  const game = useGameStore()
+  const [selectedMaterial, setSelectedMaterial] = useState<MaterialKey | null>(null)
+  const [quantity, setQuantity] = useState(1)
   const materialTotal = gameStore.getMaterialTotal(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
 

@@ -1181,6 +1181,10 @@ export const gameStore = {
       const targetParty = next.parties.find((candidate) => candidate.dungeon === dungeonIndex) ?? next.parties.find((candidate) => candidate.dungeon === null && candidate.status === 'idle')
       if (!targetParty) return next
 
+      delete partyLogs[targetParty.id]
+      delete battleStates[targetParty.id]
+      delete lastBattleStates[targetParty.id]
+
       targetParty.dungeon = dungeonIndex
       targetParty.expeditionPhase = 'entering'
       next.expeditionSessions[targetParty.id] = { id: createId('expedition'), partyId: targetParty.id, dungeonIndex, phase: 'entering', totalAreas: targetParty.areaTotal, completedAreas: 0, defeatedEnemies: 0, startedAt: Date.now(), nextProcessAt: Date.now() + EXPEDITION_TIMINGS.explorationLogMs, rewardGranted: false, logs: [] }

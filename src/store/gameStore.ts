@@ -1217,6 +1217,9 @@ export const gameStore = {
       const targetParty = next.parties[partyIndex]
 
       if (next.expeditionSessions[targetParty.id]) delete next.expeditionSessions[targetParty.id]
+      delete partyLogs[targetParty.id]
+      delete battleStates[targetParty.id]
+      delete lastBattleStates[targetParty.id]
       if (targetParty.dungeon !== null) {
         const assignment = next.dungeonProgress[String(targetParty.dungeon)]
         for (const mercenaryId of assignment?.assignedMercenaryIds ?? targetParty.members.filter((id): id is string => Boolean(id))) {

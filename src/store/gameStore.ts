@@ -1577,7 +1577,19 @@ export const gameStore = {
   upgradeMarketSpeed(): boolean {
     const cost = 10
     if (state.gold < cost) return false
-    setState((current) => ({ ...current, gold: current.gold - cost, marketSpeedMultiplier: current.marketSpeedMultiplier + 0.1 }))
+    const now = Date.now()
+    setState((current) => {
+      const nextMultiplier = current.marketSpeedMultiplier + 0.1
+      const ratio = current.marketSpeedMultiplier / nextMultiplier
+      const listings = current.marketListings.map((listing) => {
+        if (listing.claimed || now >= listing.completedAt) return listing
+        const elapsedRatio = Math.min(1, Math.max(0, (now - listing.startedAt) / listing.durationMs))
+        const nextDuration = listing.durationMs * ratio
+        const nextStartedAt = now - elapsedRatio * nextDuration
+        return { ...listing, durationMs: nextDuration, startedAt: nextStartedAt, completedAt: now + (listing.completedAt - now) * ratio }
+      })
+      return { ...current, gold: current.gold - cost, marketSpeedMultiplier: nextMultiplier, marketListings: listings }
+    })
     return true
   },
 

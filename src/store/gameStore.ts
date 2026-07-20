@@ -782,9 +782,7 @@ function rewardBattleVictory(
       party.name +
       ': ' +
       dungeon.name +
-      ' 승리 · ' +
-      gold +
-      ' 엽전'
+      ' 승리'
   }
 
   if (

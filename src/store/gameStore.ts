@@ -724,18 +724,15 @@ function rewardBattleVictory(
   targetState.dungeonProgress[progressKey] = progress
   party.runs += 1
   party.areasCompleted = Math.min(party.areaTotal, party.areasCompleted + 1)
-  const gold = 20 + dungeon.recommendedLevel * 12
-
-  targetState.gold += gold
   targetState.fame += 2 + dungeon.recommendedLevel
   const rewardLogs = [
     'good|' + dungeon.name + '의 적이 쓰러졌습니다.',
     'good|전투에서 승리했습니다.',
-    'skill|경험치와 ' + gold + '동을 획득했습니다.',
+    'skill|경험치를 획득했습니다.',
     'skill|\uC9C4\uD589\uB3C4 \uC5C5\uB370\uC774\uD2B8: ' + progress.runProgress + '/' + requirement + ' · \uCD5C\uACE0 \uC9C4\uD589\uB3C4: ' + progress.totalProgress,
   ]
   partyLogs[party.id] = [...(partyLogs[party.id] ?? []), ...rewardLogs].slice(-120)
-  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'reward', message: '전투 승리 · ' + gold + '동 획득', createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
+  if (targetState.expeditionSessions[party.id]) { const session = targetState.expeditionSessions[party.id]; session.logs.push({ id: createId('log'), type: 'reward', message: '전투 승리 · 경험치 획득', createdAt: Date.now() }); session.logs = session.logs.slice(-120) }
 
   for (const [material, range] of Object.entries(
     dungeon.materials,

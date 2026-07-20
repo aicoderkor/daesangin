@@ -585,7 +585,7 @@ function performBattleAction(
   if (!target) return
 
   if (Math.random() > actor.hit - target.evade) {
-    pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + subjectParticle(target.name) + (Math.random() < 0.5 ? ' 몸을 틀어 피했습니다.' : '이 재빠르게 회피했습니다.'))
+    pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + subjectParticle(target.name) + (Math.random() < 0.5 ? ' 몸을 틀어 피했습니다.' : ' 재빠르게 회피했습니다.'))
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
     return
   }
@@ -654,7 +654,7 @@ function performBattleAction(
         actor.kind === 'ally' ? 'good' : 'bad',
         critical
           ? subjectParticle(actor.name) + ' 빈틈을 포착해 치명타를 가했습니다. ' + hitTarget.name + '에게 ' + damage + '의 피해를 입혔습니다.'
-          : subjectParticle(actor.name) + (Math.random() < 0.5 ? ' 공격을 적중시켰습니다. ' : '이 공격을 퍼부었습니다. ') + hitTarget.name + '에게 ' + damage + '의 피해를 입혔습니다.',
+          : subjectParticle(actor.name) + (Math.random() < 0.5 ? ' 공격을 적중시켰습니다. ' : ' 공격을 퍼부었습니다. ') + hitTarget.name + '에게 ' + damage + '의 피해를 입혔습니다.',
       )
 
       if (hitTarget.hp <= 0) pushBattleLog(battle, 'good', subjectParticle(hitTarget.name) + ' 힘없이 쓰러졌습니다.')

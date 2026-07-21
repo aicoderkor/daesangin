@@ -191,7 +191,7 @@ function getMercenarySkill(mercenary: Mercenary): SkillDefinition {
     창잡이: { name: '강력한 스트라이크', cost: 20, type: 'none', powerMultiplier: 2 },
     활잡이: { name: '탄막', cost: 25, type: 'multi', powerMultiplier: 0.72, targetCount: 2 },
     검객: { name: '무영참', cost: 28, type: 'multi' },
-    의술사: { name: '치유의 손길', cost: 24, type: 'heal' },
+    의술사: { name: '에너지 폭발', cost: 22, type: 'magic', powerMultiplier: 1.5 },
   }
   return skill ?? baseSkills[mercenary.base]
 }

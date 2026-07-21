@@ -49,6 +49,12 @@ export interface SkillDefinition {
   guaranteedHit?: boolean
   riderDamage?: number
   riderDamageMultiplier?: number
+  magic?: boolean
+  healAll?: boolean
+  healLowestOnAttackRate?: number
+  cleanseNegativeCount?: number
+  regenerationTurns?: number
+  chaos?: boolean
   type:
     | 'none'
     | 'guard'

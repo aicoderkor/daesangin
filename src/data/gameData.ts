@@ -184,38 +184,102 @@ export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
     heal: 22,
     branches: [
       {
-        name: '의관',
-        description: '정통 회복 계열',
-        modifiers: { int: 1.18, heal: 1.25 },
-        skill: { name: '회생술', cost: 32, type: 'heal' },
+        name: '법사', description: '에너지 폭발 Ⅱ · 영매 또는 오행사 계열', modifiers: { int: 1.12, atk: 1.08 },
+        skill: { name: '에너지 폭발 Ⅱ', cost: 26, type: 'magic', powerMultiplier: 2 },
         branches: [
           {
-            name: '명의',
-            description: '단일 대회복',
-            modifiers: { heal: 1.35 },
+            name: '영매', description: '시들게 하는 손길 · 피해의 50% 흡혈', modifiers: { int: 1.16, lifesteal: 0.5 },
+            skill: { name: '에너지 폭발 Ⅱ', cost: 26, type: 'magic', powerMultiplier: 2 },
+            branches: [
+              {
+                name: '강령술사', description: '저주 · 400% 피해와 약한 저주', modifiers: { int: 1.2, lifesteal: 0.5 },
+                skill: { name: '저주', cost: 36, type: 'magic', powerMultiplier: 4, status: 'curse', statusChance: 1, statusTurns: 2 },
+                branches: [
+                  {
+                    name: '귀술사', description: '저주 Ⅱ · 400% 피해와 강한 저주', modifiers: { int: 1.24, lifesteal: 0.5 },
+                    skill: { name: '저주 Ⅱ', cost: 38, type: 'magic', powerMultiplier: 4, status: 'curse', statusChance: 1, statusTurns: 2 },
+                    branches: [
+                      {
+                        name: '귀령존', description: '저주 Ⅱ · 시들게 하는 연결', modifiers: { int: 1.28, lifesteal: 0.5 },
+                        skill: { name: '저주 Ⅱ', cost: 38, type: 'magic', powerMultiplier: 4, status: 'curse', statusChance: 1, statusTurns: 2 },
+                        branches: [
+                          { name: '귀후', description: '저주 Ⅲ · 시들게 하는 연결', modifiers: { int: 1.34, lifesteal: 0.5 }, skill: { name: '저주 Ⅲ', cost: 42, type: 'magic', powerMultiplier: 4, status: 'curse', statusChance: 1, statusTurns: 2 } },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    name: '야차', description: '벗기다 · 1,000% 근접 마법 피해, 혼돈', modifiers: { int: 1.3, atk: 1.16 },
+                    skill: { name: '벗기다', cost: 45, type: 'magic', powerMultiplier: 10, chaos: true },
+                    branches: [
+                      {
+                        name: '나찰', description: '벗기다 · 모든 대상에게 1,000% 피해, 혼돈', modifiers: { int: 1.36, atk: 1.2 },
+                        skill: { name: '벗기다', cost: 48, type: 'aoe', magic: true, powerMultiplier: 10, targetCount: 99, chaos: true },
+                        branches: [
+                          { name: '염라', description: '말살하다 · 모든 대상에게 2,500% 피해, 혼돈', modifiers: { int: 1.45, atk: 1.28 }, skill: { name: '말살하다', cost: 56, type: 'aoe', magic: true, powerMultiplier: 25, targetCount: 99, chaos: true } },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            name: '약선',
-            description: '전체 지속회복',
-            modifiers: { regen: 0.04, heal: 1.18 },
+            name: '오행사', description: '화염 폭발 · 200% 피해와 화염', modifiers: { int: 1.16, atk: 1.1 },
+            skill: { name: '화염 폭발', cost: 30, type: 'magic', powerMultiplier: 2, status: 'ablaze', statusChance: 1, statusTurns: 1 },
+            branches: [
+              {
+                name: '화령사', description: '파이어 볼 · 전체 200% 피해와 화염', modifiers: { int: 1.2, atk: 1.14 },
+                skill: { name: '파이어 볼', cost: 34, type: 'aoe', magic: true, powerMultiplier: 2, status: 'ablaze', statusChance: 1, statusTurns: 1, targetCount: 99 },
+                branches: [
+                  {
+                    name: '홍련술사', description: '파이어 볼 · 화염 마법 50%', modifiers: { int: 1.25, atk: 1.18 },
+                    skill: { name: '파이어 볼', cost: 34, type: 'aoe', magic: true, powerMultiplier: 2, status: 'ablaze', statusChance: 0.5, statusTurns: 1, targetCount: 99 },
+                    branches: [
+                      {
+                        name: '염화선인', description: '메테오 · 전체 250% 피해와 화염', modifiers: { int: 1.31, atk: 1.22 },
+                        skill: { name: '메테오', cost: 40, type: 'aoe', magic: true, powerMultiplier: 2.5, status: 'ablaze', statusChance: 0.5, statusTurns: 1, targetCount: 99 },
+                        branches: [
+                          { name: '화신', description: '메테오 Ⅱ · 전체 300% 피해와 2턴 화염', modifiers: { int: 1.38, atk: 1.28 }, skill: { name: '메테오 Ⅱ', cost: 46, type: 'aoe', magic: true, powerMultiplier: 3, status: 'ablaze', statusChance: 1, statusTurns: 2, targetCount: 99 } },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
       {
-        name: '주술사',
-        description: '공격과 지원',
-        modifiers: { int: 1.2, atk: 1.18 },
-        skill: { name: '혼령탄', cost: 35, type: 'magic' },
+        name: '치유무녀', description: '에너지 폭발 · 영광 회복', modifiers: { int: 1.1, heal: 1.16 },
+        skill: { name: '에너지 폭발', cost: 22, type: 'magic', powerMultiplier: 1.5, healLowestOnAttackRate: 0.5 },
         branches: [
           {
-            name: '혼령사',
-            description: '적 약화',
-            modifiers: { atk: 1.24 },
-          },
-          {
-            name: '천문사',
-            description: '광역 회복',
-            modifiers: { heal: 1.2, mana: 1.22 },
+            name: '축원무녀', description: '치유 · 최저 체력 아군 회복', modifiers: { int: 1.12, heal: 1.24 },
+            skill: { name: '치유', cost: 26, type: 'heal', powerMultiplier: 1, healLowestOnAttackRate: 0.5 },
+            branches: [
+              {
+                name: '백의무녀', description: '대량 치유 · 모든 아군 회복', modifiers: { int: 1.15, heal: 1.32 },
+                skill: { name: '대량 치유', cost: 34, type: 'heal', powerMultiplier: 1, healAll: true, healLowestOnAttackRate: 0.5 },
+                branches: [
+                  {
+                    name: '백련무녀', description: '대량 치유 · 영광과 정화', modifiers: { int: 1.18, heal: 1.4 },
+                    skill: { name: '대량 치유', cost: 34, type: 'heal', powerMultiplier: 1, healAll: true, healLowestOnAttackRate: 0.5, cleanseNegativeCount: 1 },
+                    branches: [
+                      {
+                        name: '천등무녀', description: '대량 치유 Ⅱ · 전체 치유와 재생', modifiers: { int: 1.22, heal: 1.5 },
+                        skill: { name: '대량 치유 Ⅱ', cost: 40, type: 'heal', powerMultiplier: 1, healAll: true, healLowestOnAttackRate: 0.5, cleanseNegativeCount: 1, regenerationTurns: 2 },
+                        branches: [
+                          { name: '신녀', description: '대량 치유 Ⅲ · 115% 치유와 재생', modifiers: { int: 1.28, heal: 1.62 }, skill: { name: '대량 치유 Ⅲ', cost: 46, type: 'heal', powerMultiplier: 1.15, healAll: true, healLowestOnAttackRate: 0.5, cleanseNegativeCount: 1, regenerationTurns: 3 } },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },

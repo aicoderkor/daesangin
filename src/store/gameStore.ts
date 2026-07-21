@@ -446,7 +446,7 @@ function getCombatSkill(mercenary: Mercenary): SkillDefinition {
     창잡이: { name: '강력한 스트라이크', cost: 20, type: 'none', powerMultiplier: 2 },
     활잡이: { name: '탄막', cost: 25, type: 'multi', powerMultiplier: 0.72, targetCount: 2 },
     검객: { name: '무영참', cost: 28, type: 'multi' },
-    의술사: { name: '치유의 손길', cost: 24, type: 'heal' },
+    의술사: { name: '에너지 폭발', cost: 22, type: 'magic', powerMultiplier: 1.5 },
   }
 
   return skill ?? baseSkills[mercenary.base]
@@ -592,44 +592,67 @@ function performBattleAction(
   battle.activeUnitId = actor.id
   battle.hitUnitId = null
 
-  const healTarget =
-    actor.kind === 'ally' && actor.heal > 0
-      ? friends
-          .filter(
-            (unit) =>
-              unit.hp > 0 && unit.hp / unit.maxHp < 0.6,
-          )
-          .sort(
-            (left, right) =>
-              left.hp / left.maxHp - right.hp / right.maxHp,
-          )[0]
-      : undefined
+  const skillReady =
+    actor.kind === 'ally' &&
+    !hasStatus(actor.statusEffects, 'silence') &&
+    actor.mp >= actor.skill.cost
 
-  if (
-    healTarget &&
-    actor.mp >= actor.skill.cost &&
-    actor.skill.type === 'heal'
-  ) {
-    const quantity = Math.round(
-      actor.heal * actor.healingMultiplier * (1 + Math.random() * 0.25),
-    )
-    healTarget.hp = Math.min(
-      healTarget.maxHp,
-      healTarget.hp + quantity,
-    )
+  if (actor.kind === 'ally' && actor.skill.type === 'heal' && skillReady) {
+    const healingTargets = actor.skill.healAll
+      ? friends.filter((unit) => unit.hp > 0)
+      : [...friends]
+          .filter((unit) => unit.hp > 0)
+          .sort((left, right) => left.hp / left.maxHp - right.hp / right.maxHp)
+          .slice(0, 1)
+
+    if (healingTargets.length === 0) return
+
     actor.mp -= actor.skill.cost
+    const healedNames: string[] = []
+    for (const healingTarget of healingTargets) {
+      const quantity = Math.max(1, Math.round(
+        actor.atk * (actor.skill.powerMultiplier ?? 1) * actor.healingMultiplier,
+      ))
+      healingTarget.hp = Math.min(healingTarget.maxHp, healingTarget.hp + quantity)
+      healedNames.push(healingTarget.name)
+
+      if (actor.skill.cleanseNegativeCount) {
+        const negative = new Set(['ablaze', 'poison', 'freeze', 'bleed', 'stun', 'silence', 'petrify', 'curse', 'terrify'])
+        let remaining = actor.skill.cleanseNegativeCount
+        healingTarget.statusEffects = (healingTarget.statusEffects ?? []).filter((status) => {
+          if (remaining > 0 && negative.has(status.id)) {
+            remaining -= 1
+            return false
+          }
+          return true
+        })
+      }
+
+      if (actor.skill.regenerationTurns) {
+        healingTarget.statusEffects = addStatusEffect(healingTarget.statusEffects, {
+          id: 'regeneration',
+          turns: actor.skill.regenerationTurns + 1,
+          stacks: 1,
+          sourceId: actor.id,
+        })
+      }
+    }
+
     pushBattleLog(
       battle,
       'good',
-      subjectParticle(actor.name) + ' ' + actor.skill.name + '을 사용했습니다. ' + healTarget.name + '의 HP가 ' + quantity + ' 회복되었습니다.',
+      subjectParticle(actor.name) + ' ' + actor.skill.name + '을 사용했습니다. ' + (actor.skill.healAll ? '모든 아군' : healedNames[0]) + '의 HP가 회복되었습니다.',
     )
     return
   }
 
-  const targets = foes.filter((unit) => unit.hp > 0)
+  const targets = (
+    actor.kind === 'ally' && skillReady && actor.skill.chaos
+      ? [...foes, ...friends.filter((unit) => unit.id !== actor.id)]
+      : foes
+  ).filter((unit) => unit.hp > 0)
   const target = selectWeightedTarget(targets)
   if (!target) return
-
   const actorMainStat = getCombatMainStat(actor.combatClass, {
     constitution: actor.constitution,
     dexterity: actor.dex,
@@ -641,7 +664,6 @@ function performBattleAction(
     focusBonusRate: Math.max(0, actor.hit - 0.9) - (hasStatus(target.statusEffects, 'freeze') || hasStatus(target.statusEffects, 'petrify') ? 0 : target.evade),
     missChanceMultiplier: actor.missChanceMultiplier,
   })
-  const skillReady = actor.kind === 'ally' && !hasStatus(actor.statusEffects, 'silence') && actor.mp >= actor.skill.cost
   if (!actor.skill.guaranteedHit && !rollChance(finalHitRate)) {
     pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + subjectParticle(target.name) + (Math.random() < 0.5 ? ' 몸을 틀어 피했습니다.' : ' 재빠르게 회피했습니다.'))
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
@@ -671,11 +693,11 @@ function performBattleAction(
       actor.skill.type === 'aoe' ||
       actor.skill.type === 'cleave'
     ) {
-      multiplier = 0.85
+      if (actor.skill.powerMultiplier === undefined) multiplier = 0.85
       area = true
     }
-    if (actor.skill.type === 'magic') {
-      multiplier = 1.45
+    if (actor.skill.type === 'magic' || actor.skill.magic) {
+      if (actor.skill.powerMultiplier === undefined) multiplier = 1.45
       magic = true
     }
     if (actor.skill.type === 'guard') {
@@ -740,6 +762,27 @@ function performBattleAction(
           actor.maxHp,
           actor.hp + damage * actor.lifesteal,
         )
+      }
+      if (actor.kind === 'ally' && actor.skill.healLowestOnAttackRate) {
+        const healingTarget = [...friends]
+          .filter((unit) => unit.hp > 0)
+          .sort((left, right) => left.hp / left.maxHp - right.hp / right.maxHp)[0]
+        if (healingTarget) {
+          const quantity = Math.max(1, Math.round(damage * actor.skill.healLowestOnAttackRate))
+          healingTarget.hp = Math.min(healingTarget.maxHp, healingTarget.hp + quantity)
+          if (actor.skill.cleanseNegativeCount) {
+            const negative = new Set(['ablaze', 'poison', 'freeze', 'bleed', 'stun', 'silence', 'petrify', 'curse', 'terrify'])
+            let remaining = actor.skill.cleanseNegativeCount
+            healingTarget.statusEffects = (healingTarget.statusEffects ?? []).filter((status) => {
+              if (remaining > 0 && negative.has(status.id)) {
+                remaining -= 1
+                return false
+              }
+              return true
+            })
+          }
+          pushBattleLog(battle, 'good', actor.name + '의 영광이 ' + healingTarget.name + '의 HP를 ' + quantity + ' 회복시켰습니다.')
+        }
       }
     }  }
 

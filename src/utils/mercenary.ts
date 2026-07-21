@@ -71,7 +71,7 @@ export function getMercenaryStats(
     dex: base.dex,
     int: base.int,
     hp: base.hp,
-    mp: base.mp,
+    mp: 100,
     atk: base.atk,
     def: base.def,
     mdef: base.mdef,
@@ -80,7 +80,7 @@ export function getMercenaryStats(
     crit: 0.05,
     evade: 0.03,
     hit: 0.9,
-    mana: 8,
+    mana: 10,
     regen: 0,
     lifesteal: 0,
   }

@@ -428,6 +428,8 @@ function getTotalStats(mercenary: Mercenary, targetState: GameState) {
     }
   }
 
+  stats.mp = 100
+  stats.mana = 10
   return stats
 }
 
@@ -477,7 +479,7 @@ function createAllyUnits(
       hp: stats.hp,
       maxHp: stats.hp,
       mp: 0,
-      maxMp: stats.mp,
+      maxMp: 100,
       atk: stats.atk,
       def: stats.def,
       mdef: stats.mdef,
@@ -487,7 +489,7 @@ function createAllyUnits(
       crit: stats.crit,
       evade: stats.evade + traitEffects.dodgeRate,
       hit: stats.hit,
-      mana: stats.mana + traitEffects.manaRegenerationFlat,
+      mana: 10,
       regen: stats.regen,
       lifesteal: stats.lifesteal + traitEffects.lifestealRate,
       flatDamageReduction: traitEffects.flatDamageReduction,
@@ -516,7 +518,7 @@ function createEnemyUnits(dungeonIndex: number): CombatUnit[] {
     hp: enemy.hp,
     maxHp: enemy.hp,
     mp: 0,
-    maxMp: 40,
+    maxMp: 100,
     atk: enemy.attack,
     def: enemy.defense,
     mdef: enemy.magicDefense,
@@ -526,7 +528,7 @@ function createEnemyUnits(dungeonIndex: number): CombatUnit[] {
     crit: 0.04,
     evade: 0.02,
     hit: 0.88,
-    mana: 7,
+    mana: 10,
     regen: 0,
     lifesteal: 0,
     flatDamageReduction: 0,
@@ -592,13 +594,12 @@ function performBattleAction(
   battle.activeUnitId = actor.id
   battle.hitUnitId = null
 
-  // Higher-tier skills can cost more than the base MP cap. A full MP bar must
-  // still permit their use, so their effective cost is limited to that cap.
-  const skillCost = Math.min(actor.skill.cost, actor.maxMp)
+  // All active skills share the same resource rule: fill 100 MP, then cast
+  // automatically and empty the whole gauge. Individual skill costs are ignored.
   const skillReady =
     actor.kind === 'ally' &&
     !hasStatus(actor.statusEffects, 'silence') &&
-    actor.mp >= skillCost
+    actor.mp >= actor.maxMp
 
   if (actor.kind === 'ally' && actor.skill.type === 'heal' && skillReady) {
     const healingTargets = actor.skill.healAll
@@ -610,7 +611,7 @@ function performBattleAction(
 
     if (healingTargets.length === 0) return
 
-    actor.mp -= skillCost
+    actor.mp = 0
     const healedNames: string[] = []
     for (const healingTarget of healingTargets) {
       const quantity = Math.max(1, Math.round(
@@ -679,7 +680,7 @@ function performBattleAction(
   let area = false
 
   if (skillReady) {
-    actor.mp -= skillCost
+    actor.mp = 0
     pushBattleLog(
       battle,
       'skill',

@@ -41,6 +41,8 @@ function addGearStats(
     }
   }
 
+  result.mp = 100
+
   return result
 }
 

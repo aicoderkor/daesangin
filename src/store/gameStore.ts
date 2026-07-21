@@ -717,9 +717,9 @@ function performBattleAction(
       const skill = actor.skill
       if (skill.status && rollChance(skill.statusChance ?? 1)) {
         const turns = skill.statusTurns ?? 1
-        if (skill.status === 'stun') hitTarget.stunTurns = Math.max(hitTarget.stunTurns ?? 0, turns)
-        if (skill.status === 'silence') hitTarget.silenceTurns = Math.max(hitTarget.silenceTurns ?? 0, turns)
-        if (skill.status === 'taunt') hitTarget.tauntTurns = Math.max(hitTarget.tauntTurns ?? 0, turns)
+        if (skill.status === 'stun') { hitTarget.stunTurns = Math.max(hitTarget.stunTurns ?? 0, turns); hitTarget.statusEffects = [...(hitTarget.statusEffects ?? []), { id: 'stun', turns, stacks: 1, sourceId: actor.id }] }
+        if (skill.status === 'silence') { hitTarget.silenceTurns = Math.max(hitTarget.silenceTurns ?? 0, turns); hitTarget.statusEffects = [...(hitTarget.statusEffects ?? []), { id: 'silence', turns, stacks: 1, sourceId: actor.id }] }
+        if (skill.status === 'taunt') { hitTarget.tauntTurns = Math.max(hitTarget.tauntTurns ?? 0, turns); hitTarget.statusEffects = [...(hitTarget.statusEffects ?? []), { id: 'taunt', turns, stacks: 1, sourceId: actor.id }] }
         pushBattleLog(battle, 'skill', hitTarget.name + '에게 ' + skill.status + ' 효과가 적용되었습니다.')
       }
 
@@ -1680,6 +1680,7 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 
 

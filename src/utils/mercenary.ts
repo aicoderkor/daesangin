@@ -1,4 +1,4 @@
-﻿import { CLASSES } from '../data/gameData'
+import { CLASSES } from '../data/gameData'
 import { applyPrimaryTraitStats } from '../game/traits'
 import type {
   ClassBranch,
@@ -33,7 +33,7 @@ export function getClassNode(mercenary: Mercenary): ClassBranch | null {
 }
 
 export function getClassName(mercenary: Mercenary): string {
-  return getClassNode(mercenary)?.name ?? (mercenary.base === '창잡이' ? '무도가' : mercenary.base)
+  return getClassNode(mercenary)?.name ?? ({ 창잡이: '무도가', 활잡이: '사냥꾼', 검객: '낭인', 의술사: '무녀' }[mercenary.base] ?? mercenary.base)
 }
 
 export function getNextPromotionBranches(

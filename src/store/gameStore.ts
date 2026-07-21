@@ -14,7 +14,7 @@ import type {
 } from '../types/game'
 
 import { getClassName, getMercenaryStats } from '../utils/mercenary'
-import { grantBattleExperience, normalizeMercenaryProgression } from '../game/progression'
+import { getLevelExperienceData, grantBattleExperience, normalizeMercenaryProgression } from '../game/progression'
 import { EXPEDITION_TIMINGS } from '../config/expedition'
 import { gameStorage } from '../storage/gameStorage'
 import {
@@ -1228,6 +1228,24 @@ export const gameStore = {
     return true
   },
 
+  testLevelUpMercenary(mercenaryId: string): boolean {
+    if (!state.mercenaries.some((mercenary) => mercenary.id === mercenaryId)) return false
+
+    setState((current) => {
+      const next = structuredClone(current)
+      const target = next.mercenaries.find((mercenary) => mercenary.id === mercenaryId)
+      if (!target) return current
+
+      const nextLevel = Math.min(45, target.level + 1)
+      if (nextLevel === target.level) return current
+      target.level = nextLevel
+      target.totalExp = getLevelExperienceData(nextLevel)?.startTotalExp ?? target.totalExp
+      next.recentLog = `${target.base} 테스트 레벨업: Lv.${nextLevel}`
+      return next
+    })
+
+    return true
+  },
   promoteMercenary(
     mercenaryId: string,
     branchIndex: number,

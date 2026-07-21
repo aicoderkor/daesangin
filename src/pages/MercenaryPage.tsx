@@ -257,6 +257,7 @@ function MercenaryDetail({
           <div className="small">{CLASSES[mercenary.base].role} · Lv.{mercenary.level}</div>
         </div>
         <div className="merc-detail-actions">
+          <button type="button" className="btn alt sm" onClick={() => gameStore.testLevelUpMercenary(mercenary.id)}>레벨업</button>
           <button type="button" className="btn alt sm" onClick={onDismiss}>해고</button>
           <button type="button" className="btn alt sm" onClick={onClose}>닫기</button>
         </div>

@@ -1194,6 +1194,16 @@ export const gameStore = {
   getMaterialTotal,
   getHireCost,
   getFacilityUpgradeCost,
+  forceUnlockNextDungeon(): boolean {
+    if (state.unlockedDungeonIndex >= DUNGEONS.length - 1) return false
+    setState((current) => ({
+      ...current,
+      unlockedDungeonIndex: current.unlockedDungeonIndex + 1,
+      recentLog: DUNGEONS[current.unlockedDungeonIndex + 1].name + ' 테스트 해금',
+    }))
+    return true
+  },
+
 
   fillTavernCandidates(): void {
     setState((current) => {

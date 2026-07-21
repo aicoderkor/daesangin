@@ -35,7 +35,7 @@ function Fighter({
       className={
         'fighter' +
         (active ? ' act' : '') +
-        (hit ? ' hit' : '') + (unit.hp <= 0 ? ' dead' : '')
+        (hit ? ' hit' : '') + (portrait ? ' has-portrait' : '') + (unit.hp <= 0 ? ' dead' : '')
       }
     >
       {portrait && <img className="fighter-portrait" src={portrait} alt="" />}
@@ -93,6 +93,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
               파티가 실시간으로 탐색하고 전투합니다.
             </div>
           </div>
+          <button type="button" className="btn sm" disabled={game.unlockedDungeonIndex >= DUNGEONS.length - 1} onClick={() => gameStore.forceUnlockNextDungeon()}>{'\uB2E4\uC74C \uB358\uC804 \uD14C\uC2A4\uD2B8 \uD574\uAE08'}</button>
         </div>
 
         <div>

@@ -557,6 +557,8 @@ function unitsAlive(units: CombatUnit[]): boolean {
 function selectWeightedTarget(
   units: CombatUnit[],
 ): CombatUnit | undefined {
+  const taunted = units.filter((unit) => (unit.tauntTurns ?? 0) > 0)
+  if (taunted.length > 0) return taunted[0]
   let cursor =
     Math.random() *
     units.reduce((sum, unit) => sum + (unit.threat || 1), 0)
@@ -1674,5 +1676,6 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 
 

@@ -442,7 +442,14 @@ function getCombatSkill(mercenary: Mercenary): SkillDefinition {
     branches = branch.branches ?? []
   }
 
-  return skill ?? ({ 창잡이: { name: '강력한 스트라이크', cost: 20, type: 'none', powerMultiplier: 2 }, 활잡이: { name: '탄막', cost: 25, type: 'multi', powerMultiplier: 0.72, targetCount: 2 }, 검객: { name: '무영참', cost: 28, type: 'multi' }, 의술사: { name: '치유의 손길', cost: 24, type: 'heal' } }[mercenary.base] ?? { name: '기본기', cost: 999, type: 'none' })
+  const baseSkills: Record<MercenaryBase, SkillDefinition> = {
+    창잡이: { name: '강력한 스트라이크', cost: 20, type: 'none', powerMultiplier: 2 },
+    활잡이: { name: '탄막', cost: 25, type: 'multi', powerMultiplier: 0.72, targetCount: 2 },
+    검객: { name: '무영참', cost: 28, type: 'multi' },
+    의술사: { name: '치유의 손길', cost: 24, type: 'heal' },
+  }
+
+  return skill ?? baseSkills[mercenary.base]
 }
 
 function createAllyUnits(

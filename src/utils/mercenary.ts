@@ -99,14 +99,22 @@ export function getMercenaryStats(
   }
 
 
+  const promotionBonuses: Record<MercenaryBase, { con: number; dex: number; int: number }> = {
+    창잡이: { con: 5, dex: 1, int: 1 },
+    활잡이: { con: 1, dex: 5, int: 1 },
+    의술사: { con: 1, dex: 1, int: 5 },
+    검객: { con: 3, dex: 3, int: 1 },
+  }
+  const promotionBonus = promotionBonuses[mercenary.base]
+  const promotionCount = mercenary.path.length
+
+  stats.con += promotionBonus.con * promotionCount
+  stats.dex += promotionBonus.dex * promotionCount
+  stats.int += promotionBonus.int * promotionCount
+
+  // Temporary tier level only improves durability. Promotion stat gains are handled above.
   const levelOffset = Math.max(0, mercenary.level - 1)
-
-  stats.hp *= 1 + levelOffset * 0.085
-  stats.atk *= 1 + levelOffset * 0.07
-  stats.def *= 1 + levelOffset * 0.055
-  stats.mdef *= 1 + levelOffset * 0.055
-  stats.heal *= 1 + levelOffset * 0.07
-
+  stats.hp += levelOffset
   const adjusted = applyPrimaryTraitStats({
     constitution: stats.con,
     dexterity: stats.dex,

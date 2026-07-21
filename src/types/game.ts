@@ -37,6 +37,10 @@ export interface SkillDefinition {
   name: string
   cost: number
   powerMultiplier?: number
+  status?: 'stun' | 'silence' | 'taunt'
+  statusChance?: number
+  statusTurns?: number
+  counterRate?: number
   type:
     | 'none'
     | 'guard'
@@ -225,6 +229,10 @@ export interface CombatUnit {
   missChanceMultiplier: number
   healingMultiplier: number
   skill: SkillDefinition
+  stunTurns?: number
+  silenceTurns?: number
+  tauntTurns?: number
+  counterRate?: number
 }
 
 export interface BattleState {
@@ -240,4 +248,5 @@ export interface BattleState {
   finishAt: number
   introQueue?: string[]
 }
+
 

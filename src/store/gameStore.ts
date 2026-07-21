@@ -490,6 +490,7 @@ function createAllyUnits(
       missChanceMultiplier: traitEffects.missChanceMultiplier,
       healingMultiplier: traitEffects.healingMultiplier,
       skill: getCombatSkill(mercenary),
+      stunTurns: 0, silenceTurns: 0, tauntTurns: 0, counterRate: 0,
     })
   }
 
@@ -707,6 +708,14 @@ function performBattleAction(
       )
 
       if (hitTarget.hp <= 0) pushBattleLog(battle, 'good', subjectParticle(hitTarget.name) + ' 힘없이 쓰러졌습니다.')
+      const skill = actor.skill
+      if (skill.status && rollChance(skill.statusChance ?? 1)) {
+        const turns = skill.statusTurns ?? 1
+        if (skill.status === 'stun') hitTarget.stunTurns = Math.max(hitTarget.stunTurns ?? 0, turns)
+        if (skill.status === 'silence') hitTarget.silenceTurns = Math.max(hitTarget.silenceTurns ?? 0, turns)
+        if (skill.status === 'taunt') hitTarget.tauntTurns = Math.max(hitTarget.tauntTurns ?? 0, turns)
+        pushBattleLog(battle, 'skill', hitTarget.name + '에게 ' + skill.status + ' 효과가 적용되었습니다.')
+      }
 
       if (actor.lifesteal > 0) {
         actor.hp = Math.min(
@@ -1665,4 +1674,5 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
 

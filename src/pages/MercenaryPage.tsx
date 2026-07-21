@@ -1,9 +1,9 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { CLASSES } from '../data/gameData'
 import { getMercenaryTraitDefinitions, getTraitCount } from '../game/traits'
 import { getCurrentLevelExp, getLevelProgress, getRequiredExpForLevel } from '../game/progression'
 import { gameStore, useGameStore } from '../store/gameStore'
-import type { Mercenary, SkillDefinition, StatMap } from '../types/game'
+import type { Mercenary, MercenaryBase, SkillDefinition, StatMap } from '../types/game'
 import { calculateDamageRange, calculateHealing, mapJobToCombatClass } from '../game/combat'
 import {
   getBaseIcon,
@@ -187,7 +187,13 @@ function getMercenarySkill(mercenary: Mercenary): SkillDefinition {
     if (branch.skill) skill = branch.skill
     branches = branch.branches ?? []
   }
-  return skill ?? { name: '기본 공격', cost: 0, type: 'none' }
+  const baseSkills: Record<MercenaryBase, SkillDefinition> = {
+    창잡이: { name: '강력한 스트라이크', cost: 20, type: 'none', powerMultiplier: 2 },
+    활잡이: { name: '탄막', cost: 25, type: 'multi', powerMultiplier: 0.72, targetCount: 2 },
+    검객: { name: '무영참', cost: 28, type: 'multi' },
+    의술사: { name: '치유의 손길', cost: 24, type: 'heal' },
+  }
+  return skill ?? baseSkills[mercenary.base]
 }
 
 function getSkillDescription(skill: SkillDefinition): string {

@@ -16,6 +16,7 @@ import type {
 import { getClassName, getMercenaryStats } from '../utils/mercenary'
 import { grantBattleExperience, normalizeMercenaryProgression } from '../game/progression'
 import { EXPEDITION_TIMINGS } from '../config/expedition'
+import { gameStorage } from '../storage/gameStorage'
 import {
   calculateCriticalMultiplier,
   calculateDamageRange,
@@ -28,7 +29,6 @@ import {
 } from '../game/combat'
 import { generateMercenaryTraits, getTraitCombatEffects, normalizeMercenaryTraits } from '../game/traits'
 
-const STORAGE_KEY = 'daesangin-react-v3'
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
 const DUNGEON_PROGRESS_REQUIREMENTS = [80, 150, 220, 300] as const
 
@@ -294,19 +294,17 @@ function loadState(): GameState {
   }
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
+    const raw = gameStorage.load()
 
     if (!raw) {
       return createInitialState()
     }
 
-    const loadedState = normalizeState(
-      JSON.parse(raw) as Partial<GameState>,
-    )
+    const loadedState = normalizeState(raw)
     processOfflineProgress(loadedState)
     return loadedState
   } catch {
-    window.localStorage.removeItem(STORAGE_KEY)
+    gameStorage.clear()
     return createInitialState()
   }
 }
@@ -325,7 +323,7 @@ function persist(): void {
   }
 
   state.lastSavedAt = Date.now()
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  gameStorage.save(state)
 }
 
 function setState(updater: (current: GameState) => GameState): void {

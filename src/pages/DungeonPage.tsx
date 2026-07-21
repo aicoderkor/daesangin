@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DUNGEONS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
-import { getClassName } from '../utils/mercenary'
+import { getBasePortrait, getClassName } from '../utils/mercenary'
 import type {
   CombatUnit,
 } from '../types/game'
@@ -14,10 +14,12 @@ function Fighter({
   unit,
   active,
   hit,
+  portrait,
 }: {
   unit: CombatUnit
   active: boolean
   hit: boolean
+  portrait?: string | null
 }) {
   const hpPercent = Math.max(
     0,
@@ -36,6 +38,7 @@ function Fighter({
         (hit ? ' hit' : '') + (unit.hp <= 0 ? ' dead' : '')
       }
     >
+      {portrait && <img className="fighter-portrait" src={portrait} alt="" />}
       <b>{unit.name}</b>
       <div className="small">{unit.className ?? ''}</div>
       <div className="hp">
@@ -142,6 +145,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
                       unit={unit}
                       active={battle!.activeUnitId === unit.id}
                       hit={battle!.hitUnitId === unit.id}
+                      portrait={getBasePortrait(game.mercenaries.find((mercenary) => mercenary.id === unit.id)?.base)}
                       key={unit.id}
                     />
                   ))}
@@ -155,6 +159,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
                       unit={unit}
                       active={battle!.activeUnitId === unit.id}
                       hit={battle!.hitUnitId === unit.id}
+                      portrait={getBasePortrait(game.mercenaries.find((mercenary) => mercenary.id === unit.id)?.base)}
                       key={unit.id}
                     />
                   ))}

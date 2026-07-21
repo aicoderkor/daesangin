@@ -1,4 +1,4 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+﻿@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 :root {
   --bg: #0d0d0d;
@@ -31,10 +31,10 @@ button { cursor: pointer; }
 .res div { display: flex; align-items: center; gap: 4px; }
 .res span { display: none; }
 .res b { font-size: 17px; color: #ddd; }
-.res div:nth-child(1)::before { content: '🟡'; }
-.res div:nth-child(2)::before { content: '⚔️'; filter: grayscale(1); }
-.res div:nth-child(3)::before { content: '🪵'; }
-.res div:nth-child(4)::before { content: '⛏️'; }
+.res div:nth-child(1)::before { content: '?윞'; }
+.res div:nth-child(2)::before { content: '?뷂툘'; filter: grayscale(1); }
+.res div:nth-child(3)::before { content: '?さ'; }
+.res div:nth-child(4)::before { content: '?륅툘'; }
 .screen { display: block; padding: 18px 20px; }
 .card { background: transparent; border: 0; padding: 0; margin: 0 0 16px; }
 .head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -57,7 +57,7 @@ button { cursor: pointer; }
 .building em { font-style: normal; color: var(--orange); }
 .grid { display: grid; gap: 12px; }
 .merc { width: 100%; color: var(--text); text-align: left; display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; align-items: center; background: #303030; border: 2px solid #bdbdbd; border-radius: 15px; overflow: hidden; padding: 0 10px 0 0; }
-.ico { width: 72px; height: 82px; display: grid; place-items: center; font-size: 39px; background: #454545; border-right: 2px solid #aaa; }
+.ico { width: 72px; height: 82px; display: grid; place-items: center; font-size: 39px; background: transparent; border-right: 2px solid #aaa; overflow: visible; }
 .name { font-weight: 900; font-size: 20px; }
 .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
 .tag { font-size: 12px; border: 0; padding: 0; background: none; color: var(--orange); }
@@ -165,7 +165,7 @@ button { cursor: pointer; }
 .merc-detail-head { margin-bottom: 0; }
 .merc-detail-actions { display: flex; gap: 7px; }
 .merc-profile { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: center; }
-.merc-portrait { height: 112px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 16px; background: #555; font-size: 62px; }
+.merc-portrait { height: 112px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 16px; background: transparent; font-size: 62px; }
 .merc-level { display: grid; gap: 7px; color: var(--muted); }
 .merc-level b { color: var(--text); font-size: 17px; }
 .merc-level span { font-size: 13px; }
@@ -199,8 +199,14 @@ button { cursor: pointer; }
   object-fit: contain;
 }
 
-.ico img { padding: 4px; }
+.ico img { padding: 3px 0 0; mix-blend-mode: multiply; object-position: center bottom; transform: scale(1.12); }
 .candidate-icon { width: 42px; height: 48px; display: grid; place-items: center; overflow: hidden; }
 .candidate-icon img { max-width: 42px; max-height: 48px; }
 .merc-portrait { overflow: hidden; }
-.merc-portrait img { padding: 6px; }
+.merc-portrait img { padding: 4px; mix-blend-mode: multiply; object-position: center bottom; transform: scale(1.08); }
+.candidate-icon img { mix-blend-mode: multiply; }
+.fighter { min-height: 80px; display: grid; grid-template-columns: 56px 1fr; grid-template-rows: auto auto auto; column-gap: 7px; align-items: center; text-align: left; }
+.fighter-portrait { grid-row: 1 / 4; width: 56px; height: 72px; object-fit: contain; object-position: center bottom; mix-blend-mode: multiply; align-self: end; }
+.fighter > b, .fighter > .small, .fighter > .hp { grid-column: 2; }
+.fighter > b, .fighter > .small { text-align: center; }
+

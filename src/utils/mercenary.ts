@@ -121,7 +121,8 @@ export function getMercenaryStats(
 export function getBaseIcon(base: MercenaryBase): string {
   return CLASSES[base].icon
 }
-export function getBasePortrait(base: MercenaryBase): string | null {
+export function getBasePortrait(base?: MercenaryBase | null): string | null {
+  if (!base) return null
   return ({
     창잡이: martialArtistPortrait,
     활잡이: hunterPortrait,

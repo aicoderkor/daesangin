@@ -73,57 +73,52 @@ export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
       },
     ],
   },  활잡이: {
-    icon: '🏹',
-    role: '후열',
-    con: 7,
-    dex: 16,
-    int: 4,
-    hp: 90,
-    mp: 45,
-    atk: 21,
-    def: 6,
-    mdef: 5,
-    threat: 0.65,
+    icon: '🏹', role: '후열', con: 7, dex: 16, int: 4, hp: 90, mp: 45, atk: 21, def: 6, mdef: 5, threat: 0.65,
     branches: [
       {
-        name: '궁사',
-        description: '강한 단일 저격',
-        modifiers: { atk: 1.25, dex: 1.15 },
-        skill: { name: '관통사격', cost: 35, type: 'pierce' },
+        name: '궁사', description: '탄막 Ⅱ', modifiers: { atk: 1.08, dex: 1.08 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72 },
         branches: [
           {
-            name: '사수',
-            description: '보스 저격',
-            modifiers: { atk: 1.32 },
+            name: '사수', description: '탄막 Ⅱ · 날카로운 시력', modifiers: { atk: 1.08, dex: 1.1 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72 },
+            branches: [
+              {
+                name: '명사수', description: '탄막 Ⅲ · 날카로운 시력', modifiers: { atk: 1.12, dex: 1.12 }, skill: { name: '탄막 Ⅲ', cost: 32, type: 'multi', powerMultiplier: 0.72 },
+                branches: [
+                  { name: '백발백중', description: '탄막 Ⅳ · 날카로운 시력', modifiers: { atk: 1.15, dex: 1.15 }, skill: { name: '탄막 Ⅳ', cost: 34, type: 'multi', powerMultiplier: 0.72 }, branches: [
+                    { name: '천궁', description: '탄막 Ⅴ · 날카로운 시력', modifiers: { atk: 1.18, dex: 1.18 }, skill: { name: '탄막 Ⅴ', cost: 36, type: 'multi', powerMultiplier: 0.72 }, branches: [
+                      { name: '신궁', description: '탄막 Ⅵ · 날카로운 시력', modifiers: { atk: 1.22, dex: 1.22 }, skill: { name: '탄막 Ⅵ', cost: 38, type: 'multi', powerMultiplier: 0.72 } },
+                    ] },
+                  ] },
+                ],
+              },
+              {
+                name: '독사수', description: '탄막 Ⅱ · 독 화살 25%', modifiers: { atk: 1.1, dex: 1.1 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72, status: 'silence', statusChance: 0.25, statusTurns: 1 },
+                branches: [
+                  { name: '맹독사수', description: '탄막 Ⅱ · 독 화살 40%', modifiers: { atk: 1.12, dex: 1.12 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72, status: 'silence', statusChance: 0.4, statusTurns: 1 }, branches: [
+                    { name: '독시', description: '탄막 Ⅱ · 독 화살 Ⅱ', modifiers: { atk: 1.15, dex: 1.15 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72, status: 'silence', statusChance: 0.4, statusTurns: 2 }, branches: [
+                      { name: '독궁', description: '탄막 Ⅲ · 독 화살 Ⅲ', modifiers: { atk: 1.2, dex: 1.2 }, skill: { name: '탄막 Ⅲ', cost: 32, type: 'multi', powerMultiplier: 0.72, status: 'silence', statusChance: 0.4, statusTurns: 2 } },
+                    ] },
+                  ] },
+                ],
+              },
+            ],
           },
           {
-            name: '기마궁수',
-            description: '치명과 회피',
-            modifiers: { crit: 0.1, evade: 0.08 },
-          },
-        ],
-      },
-      {
-        name: '독사수',
-        description: '광역 연속사격',
-        modifiers: { atk: 1.12, dex: 1.22 },
-        skill: { name: '화살비', cost: 38, type: 'aoe' },
-        branches: [
-          {
-            name: '맹독사수',
-            description: '광역 피해 강화',
-            modifiers: { atk: 1.2 },
-          },
-          {
-            name: '독시',
-            description: '빠른 마나 순환',
-            modifiers: { mana: 1.3, dex: 1.18 },
+            name: '기마궁수', description: '탄막 Ⅱ · 기수', modifiers: { atk: 1.08, dex: 1.12, evade: 0.04 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72 },
+            branches: [
+              { name: '늑대기수', description: '탄막 Ⅱ · 기수 Ⅱ', modifiers: { atk: 1.1, dex: 1.14, evade: 0.05 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72 }, branches: [
+                { name: '흑표기수', description: '탄막 Ⅱ · 기수 Ⅲ', modifiers: { atk: 1.12, dex: 1.16, evade: 0.06 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72 }, branches: [
+                  { name: '백호기수', description: '탄막 Ⅱ · 기수 Ⅳ', modifiers: { atk: 1.15, dex: 1.18, evade: 0.08 }, skill: { name: '탄막 Ⅱ', cost: 30, type: 'multi', powerMultiplier: 0.72 }, branches: [
+                    { name: '청룡기수', description: '소각 · 기수 Ⅴ', modifiers: { atk: 1.2, dex: 1.2, evade: 0.1 }, skill: { name: '소각', cost: 42, type: 'aoe', powerMultiplier: 2, status: 'stun', statusChance: 1, statusTurns: 1 } },
+                  ] },
+                ] },
+              ] },
+            ],
           },
         ],
       },
     ],
-  },
-  검객: {
+  }, 검객: {
     icon: '⚔️',
     role: '전열',
     con: 12,

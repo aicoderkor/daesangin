@@ -16,57 +16,63 @@ export const MATERIAL_NAMES: Record<MaterialKey, string> = {
 
 export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
   창잡이: {
-    icon: '🔱',
-    role: '전열',
-    con: 15,
-    dex: 8,
-    int: 3,
-    hp: 130,
-    mp: 35,
-    atk: 18,
-    def: 12,
-    mdef: 4,
-    threat: 1.5,
+    icon: '🔱', role: '전열', con: 15, dex: 8, int: 3, hp: 130, mp: 35, atk: 18, def: 12, mdef: 4, threat: 1.5,
     branches: [
       {
-        name: '철창수',
-        description: '높은 위협과 방어',
-        modifiers: { hp: 1.22, def: 1.28, threat: 1.3 },
-        skill: { name: '수호진', cost: 30, type: 'guard' },
+        name: '무림인', description: '중국 무도가의 기본 상위 직업', modifiers: { atk: 1.08, hp: 1.08 }, skill: { name: '강력한 스트라이크', cost: 20, type: 'none' },
         branches: [
           {
-            name: '금위장',
-            description: '아군 보호에 특화',
-            modifiers: { hp: 1.25, def: 1.25 },
+            name: '수선자', description: '침묵과 어둠 저항', modifiers: { mdef: 1.1 },
+            branches: [
+              { name: '도인', description: '규탄하다 · 1턴 침묵 후 250% 피해', modifiers: { mdef: 1.08 }, skill: { name: '규탄하다', cost: 30, type: 'magic' }, branches: [
+                { name: '진인', description: '규탄하다 · 어둠 저항 강화', modifiers: { mdef: 1.1 }, skill: { name: '규탄하다', cost: 30, type: 'magic' }, branches: [
+                  { name: '선인', description: '모두 규탄하다 · 전체 250% 피해', modifiers: { mdef: 1.12 }, skill: { name: '모두 규탄하다', cost: 35, type: 'aoe' }, branches: [
+                    { name: '천선', description: '모두 규탄하다 · 어둠 저항 극대화', modifiers: { mdef: 1.15 }, skill: { name: '모두 규탄하다', cost: 35, type: 'aoe' } },
+                  ] },
+                ] },
+              ] },
+            ],
           },
           {
-            name: '파성장',
-            description: '방어형 반격 장수',
-            modifiers: { atk: 1.23, def: 1.12 },
-          },
-        ],
-      },
-      {
-        name: '비창객',
-        description: '빠른 공격과 치명타',
-        modifiers: { atk: 1.22, dex: 1.18, threat: 0.85 },
-        skill: { name: '연창격', cost: 30, type: 'multi' },
-        branches: [
-          {
-            name: '풍뢰장',
-            description: '연속 행동',
-            modifiers: { dex: 1.25, atk: 1.16 },
+            name: '마인', description: '광역 공격과 기절', modifiers: { atk: 1.12, threat: 1.1 },
+            branches: [
+              { name: '귀검', description: '압도하다 · 300% 피해와 기절', modifiers: { atk: 1.1 }, skill: { name: '압도하다', cost: 30, type: 'cleave' }, branches: [
+                { name: '수라', description: '학살 · 모든 적 공격과 기절', modifiers: { atk: 1.12 }, skill: { name: '학살', cost: 35, type: 'aoe' }, branches: [
+                  { name: '혈마', description: '학살 Ⅱ · 350% 피해', modifiers: { atk: 1.14 }, skill: { name: '학살 Ⅱ', cost: 38, type: 'aoe' }, branches: [
+                    { name: '마존', description: '대량 학살 · 400% 피해', modifiers: { atk: 1.16 }, skill: { name: '대량 학살', cost: 42, type: 'aoe' } },
+                  ] },
+                ] },
+              ] },
+            ],
           },
           {
-            name: '적월장',
-            description: '치명타 처형',
-            modifiers: { atk: 1.3, crit: 0.08 },
+            name: '금의위', description: '방어와 반격', modifiers: { def: 1.12, threat: 1.25 },
+            branches: [
+              { name: '금의호위', description: '검술 마스터리 · 30% 반격', modifiers: { def: 1.1, threat: 1.15 }, skill: { name: '강력한 스트라이크', cost: 20, type: 'guard' }, branches: [
+                { name: '호위대장', description: '가드 대기 · 30% 반격', modifiers: { def: 1.1 }, skill: { name: '가드 대기', cost: 25, type: 'guard' }, branches: [
+                  { name: '대도독', description: '가드 대기 · 45% 반격', modifiers: { def: 1.12 }, skill: { name: '가드 대기', cost: 25, type: 'guard' }, branches: [
+                    { name: '패왕', description: '가드 대기 · 60% 반격', modifiers: { def: 1.15 }, skill: { name: '가드 대기', cost: 25, type: 'guard' } },
+                  ] },
+                ] },
+              ] },
+            ],
+          },
+          {
+            name: '협객', description: '도발과 피격 유도', modifiers: { hp: 1.12, threat: 1.3 },
+            branches: [
+              { name: '신룡', description: '도발 · 1턴 조롱', modifiers: { hp: 1.1, threat: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard' }, branches: [
+                { name: '화경', description: '도발 · 2턴 조롱', modifiers: { hp: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard' }, branches: [
+                  { name: '무신', description: '도발 · 강한 생존력', modifiers: { hp: 1.12, def: 1.08 }, skill: { name: '도발', cost: 20, type: 'guard' }, branches: [
+                    { name: '천하제일인', description: '도발 · 4턴 조롱', modifiers: { hp: 1.15, def: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard' } },
+                  ] },
+                ] },
+              ] },
+            ],
           },
         ],
       },
     ],
-  },
-  활잡이: {
+  },  활잡이: {
     icon: '🏹',
     role: '후열',
     con: 7,
@@ -400,5 +406,6 @@ export const RECIPES: RecipeDefinition[] = [
 ]
 
 export const MERCENARY_BASES = Object.keys(CLASSES) as MercenaryBase[]
+
 
 

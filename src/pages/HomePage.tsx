@@ -19,9 +19,6 @@ export default function HomePage({
   const mercenaryCapacity = gameStore.getMercenaryCapacity(game)
   const storageCapacity = gameStore.getStorageCapacity(game)
   const materialTotal = gameStore.getMaterialTotal(game)
-  const activePartyCount = game.parties.filter(
-    (party) => party.status !== 'idle',
-  ).length
 
   return (
     <>
@@ -127,25 +124,6 @@ export default function HomePage({
           <span><em>추후 개방</em></span>
         </div>
       </button>
-
-      <div className="home-summary">
-        <div className="summary-card">
-          <span>용병</span>
-          <b>{game.mercenaries.length}/{mercenaryCapacity}</b>
-        </div>
-        <div className="summary-card">
-          <span>원정대</span>
-          <b>{activePartyCount}/{game.facilities.party}</b>
-        </div>
-        <div className="summary-card">
-          <span>해금 지역</span>
-          <b>{game.unlockedDungeonIndex + 1}</b>
-        </div>
-        <div className="summary-card">
-          <span>최근 기록</span>
-          <b>{game.recentLog || '기록 없음'}</b>
-        </div>
-      </div>
     </section>
       {marketOpen && (
         <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setMarketOpen(false) }}>

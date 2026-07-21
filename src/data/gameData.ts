@@ -49,8 +49,8 @@ export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
             name: '금의위', description: '방어와 반격', modifiers: { def: 1.12, threat: 1.25 },
             branches: [
               { name: '금의호위', description: '검술 마스터리 · 30% 반격', modifiers: { def: 1.1, threat: 1.15 }, skill: { name: '강력한 스트라이크', cost: 20, type: 'guard' }, branches: [
-                { name: '호위대장', description: '가드 대기 · 30% 반격', modifiers: { def: 1.1 }, skill: { name: '가드 대기', cost: 25, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 }, branches: [
-                  { name: '대도독', description: '가드 대기 · 45% 반격', modifiers: { def: 1.12 }, skill: { name: '가드 대기', cost: 25, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 }, branches: [
+                { name: '호위대장', description: '가드 대기 · 30% 반격', modifiers: { def: 1.1 }, skill: { name: '가드 대기', cost: 25, type: 'guard' }, branches: [
+                  { name: '대도독', description: '가드 대기 · 45% 반격', modifiers: { def: 1.12 }, skill: { name: '가드 대기', cost: 25, type: 'guard' }, branches: [
                     { name: '패왕', description: '가드 대기 · 60% 반격', modifiers: { def: 1.15 }, skill: { name: '가드 대기', cost: 25, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 } },
                   ] },
                 ] },
@@ -60,10 +60,10 @@ export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
           {
             name: '협객', description: '도발과 피격 유도', modifiers: { hp: 1.12, threat: 1.3 },
             branches: [
-              { name: '신룡', description: '도발 · 1턴 조롱', modifiers: { hp: 1.1, threat: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 }, branches: [
-                { name: '화경', description: '도발 · 2턴 조롱', modifiers: { hp: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 }, branches: [
-                  { name: '무신', description: '도발 · 강한 생존력', modifiers: { hp: 1.12, def: 1.08 }, skill: { name: '도발', cost: 20, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 }, branches: [
-                    { name: '천하제일인', description: '도발 · 4턴 조롱', modifiers: { hp: 1.15, def: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 1 } },
+              { name: '신룡', description: '도발 · 1턴 조롱', modifiers: { hp: 1.1, threat: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard' }, branches: [
+                { name: '화경', description: '도발 · 2턴 조롱', modifiers: { hp: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard' }, branches: [
+                  { name: '무신', description: '도발 · 강한 생존력', modifiers: { hp: 1.12, def: 1.08 }, skill: { name: '도발', cost: 20, type: 'guard' }, branches: [
+                    { name: '천하제일인', description: '도발 · 4턴 조롱', modifiers: { hp: 1.15, def: 1.1 }, skill: { name: '도발', cost: 20, type: 'guard', powerMultiplier: 2, status: 'taunt', statusChance: 1, statusTurns: 4 } },
                   ] },
                 ] },
               ] },
@@ -406,6 +406,7 @@ export const RECIPES: RecipeDefinition[] = [
 ]
 
 export const MERCENARY_BASES = Object.keys(CLASSES) as MercenaryBase[]
+
 
 
 

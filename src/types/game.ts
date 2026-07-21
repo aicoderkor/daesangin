@@ -33,6 +33,10 @@ export type StatKey =
 
 export type StatMap = Partial<Record<StatKey, number>>
 
+export type StatusEffectId = 'ablaze' | 'poison' | 'anointed' | 'inspire' | 'exalt' | 'frenzy' | 'delirium' | 'freeze' | 'bleed' | 'defensive_stance' | 'regeneration' | 'stun' | 'silence' | 'taunt' | 'petrify' | 'curse' | 'terrify'
+
+export interface CombatStatusEffect { id: StatusEffectId; turns: number; stacks: number; sourceId?: string }
+
 export interface SkillDefinition {
   name: string
   cost: number
@@ -233,6 +237,7 @@ export interface CombatUnit {
   silenceTurns?: number
   tauntTurns?: number
   counterRate?: number
+  statusEffects?: CombatStatusEffect[]
 }
 
 export interface BattleState {
@@ -248,5 +253,6 @@ export interface BattleState {
   finishAt: number
   introQueue?: string[]
 }
+
 
 

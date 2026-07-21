@@ -28,6 +28,7 @@ import {
   rollChance,
 } from '../game/combat'
 import { generateMercenaryTraits, getTraitCombatEffects, normalizeMercenaryTraits } from '../game/traits'
+import { hasStatus } from '../game/combat/statusEffects'
 
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
 const DUNGEON_PROGRESS_REQUIREMENTS = [80, 150, 220, 300] as const
@@ -490,7 +491,7 @@ function createAllyUnits(
       missChanceMultiplier: traitEffects.missChanceMultiplier,
       healingMultiplier: traitEffects.healingMultiplier,
       skill: getCombatSkill(mercenary),
-      stunTurns: 0, silenceTurns: 0, tauntTurns: 0, counterRate: 0,
+      stunTurns: 0, silenceTurns: 0, tauntTurns: 0, counterRate: 0, statusEffects: [],
     })
   }
 
@@ -529,6 +530,7 @@ function createEnemyUnits(dungeonIndex: number): CombatUnit[] {
     missChanceMultiplier: 1,
     healingMultiplier: 1,
     skill: { name: '공격', cost: 999, type: 'none' },
+    statusEffects: [],
   }))
 }
 
@@ -691,13 +693,15 @@ function performBattleAction(
         maxHp: actor.maxHp,
         magicDefenseRate: 0,
       })
+      const damageTakenMultiplier = hasStatus(hitTarget.statusEffects, 'exalt') ? 0.95 : hasStatus(hitTarget.statusEffects, 'petrify') ? 1.15 : 1
+      const damageDealtMultiplier = hasStatus(actor.statusEffects, 'poison') ? 0.8 : hasStatus(actor.statusEffects, 'anointed') || hasStatus(actor.statusEffects, 'inspire') ? 1.25 : hasStatus(actor.statusEffects, 'frenzy') ? 1.3 : hasStatus(actor.statusEffects, 'delirium') ? 2 : 1
       const damage = calculatePhysicalDamage({
         baseDamage: rollBaseDamage(damageRange),
         skillMultiplier: multiplier,
         isCritical: critical,
         criticalMultiplier: calculateCriticalMultiplier({ multiplicativeCriticalModifiers: [actor.criticalMultiplier] }),
         flatDamageReduction: defense * 0.5 + hitTarget.flatDamageReduction,
-      })
+      }) * damageDealtMultiplier * damageTakenMultiplier
       hitTarget.hp = Math.max(0, hitTarget.hp - damage)
       battle.hitUnitId = hitTarget.id
 
@@ -1676,6 +1680,10 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+
+
+
+
 
 
 

@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   ClassDefinition,
   DungeonDefinition,
   MaterialKey,
@@ -86,36 +86,36 @@ export const CLASSES: Record<MercenaryBase, ClassDefinition> = {
     threat: 0.65,
     branches: [
       {
-        name: '명궁',
+        name: '궁사',
         description: '강한 단일 저격',
         modifiers: { atk: 1.25, dex: 1.15 },
         skill: { name: '관통사격', cost: 35, type: 'pierce' },
         branches: [
           {
-            name: '천리궁',
+            name: '사수',
             description: '보스 저격',
             modifiers: { atk: 1.32 },
           },
           {
-            name: '월영궁',
+            name: '기마궁수',
             description: '치명과 회피',
             modifiers: { crit: 0.1, evade: 0.08 },
           },
         ],
       },
       {
-        name: '연노수',
+        name: '독사수',
         description: '광역 연속사격',
         modifiers: { atk: 1.12, dex: 1.22 },
         skill: { name: '화살비', cost: 38, type: 'aoe' },
         branches: [
           {
-            name: '화우장',
+            name: '맹독사수',
             description: '광역 피해 강화',
             modifiers: { atk: 1.2 },
           },
           {
-            name: '추풍장',
+            name: '독시',
             description: '빠른 마나 순환',
             modifiers: { mana: 1.3, dex: 1.18 },
           },

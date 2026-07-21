@@ -1,4 +1,4 @@
-export type ScreenId =
+﻿export type ScreenId =
   | 'home'
   | 'tavern'
   | 'mercs'
@@ -36,6 +36,7 @@ export type StatMap = Partial<Record<StatKey, number>>
 export interface SkillDefinition {
   name: string
   cost: number
+  powerMultiplier?: number
   type:
     | 'none'
     | 'guard'
@@ -239,3 +240,4 @@ export interface BattleState {
   finishAt: number
   introQueue?: string[]
 }
+

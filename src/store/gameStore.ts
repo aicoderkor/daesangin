@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+﻿import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
 import { CLASSES, DUNGEONS, MATERIAL_NAMES, MERCENARY_BASES, RECIPES } from '../data/gameData'
 import type {
@@ -648,7 +648,8 @@ function performBattleAction(
       actor.name + '의 ' + actor.skill.name,
     )
 
-    if (actor.skill.type === 'multi') {
+    if (actor.skill.powerMultiplier !== undefined) multiplier = actor.skill.powerMultiplier
+    if (actor.skill.type === 'multi' && actor.skill.powerMultiplier === undefined) {
       multiplier = 0.72
       hitCount = 2
     }
@@ -1664,3 +1665,4 @@ export const gameStore = {
 export function getClassDefinition(base: MercenaryBase) {
   return CLASSES[base]
 }
+

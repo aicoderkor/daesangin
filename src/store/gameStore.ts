@@ -592,10 +592,13 @@ function performBattleAction(
   battle.activeUnitId = actor.id
   battle.hitUnitId = null
 
+  // Higher-tier skills can cost more than the base MP cap. A full MP bar must
+  // still permit their use, so their effective cost is limited to that cap.
+  const skillCost = Math.min(actor.skill.cost, actor.maxMp)
   const skillReady =
     actor.kind === 'ally' &&
     !hasStatus(actor.statusEffects, 'silence') &&
-    actor.mp >= actor.skill.cost
+    actor.mp >= skillCost
 
   if (actor.kind === 'ally' && actor.skill.type === 'heal' && skillReady) {
     const healingTargets = actor.skill.healAll
@@ -607,7 +610,7 @@ function performBattleAction(
 
     if (healingTargets.length === 0) return
 
-    actor.mp -= actor.skill.cost
+    actor.mp -= skillCost
     const healedNames: string[] = []
     for (const healingTarget of healingTargets) {
       const quantity = Math.max(1, Math.round(
@@ -676,7 +679,7 @@ function performBattleAction(
   let area = false
 
   if (skillReady) {
-    actor.mp -= actor.skill.cost
+    actor.mp -= skillCost
     pushBattleLog(
       battle,
       'skill',
@@ -684,9 +687,10 @@ function performBattleAction(
     )
 
     if (actor.skill.powerMultiplier !== undefined) multiplier = actor.skill.powerMultiplier
-    if (actor.skill.type === 'multi' && actor.skill.powerMultiplier === undefined) {
-      multiplier = 0.72
-      hitCount = 2
+    if (actor.skill.type === 'multi') {
+      // Barrage selects distinct random targets instead of striking one target twice.
+      if (actor.skill.powerMultiplier === undefined) multiplier = 0.72
+      area = true
     }
     if (actor.skill.type === 'pierce') multiplier = 1.65
     if (
@@ -708,7 +712,7 @@ function performBattleAction(
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
   }
 
-  const hitTargets = area ? [...targets].sort(() => Math.random() - 0.5).slice(0, actor.skill.targetCount ?? 3) : [target]
+  const hitTargets = area ? [...targets].sort(() => Math.random() - 0.5).slice(0, actor.skill.targetCount ?? (actor.skill.type === 'multi' ? 2 : 3)) : [target]
 
   for (const hitTarget of hitTargets) {
     for (let hitIndex = 0; hitIndex < hitCount; hitIndex += 1) {

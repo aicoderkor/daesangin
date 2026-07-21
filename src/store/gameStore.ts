@@ -1,4 +1,4 @@
-﻿import { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 import { randomExpeditionEvent } from '../data/expeditionEvents'
 import { CLASSES, DUNGEONS, MATERIAL_NAMES, MERCENARY_BASES, RECIPES } from '../data/gameData'
 import type {
@@ -631,7 +631,7 @@ function performBattleAction(
   const finalHitRate = calculateFinalHitRate({
     attackerMainStat: actorMainStat,
     defenderRelevantStat: target.dex,
-    focusBonusRate: Math.max(0, actor.hit - 0.9) - target.evade,
+    focusBonusRate: Math.max(0, actor.hit - 0.9) - (hasStatus(target.statusEffects, 'freeze') || hasStatus(target.statusEffects, 'petrify') ? 0 : target.evade),
     missChanceMultiplier: actor.missChanceMultiplier,
   })
   if (!rollChance(finalHitRate)) {
@@ -645,7 +645,7 @@ function performBattleAction(
   let hitCount = 1
   let area = false
 
-  if (actor.kind === 'ally' && actor.mp >= actor.skill.cost) {
+  if (actor.kind === 'ally' && !hasStatus(actor.statusEffects, 'silence') && actor.mp >= actor.skill.cost) {
     actor.mp -= actor.skill.cost
     pushBattleLog(
       battle,
@@ -693,7 +693,9 @@ function performBattleAction(
         maxHp: actor.maxHp,
         magicDefenseRate: 0,
       })
-      const damageTakenMultiplier = hasStatus(hitTarget.statusEffects, 'exalt') ? 0.95 : hasStatus(hitTarget.statusEffects, 'petrify') ? 1.15 : 1
+      const defensive = hasStatus(hitTarget.statusEffects, 'defensive_stance')
+      const damageTakenMultiplier = defensive ? 0 : hasStatus(hitTarget.statusEffects, 'petrify') ? 1.15 : 1
+      const flatStatusReduction = hasStatus(hitTarget.statusEffects, 'exalt') ? 5 : 0
       const damageDealtMultiplier = hasStatus(actor.statusEffects, 'poison') ? 0.8 : hasStatus(actor.statusEffects, 'anointed') || hasStatus(actor.statusEffects, 'inspire') ? 1.25 : hasStatus(actor.statusEffects, 'frenzy') ? 1.3 : hasStatus(actor.statusEffects, 'delirium') ? 2 : 1
       const damage = calculatePhysicalDamage({
         baseDamage: rollBaseDamage(damageRange),
@@ -701,8 +703,9 @@ function performBattleAction(
         isCritical: critical,
         criticalMultiplier: calculateCriticalMultiplier({ multiplicativeCriticalModifiers: [actor.criticalMultiplier] }),
         flatDamageReduction: defense * 0.5 + hitTarget.flatDamageReduction,
-      }) * damageDealtMultiplier * damageTakenMultiplier
-      hitTarget.hp = Math.max(0, hitTarget.hp - damage)
+      }) * damageDealtMultiplier * damageTakenMultiplier - flatStatusReduction
+      hitTarget.hp = Math.max(0, hitTarget.hp - Math.max(0, damage))
+      if (defensive) hitTarget.statusEffects = (hitTarget.statusEffects ?? []).filter((status) => status.id !== 'defensive_stance')
       battle.hitUnitId = hitTarget.id
 
       pushBattleLog(
@@ -1012,6 +1015,38 @@ function advanceBattle(
   const actor = battle.queue.shift()
 
   if (actor && actor.hp > 0) {
+    const activeStatuses = actor.statusEffects ?? []
+    const ablaze = activeStatuses.find((status) => status.id === 'ablaze')
+    const freeze = activeStatuses.find((status) => status.id === 'freeze')
+    const bleed = activeStatuses.find((status) => status.id === 'bleed')
+    const regeneration = activeStatuses.find((status) => status.id === 'regeneration')
+    if (ablaze) {
+      const damage = Math.max(1, Math.floor(actor.maxHp * 0.05))
+      actor.hp = Math.max(0, actor.hp - damage)
+      pushBattleLog(battle, actor.kind === 'ally' ? 'bad' : 'good', subjectParticle(actor.name) + ' 화염으로 ' + damage + '의 피해를 입었습니다.')
+    }
+    if (actor.hp > 0 && freeze) {
+      const damage = 10
+      actor.hp = Math.max(0, actor.hp - damage)
+      pushBattleLog(battle, actor.kind === 'ally' ? 'bad' : 'good', subjectParticle(actor.name) + ' 빙결로 ' + damage + '의 피해를 입었습니다.')
+    }
+    if (actor.hp > 0 && bleed && bleed.stacks > 0) {
+      const damage = bleed.stacks
+      actor.hp = Math.max(0, actor.hp - damage)
+      bleed.stacks -= 1
+      pushBattleLog(battle, actor.kind === 'ally' ? 'bad' : 'good', subjectParticle(actor.name) + ' 출혈로 ' + damage + '의 피해를 입었습니다.')
+    }
+    if (actor.hp > 0 && regeneration) {
+      const restored = Math.min(Math.max(1, Math.floor(actor.maxHp * 0.06)), actor.maxHp - actor.hp)
+      actor.hp += restored
+      if (restored > 0) pushBattleLog(battle, actor.kind === 'ally' ? 'good' : 'bad', subjectParticle(actor.name) + ' 재생으로 HP ' + restored + '을 회복했습니다.')
+    }
+    actor.statusEffects = activeStatuses
+      .map((status) => ({ ...status, turns: status.turns > 0 ? status.turns - 1 : status.turns }))
+      .filter((status) => status.turns !== 0 && status.stacks !== 0)
+    actor.stunTurns = Math.max(0, (actor.stunTurns ?? 0) - 1)
+    actor.silenceTurns = Math.max(0, (actor.silenceTurns ?? 0) - 1)
+    actor.tauntTurns = Math.max(0, (actor.tauntTurns ?? 0) - 1)
     if (actor.turnHpLossRate > 0) {
       const loss = Math.max(1, Math.floor(actor.maxHp * actor.turnHpLossRate))
       actor.hp = Math.max(0, actor.hp - loss)
@@ -1022,7 +1057,20 @@ function advanceBattle(
       actor.hp += restored
       if (restored > 0) pushBattleLog(battle, actor.kind === 'ally' ? 'good' : 'bad', subjectParticle(actor.name) + ' HP ' + restored + '을 재생했습니다.')
     }
-    if (actor.hp > 0) performBattleAction(battle, actor)
+    const stunned = (actor.stunTurns ?? 0) > 0 || hasStatus(actor.statusEffects, 'stun') || hasStatus(actor.statusEffects, 'petrify') || hasStatus(actor.statusEffects, 'terrify')
+    const silenced = (actor.silenceTurns ?? 0) > 0 || hasStatus(actor.statusEffects, 'silence')
+    if (stunned) {
+      if (hasStatus(actor.statusEffects, 'terrify')) {
+        const damage = Math.max(1, Math.floor(actor.maxHp * 0.2))
+        actor.hp = Math.max(0, actor.hp - damage)
+        pushBattleLog(battle, actor.kind === 'ally' ? 'bad' : 'good', subjectParticle(actor.name) + ' 공포로 행동을 건너뛰고 ' + damage + '의 마법 피해를 입었습니다.')
+      } else {
+        pushBattleLog(battle, 'normal', subjectParticle(actor.name) + ' 행동을 건너뛰었습니다.')
+      }
+    } else {
+      if (silenced) actor.mp = actor.mp
+      performBattleAction(battle, actor)
+    }
   }
 
   if (

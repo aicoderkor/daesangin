@@ -28,7 +28,7 @@ import {
   rollChance,
 } from '../game/combat'
 import { generateMercenaryTraits, getTraitCombatEffects, normalizeMercenaryTraits } from '../game/traits'
-import { hasStatus } from '../game/combat/statusEffects'
+import { addStatusEffect, hasStatus } from '../game/combat/statusEffects'
 
 const TAVERN_REFRESH_MS = 4 * 60 * 60 * 1_000
 const DUNGEON_PROGRESS_REQUIREMENTS = [80, 150, 220, 300] as const
@@ -442,7 +442,7 @@ function getCombatSkill(mercenary: Mercenary): SkillDefinition {
     branches = branch.branches ?? []
   }
 
-  return skill ?? { name: '기본기', cost: 999, type: 'none' }
+  return skill ?? (mercenary.base === '활잡이' ? { name: '탄막', cost: 25, type: 'multi', powerMultiplier: 0.72, targetCount: 2 } : { name: '기본기', cost: 999, type: 'none' })
 }
 
 function createAllyUnits(
@@ -634,7 +634,8 @@ function performBattleAction(
     focusBonusRate: Math.max(0, actor.hit - 0.9) - (hasStatus(target.statusEffects, 'freeze') || hasStatus(target.statusEffects, 'petrify') ? 0 : target.evade),
     missChanceMultiplier: actor.missChanceMultiplier,
   })
-  if (!rollChance(finalHitRate)) {
+  const skillReady = actor.kind === 'ally' && !hasStatus(actor.statusEffects, 'silence') && actor.mp >= actor.skill.cost
+  if (!actor.skill.guaranteedHit && !rollChance(finalHitRate)) {
     pushBattleLog(battle, 'normal', actor.name + '의 공격을 ' + subjectParticle(target.name) + (Math.random() < 0.5 ? ' 몸을 틀어 피했습니다.' : ' 재빠르게 회피했습니다.'))
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
     return
@@ -645,7 +646,7 @@ function performBattleAction(
   let hitCount = 1
   let area = false
 
-  if (actor.kind === 'ally' && !hasStatus(actor.statusEffects, 'silence') && actor.mp >= actor.skill.cost) {
+  if (skillReady) {
     actor.mp -= actor.skill.cost
     pushBattleLog(
       battle,
@@ -678,7 +679,7 @@ function performBattleAction(
     actor.mp = Math.min(actor.maxMp, actor.mp + actor.mana)
   }
 
-  const hitTargets = area ? targets.slice(0, 3) : [target]
+  const hitTargets = area ? [...targets].sort(() => Math.random() - 0.5).slice(0, actor.skill.targetCount ?? 3) : [target]
 
   for (const hitTarget of hitTargets) {
     for (let hitIndex = 0; hitIndex < hitCount; hitIndex += 1) {
@@ -719,10 +720,11 @@ function performBattleAction(
       if (hitTarget.hp <= 0) pushBattleLog(battle, 'good', subjectParticle(hitTarget.name) + ' 힘없이 쓰러졌습니다.')
       const skill = actor.skill
       if (skill.status && rollChance(skill.statusChance ?? 1)) {
-        const turns = skill.statusTurns ?? 1
-        if (skill.status === 'stun') { hitTarget.stunTurns = Math.max(hitTarget.stunTurns ?? 0, turns); hitTarget.statusEffects = [...(hitTarget.statusEffects ?? []), { id: 'stun', turns, stacks: 1, sourceId: actor.id }] }
-        if (skill.status === 'silence') { hitTarget.silenceTurns = Math.max(hitTarget.silenceTurns ?? 0, turns); hitTarget.statusEffects = [...(hitTarget.statusEffects ?? []), { id: 'silence', turns, stacks: 1, sourceId: actor.id }] }
-        if (skill.status === 'taunt') { hitTarget.tauntTurns = Math.max(hitTarget.tauntTurns ?? 0, turns); hitTarget.statusEffects = [...(hitTarget.statusEffects ?? []), { id: 'taunt', turns, stacks: 1, sourceId: actor.id }] }
+        const turns = (skill.statusTurns ?? 1) + 1
+        hitTarget.statusEffects = addStatusEffect(hitTarget.statusEffects, { id: skill.status, turns, stacks: 1, sourceId: actor.id })
+        if (skill.status === 'stun') hitTarget.stunTurns = Math.max(hitTarget.stunTurns ?? 0, turns)
+        if (skill.status === 'silence') hitTarget.silenceTurns = Math.max(hitTarget.silenceTurns ?? 0, turns)
+        if (skill.status === 'taunt') hitTarget.tauntTurns = Math.max(hitTarget.tauntTurns ?? 0, turns)
         pushBattleLog(battle, 'skill', hitTarget.name + '에게 ' + skill.status + ' 효과가 적용되었습니다.')
       }
 
@@ -732,6 +734,16 @@ function performBattleAction(
           actor.hp + damage * actor.lifesteal,
         )
       }
+    }  }
+
+  if (actor.riderDamage || actor.riderDamageMultiplier) {
+    const riderTarget = selectWeightedTarget(foes.filter((unit) => unit.hp > 0))
+    if (riderTarget) {
+      const riderDamage = actor.riderDamage ?? Math.max(1, Math.floor(actor.atk * (actor.riderDamageMultiplier ?? 0)))
+      riderTarget.hp = Math.max(0, riderTarget.hp - riderDamage)
+      battle.hitUnitId = riderTarget.id
+      pushBattleLog(battle, actor.kind === 'ally' ? 'good' : 'bad', actor.name + '의 탈것이 ' + riderTarget.name + '에게 ' + riderDamage + '의 물리 피해를 입혔습니다.')
+      if (riderTarget.hp <= 0) pushBattleLog(battle, 'good', subjectParticle(riderTarget.name) + ' 힘없이 쓰러졌습니다.')
     }
   }
 }

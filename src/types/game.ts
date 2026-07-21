@@ -1,4 +1,4 @@
-﻿export type ScreenId =
+export type ScreenId =
   | 'home'
   | 'tavern'
   | 'mercs'
@@ -41,10 +41,14 @@ export interface SkillDefinition {
   name: string
   cost: number
   powerMultiplier?: number
-  status?: 'stun' | 'silence' | 'taunt'
+  status?: StatusEffectId
   statusChance?: number
   statusTurns?: number
   counterRate?: number
+  targetCount?: number
+  guaranteedHit?: boolean
+  riderDamage?: number
+  riderDamageMultiplier?: number
   type:
     | 'none'
     | 'guard'
@@ -237,6 +241,8 @@ export interface CombatUnit {
   silenceTurns?: number
   tauntTurns?: number
   counterRate?: number
+  riderDamage?: number
+  riderDamageMultiplier?: number
   statusEffects?: CombatStatusEffect[]
 }
 

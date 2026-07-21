@@ -26,7 +26,12 @@ export function addExperience({ currentLevel, currentTotalExp, gainedExp }: { cu
 }
 
 export function grantBattleExperience(mercenary: Mercenary, gainedExp: number): { mercenary: Mercenary; result: ExperienceGainResult } {
-  const result = addExperience({ currentLevel: mercenary.level, currentTotalExp: mercenary.totalExp, gainedExp })
+  const promotionCap = Math.min(MAX_DEFINED_LEVEL, (mercenary.path.length + 1) * 5)
+  const capData = getLevelExperienceData(promotionCap)
+  const capExp = capData?.nextTotalExp ?? Number.POSITIVE_INFINITY
+  const safeGain = Number.isFinite(gainedExp) ? Math.max(0, gainedExp) : 0
+  const acceptedGain = Math.min(safeGain, Math.max(0, capExp - mercenary.totalExp))
+  const result = addExperience({ currentLevel: mercenary.level, currentTotalExp: mercenary.totalExp, gainedExp: acceptedGain })
   return { mercenary: { ...mercenary, level: result.newLevel, totalExp: result.newTotalExp }, result }
 }
 
@@ -37,4 +42,5 @@ export function normalizeMercenaryProgression(value: { level?: number; totalExp?
     : (getLevelExperienceData(clampDefinedLevel(value.level ?? 1))?.startTotalExp ?? 0) + Math.max(0, Number.isFinite(value.xp) ? value.xp ?? 0 : 0)
   return { totalExp, level: getLevelFromTotalExp(totalExp) }
 }
+
 

@@ -1114,9 +1114,7 @@ export const gameStore = {
       return false
     }
 
-    const promotionReady =
-      (mercenary.path.length === 0 && mercenary.level >= 5) ||
-      (mercenary.path.length === 1 && mercenary.level >= 10)
+    const promotionReady = mercenary.level >= (mercenary.path.length + 1) * 5 && mercenary.path.length < 9
 
     let branches = CLASSES[mercenary.base].branches
 
@@ -1138,6 +1136,8 @@ export const gameStore = {
       if (!target) return current
 
       target.path.push(branchIndex)
+      target.level = 1
+      target.totalExp = 0
       next.fame += 40
       next.recentLog = target.base + ' 전직 완료'
       return next

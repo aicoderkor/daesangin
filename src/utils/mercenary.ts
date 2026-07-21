@@ -47,29 +47,15 @@ export function getNextPromotionBranches(
 }
 
 export function isPromotionReady(mercenary: Mercenary): boolean {
-  if (mercenary.path.length === 0) {
-    return mercenary.level >= 5
-  }
-
-  if (mercenary.path.length === 1) {
-    return mercenary.level >= 10
-  }
-
-  return false
+  const requiredLevel = getNextPromotionLevel(mercenary)
+  return requiredLevel !== null && mercenary.level >= requiredLevel
 }
 
 export function getNextPromotionLevel(
   mercenary: Mercenary,
 ): number | null {
-  if (mercenary.path.length === 0) {
-    return 5
-  }
-
-  if (mercenary.path.length === 1) {
-    return 10
-  }
-
-  return null
+  const nextLevel = (mercenary.path.length + 1) * 5
+  return nextLevel <= 45 ? nextLevel : null
 }
 
 export function getMercenaryStats(

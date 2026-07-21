@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { CLASSES } from '../data/gameData'
 import { getMercenaryTraitDefinitions, getTraitCount } from '../game/traits'
-import { getCurrentLevelExp, getLevelProgress, getRequiredExpForLevel, MAX_DEFINED_LEVEL, MAX_DEFINED_TOTAL_EXP } from '../game/progression'
+import { getCurrentLevelExp, getLevelProgress, getRequiredExpForLevel } from '../game/progression'
 import { gameStore, useGameStore } from '../store/gameStore'
 import type { Mercenary, SkillDefinition, StatMap } from '../types/game'
 import { calculateDamageRange, calculateHealing, mapJobToCombatClass } from '../game/combat'
@@ -231,14 +231,14 @@ function MercenaryDetail({
   const requiredExp = getRequiredExpForLevel(mercenary.level)
   const currentLevelExp = getCurrentLevelExp(mercenary.level, mercenary.totalExp)
   const xpProgress = getLevelProgress(mercenary.level, mercenary.totalExp) * 100
-  const atCurrentMaxExp = mercenary.level === MAX_DEFINED_LEVEL && mercenary.totalExp >= MAX_DEFINED_TOTAL_EXP
+  const nextPromotionLevel = getNextPromotionLevel(mercenary)
+  const atCurrentMaxExp = nextPromotionLevel !== null && mercenary.level >= nextPromotionLevel
   const baseHealing = calculateHealing({ baseDamage: damageRange.average })
   const healingRate = CLASSES[mercenary.base].heal
     ? stats.heal / (CLASSES[mercenary.base].heal ?? stats.heal)
     : 1
   const gearSlots = ['weapon', 'armor', 'charm'] as const
   const gearIcons = { weapon: '⚔️', armor: '🛡️', charm: '🔮' } as const
-  const nextPromotionLevel = getNextPromotionLevel(mercenary)
   const promotionReady = isPromotionReady(mercenary)
   const pageCount = 4
   const percent = (value: number) => `${Math.round(value * 100)}%`
@@ -263,7 +263,7 @@ function MercenaryDetail({
           <span>{formatExp(currentLevelExp)} / {formatExp(requiredExp)} EXP</span>
           <div className="bar"><i style={{ width: `${xpProgress}%` }} /></div>
           <span>총 누적 경험치 {formatExp(mercenary.totalExp)}</span>
-          {atCurrentMaxExp && <span>현재 최고 레벨</span>}
+          {atCurrentMaxExp && <span>전직 가능</span>}
         </div>
       </div>
 
@@ -359,7 +359,7 @@ function MercenaryDetail({
       </div>
 
       <div className="merc-promotion-row">
-        <span>{mercenary.path.length >= 2 ? '최종 전직 완료' : promotionReady ? '전직 가능' : `다음 전직 Lv.${nextPromotionLevel}`}</span>
+        <span>{mercenary.path.length >= 9 ? '최종 전직 완료' : promotionReady ? '전직 가능' : `다음 전직 Lv.${nextPromotionLevel}`}</span>
         {promotionReady && <button type="button" className="btn sm" onClick={onOpenPromotion}>전직 선택</button>}
       </div>
     </div>
@@ -415,3 +415,5 @@ function PromotionPanel({
     </>
   )
 }
+
+

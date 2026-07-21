@@ -1,6 +1,7 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DUNGEONS } from '../data/gameData'
 import { gameStore, useGameStore } from '../store/gameStore'
+import { getClassName } from '../utils/mercenary'
 import type {
   CombatUnit,
 } from '../types/game'
@@ -112,7 +113,7 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
 
                   <span>{unlocked ? '해금' : '잠김'}</span>
                 </div>
-                {(() => { const ids = game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds ?? []; const names = ids.map((id) => game.mercenaries.find((mercenary) => mercenary.id === id)?.base).filter(Boolean).join(" / "); return names ? <div className="small">{names}</div> : null })()}
+                {(() => { const ids = game.dungeonProgress[String(dungeonIndex)]?.assignedMercenaryIds ?? []; const names = ids.map((id) => game.mercenaries.find((mercenary) => mercenary.id === id)).filter((mercenary): mercenary is NonNullable<typeof mercenary> => Boolean(mercenary)).map(getClassName).join(" / "); return names ? <div className="small">{names}</div> : null })()}
 
               </article>
             )
@@ -198,9 +199,9 @@ export default function DungeonPage({}: { onNavigate?: (screen: never) => void }
         <div className="modal on" onClick={(event) => { if (event.target === event.currentTarget) setSelectedDungeon(null) }}>
           <div className="sheet"><div className="head"><h2>던전 용병 배치</h2><button type="button" className="btn sm" onClick={() => setSelectedDungeon(null)}>닫기</button></div>
             <div className="small">현재 던전 참여 용병</div>
-            {(game.dungeonProgress[String(selectedDungeon)]?.assignedMercenaryIds ?? []).map((id) => { const mercenary = game.mercenaries.find((candidate) => candidate.id === id); return mercenary ? <div className="row" key={id}><span>{mercenary.base === '창잡이' ? '무도가' : mercenary.base} Lv.{mercenary.level}</span><button type="button" className="btn sm" onClick={() => gameStore.removeMercenaryFromDungeon(selectedDungeon, id)}>제외</button></div> : null })}
+            {(game.dungeonProgress[String(selectedDungeon)]?.assignedMercenaryIds ?? []).map((id) => { const mercenary = game.mercenaries.find((candidate) => candidate.id === id); return mercenary ? <div className="row" key={id}><span>{getClassName(mercenary)} Lv.{mercenary.level}</span><button type="button" className="btn sm" onClick={() => gameStore.removeMercenaryFromDungeon(selectedDungeon, id)}>제외</button></div> : null })}
             <div className="small">배치 가능한 용병</div>
-            {game.mercenaries.filter((mercenary) => { const assigned = mercenary.assignedDungeonId; return !assigned }).map((mercenary) => <button type="button" className="btn" key={mercenary.id} onClick={() => gameStore.assignMercenaryToDungeon(selectedDungeon, mercenary.id)}>{mercenary.base === '창잡이' ? '무도가' : mercenary.base} Lv.{mercenary.level}</button>)}
+            {game.mercenaries.filter((mercenary) => { const assigned = mercenary.assignedDungeonId; return !assigned }).map((mercenary) => <button type="button" className="btn" key={mercenary.id} onClick={() => gameStore.assignMercenaryToDungeon(selectedDungeon, mercenary.id)}>{getClassName(mercenary)} Lv.{mercenary.level}</button>)}
 
             <button type="button" className="btn" onClick={() => { if ((game.dungeonProgress[String(selectedDungeon)]?.assignedMercenaryIds ?? []).length > 0) { gameStore.assignDungeon(0, selectedDungeon); setSelectedDungeon(null) } }}>출전</button>
           </div>

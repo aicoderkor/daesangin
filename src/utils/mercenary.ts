@@ -1,3 +1,6 @@
+import martialArtistPortrait from '../assets/martial-artist.png'
+import hunterPortrait from '../assets/hunter.png'
+import shamanPortrait from '../assets/shaman.png'
 import { CLASSES } from '../data/gameData'
 import { applyPrimaryTraitStats } from '../game/traits'
 import type {
@@ -117,6 +120,13 @@ export function getMercenaryStats(
 
 export function getBaseIcon(base: MercenaryBase): string {
   return CLASSES[base].icon
+}
+export function getBasePortrait(base: MercenaryBase): string | null {
+  return ({
+    창잡이: martialArtistPortrait,
+    활잡이: hunterPortrait,
+    의술사: shamanPortrait,
+  } as Partial<Record<MercenaryBase, string>>)[base] ?? null
 }
 
 export function getBaseRole(base: MercenaryBase): string {

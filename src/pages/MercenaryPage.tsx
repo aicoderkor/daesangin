@@ -7,6 +7,7 @@ import type { Mercenary, MercenaryBase, SkillDefinition, StatMap } from '../type
 import { calculateDamageRange, calculateHealing, mapJobToCombatClass } from '../game/combat'
 import {
   getBaseIcon,
+  getBasePortrait,
   getClassName,
   getMercenaryStats,
   getNextPromotionBranches,
@@ -114,7 +115,9 @@ export default function MercenaryPage({
                   }}
                 >
                   <div className="ico">
-                    {getBaseIcon(mercenary.base)}
+                    {getBasePortrait(mercenary.base) ? (
+                      <img src={getBasePortrait(mercenary.base)!} alt="" />
+                    ) : getBaseIcon(mercenary.base)}
                   </div>
 
                   <div>
@@ -264,7 +267,11 @@ function MercenaryDetail({
       </div>
 
       <div className="merc-profile">
-        <div className="merc-portrait">{getBaseIcon(mercenary.base)}</div>
+        <div className="merc-portrait">
+          {getBasePortrait(mercenary.base) ? (
+            <img src={getBasePortrait(mercenary.base)!} alt="" />
+          ) : getBaseIcon(mercenary.base)}
+        </div>
         <div className="merc-level">
           <b>Lv. {mercenary.level}</b>
           <span>{formatExp(currentLevelExp)} / {formatExp(requiredExp)} EXP</span>
